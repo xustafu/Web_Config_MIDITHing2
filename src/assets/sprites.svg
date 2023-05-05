@@ -1,0 +1,29 @@
+<svg width="100mm" height="100mm" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <clipPath id="clipPath37648">
+   <rect width="1920" height="1920"/>
+  </clipPath>
+ </defs>
+ <path d="m8.237 31.114c1.1982 0 1.1923-1.1651 1.1923-1.2103v-5.8011h-9.4289v7.0115zm-9e-5 -14.023c1.1983 0 1.1923 1.1651 1.1923 1.2103v5.8011h-9.4289v-7.0115z" style="fill:#b2b2b2;paint-order:stroke fill markers;stroke-dasharray:1.32299, 1.32299;stroke-width:1.323"/>
+ <path d="m43.636 0c1.1983 0 1.1923 1.0772 1.1923 1.119v5.3633h-9.4289v-6.4823z" style="fill:#b2b2b2;paint-order:stroke fill markers;stroke-dasharray:1.32299, 1.32299;stroke-width:1.323"/>
+ <path d="m18.606 25.511 1.863-2.3812h-3.7259z" style="fill:#979797;paint-order:stroke fill markers;stroke-width:1.323"/>
+ <path d="m18.606 5.603 1.863 2.3812h-3.7259z" style="fill:#979797;paint-order:stroke fill markers;stroke-width:1.323"/>
+ <path d="m28.242 25.511 1.863-2.3812h-3.7259z" style="fill:#f9f9f9;paint-order:stroke fill markers;stroke-width:1.323"/>
+ <path d="m28.242 5.603 1.863 2.3812h-3.7259z" style="fill:#f9f9f9;paint-order:stroke fill markers;stroke-width:1.323"/>
+ <path transform="matrix(.61986 0 0 .61986 -244.16 -474.62)" d="m506.94 774.16-4.167 2.4859v-6.647l4.167 2.4859v-2.4859l4.93 3.323-4.93 3.323z" clip-path="url(#clipPath37648)" fill="#b3b3b3" stroke="rgba(0,0,0,0)" stroke-miterlimit="10" stroke-width=".42684" style="fill:#b3b3b3"/>
+ <path d="m40.114 3.295 1.7728 2.266h-3.5456z" style="fill:#494c4f;paint-order:stroke fill markers;stroke-width:1.323"/>
+ <path d="m43.636 23.573c1.1983 0 1.1923-1.0772 1.1923-1.119v-5.3633h-9.4289v6.4823z" style="fill:#b2b2b2;paint-order:stroke fill markers;stroke-dasharray:1.32299, 1.32299;stroke-width:1.323"/>
+ <path d="m40.114 20.745 1.7728-2.266h-3.5456z" style="fill:#494c4f;paint-order:stroke fill markers;stroke-width:1.323"/>
+ <path d="m59.679 0c1.1983 0 1.1923 1.0772 1.1923 1.119v5.3633h-9.4289v-6.4823z" style="fill:#b3b3b3;paint-order:stroke fill markers;stroke-dasharray:1.32299, 1.32299;stroke-width:1.323"/>
+ <path d="m56.157 3.295 1.7728 2.266h-3.5456z" style="fill:#f9f9f9;paint-order:stroke fill markers;stroke-width:1.323"/>
+ <path d="m59.679 23.573c1.1982 0 1.1923-1.0772 1.1923-1.119v-5.3633h-9.4289v6.4823z" style="fill:#b3b3b3;paint-order:stroke fill markers;stroke-dasharray:1.32299, 1.32299;stroke-width:1.323"/>
+ <path d="m56.157 20.745 1.7728-2.266h-3.5456z" style="fill:#f9f9f9;paint-order:stroke fill markers;stroke-width:1.323"/>
+ <path d="m8.237 14.023c1.1982 0 1.1923-1.1651 1.1923-1.2103v-5.8011h-9.4289v7.0115zm-9e-5 -14.023c1.1983 0 1.1923 1.1651 1.1923 1.2103v5.8011h-9.4289v-7.0115z" style="fill:#b2b2b2;paint-order:stroke fill markers;stroke-dasharray:1.32299, 1.32299;stroke-width:1.323"/>
+ <path d="m4.715 8.42 2.0373-2.8166h-4.0746z" style="fill:#494c4f;paint-order:stroke fill markers;stroke-width:1.323"/>
+ <path d="m4.715 22.694 2.0373 2.8166h-4.0746z" style="fill:#f9f9f9;paint-order:stroke fill markers;stroke-width:1.323"/>
+ <path transform="matrix(-.61986 0 0 .61986 397.03 -474.62)" d="m506.94 774.16-4.167 2.4859v-6.647l4.167 2.4859v-2.4859l4.93 3.323-4.93 3.323z" clip-path="url(#clipPath37648)" fill="#b3b3b3" stroke="rgba(0,0,0,0)" stroke-miterlimit="10" stroke-width=".42684" style="fill:#b3b3b3"/>
+ <path d="m4.1443 45.511 1.1596-1.4821h-2.319z" style="fill:#979797;paint-order:stroke fill markers;stroke-width:1.323"/>
+ <path d="m4.1443 38.941 1.1596 1.4821h-2.319z" style="fill:#979797;paint-order:stroke fill markers;stroke-width:1.323"/>
+ <path d="m10.142 45.511 1.1596-1.4821h-2.319z" style="fill:#f9f9f9;paint-order:stroke fill markers;stroke-width:1.323"/>
+ <path d="m10.142 38.941 1.1596 1.4821h-2.319z" style="fill:#f9f9f9;paint-order:stroke fill markers;stroke-width:1.323"/>
+</svg>

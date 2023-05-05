@@ -1,0 +1,76 @@
+/* all number input arrows  */
+span[class*='arrow'] {
+  position: absolute;
+  background: url(../../assets/sprites.svg) no-repeat -7rem 0rem;
+  border-radius: 0;
+  width: 2rem;
+  height: 1.4rem;
+  right: 0;
+  background-size: 20rem;
+}
+
+span.arrow-down {
+  top: 2.875rem;
+  background-position-y: -3.3rem;
+}
+
+span[class^='arrow']:hover,
+span[class^='arrow']:active,
+span[class^='arrow']:focus {
+  cursor: pointer;
+  background-position-x: -10.2rem;
+}
+
+.box-body span[class^=arrow],
+.conf-window-wrap span[class^=arrow] {
+  width: 1.4rem;
+  background-position-x: -3.2rem;
+}
+
+.box-body span.arrow-up,
+.conf-window-wrap span.arrow-up {
+  background-position-y: -0.5rem;
+}
+
+.box-body span.arrow-down,
+.conf-window-wrap span.arrow-down {
+  background-position-y: -4rem;
+  top: .8rem;
+}
+
+.box-body span[class^=arrow]:hover,
+.box-body span[class^=arrow]:active,
+.box-body span[class^=arrow]:focus,
+.conf-window-wrap span[class^=arrow]:hover,
+.conf-window-wrap span[class^=arrow]:active,
+.conf-window-wrap span[class^=arrow]:focus {
+  background-position-x: -5.12rem;
+}
+
+.arrow-for,
+.arrow-back {
+  width: 2.6rem !important;
+  height: 1.1rem !important;
+  top: 0.6rem;
+}
+
+.conf-window button .arrow-for:hover,
+.conf-window button .arrow-for:active,
+.conf-window button .arrow-for:focus,
+.conf-window button .arrow-back:hover,
+.conf-window button .arrow-back:active,
+.conf-window button .arrow-back:focus {
+  background-position-x: initial !important;
+}
+
+.arrow-back {
+  background-position-x: -15.5rem !important;
+  background-position-y: -0.3rem !important;
+  left: 0.2rem;
+}
+
+.arrow-for {
+  background-position-x: -12.7rem !important;
+  background-position-y: -0.3rem !important;
+  right: 0.2rem;
+}

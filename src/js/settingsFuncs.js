@@ -1,0 +1,84 @@
+import { q, qA } from "./globals.js";
+import { sendSysex, sendParameterSysex } from "./backend/sysexMgt.js";
+import { showModal } from "./domScripts.js";
+import { getParent } from "./helpers.js";
+import { refreshWeb } from "./backend/refreshWeb.js";
+
+export function saveToFile() {
+  const Months = ["Ene", "Feb",'Mar','Abr','May','Jun','Ago','Sep','Oct','Nov','Dic'];
+  var data = JSON.stringify(DeviceConfig, undefined, 4);
+  var blob = new Blob([data], { type: "text/json" });
+  var d = new Date();
+  var date_string = d.getFullYear()+'_'+Months[d.getMonth()]+'_'+d.getDate()
+                    +'_'+d.getHours()+'_'+d.getMinutes()+'_'+d.getSeconds();
+  var elem = q("#save_to_file");
+  elem.href = window.URL.createObjectURL(blob);
+  elem.download = "MTConfig" + date_string + ".json";
+  elem.dataset.downloadurl = ["text/json", elem.download, elem.href].join(":");
+}
+
+export function loadFromFile() {
+  q('#file_load').click();
+}
+
+export function handleFiles(files) {
+  const reader = new FileReader();
+  const file = files[0];
+
+  if (file.type == "application/json") {
+    reader.onloadend = function (evt) {
+      //console.log(reader.readyState);
+      //console.log(reader.result);
+      var json;
+
+      try {
+        json = JSON.parse(reader.result);
+      } catch (e) {
+        alert("invalid json");
+        return;
+      }
+      if (typeof json.ports === "undefined") {
+        console.log("empty object");
+        return;
+      }
+      DeviceConfig = json;
+      refreshWeb();
+      sendToModule();
+    };
+    reader.readAsText(file);
+    console.log(file.name + "/Type: " + file.type + ". " + file.size + " bytes");
+
+    return;
+  }
+}
+
+export function sendToModule() {
+  // send all web to module
+  qA("input.header-input").forEach((input) => {
+    sendParameterSysex(input);
+  });
+  qA("input:not(.no-trigger):not(.header-input").forEach((input) => {
+    try {
+      var box = getParent(input, true, 'box-body');
+      if (box.classList.contains('box-options'))
+        box = getParent(box, true, 'conf-window-wrap');
+    } catch (e) {
+      var box = false;
+    }
+    if (box && !box.classList.contains('hidden'))
+      sendParameterSysex(input);
+  });
+  requestConfig();
+  console.log("sending to module");
+}
+
+export function requestConfig() {
+  // request all configuration from module
+  sendSysex("GENERAL", 0, "REQ_CONFIG", 0);
+  console.log('requesting from module');
+}
+
+export function credits() {
+  // Reveal the modal with the credits
+  showModal('credits');
+}

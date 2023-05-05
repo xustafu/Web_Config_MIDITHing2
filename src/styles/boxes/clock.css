@@ -1,0 +1,21 @@
+[id^=clock-divider] {
+  /* width: 13.5rem; */
+}
+
+.box-body .input-wrap label[for^=clock-divider-input] {
+  padding-right: 2.2rem;
+}
+[id^=clock-stop] {
+  order: 1;
+  margin-left: 16.5rem;
+}
+
+
+[id^=clock-mult] {
+  order: 3;
+}
+
+
+[id^=clock-div] {
+  order: 2;
+}

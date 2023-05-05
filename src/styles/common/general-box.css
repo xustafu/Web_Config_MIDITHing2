@@ -1,0 +1,187 @@
+.box {
+  --box-width: 26.5rem;
+  --box-height: 26rem;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 1fr 4rem repeat(2, 1fr);
+  grid-template-areas:
+    'header header header header'
+    'func func func func'
+    'body body body body';
+  row-gap: 0.8rem;
+  justify-items: stretch;
+  position: relative;
+
+  background-color: var(--bg);
+  color: var(--off-white);
+  border: 5px solid var(--box-border);
+  border-radius: 20px;
+  padding: 1rem;
+  padding-block: 0.5rem;
+  width: var(--box-width);
+  height: var(--box-height);
+}
+
+.box-header {
+  grid-area: header;
+  display: inline-grid;
+  grid-template-columns: repeat(4, 5.3rem);
+  grid-template-areas: 'port volts midi learn';
+  gap: 0.75rem;
+  justify-items: center;
+  align-items: center;
+}
+
+.box-header .box-header-title,
+.box-header .box-header-field-v,
+.box-header .box-header-field-mc,
+.box-header .box-learn-button {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  justify-self: stretch;
+}
+
+.box-header-title {
+  grid-area: 'port';
+  /* min-width: 6rem; */
+  justify-self: stretch;
+}
+
+.box-header-field-v {
+  grid-area: 'volts';
+  /* max-width: 6rem; */
+}
+
+.box-header-field-mc {
+  grid-area: 'midi';
+  /* max-width: 4rem; */
+}
+
+.box-learn-button {
+  grid-area: 'learn';
+}
+
+/* Hack needed to get firefox to do 
+the same as Chrome */
+.box-header-field-v,
+.box-header-field-mc,
+.box-learn-button,
+.box-header-field-v *,
+.box-header-field-mc *,
+.box-learn-button * {
+  width: 100%;
+}
+
+.box-func-select {
+  grid-area: func;
+  height: 100%;
+}
+
+.box-body {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  row-gap: 2rem;
+  margin-top: 0.3rem;
+  align-items: center;
+}
+
+.box-header input {
+  padding-block: 0.7rem;
+  background-color: var(--grey);
+  color: var(--off-white);
+  border: 0;
+  text-indent: 0.5rem;
+}
+
+.body-types-wrap {
+  width: 23.5rem;
+}
+
+.box-body label,
+.box-body h3,
+.conf-window-wrap label,
+.conf-window-wrap h3 {
+  color: var(--label-title);
+  font-size: 1.2rem;
+}
+
+h3.inline,
+label[class^=box-num] {
+  margin-right: 0.3rem;
+}
+
+.box-body .selector-options,
+.conf-window-wrap .selector-options {
+  text-indent: 0;
+  position: absolute;
+  max-width: 100%;
+}
+
+.box-body .selector-options .box-selector-item,
+.conf-window-wrap .selector-options .box-selector-item {
+  padding-inline: 1.2rem;
+  font-size: 1.2rem;
+}
+
+.box-selector-label {
+  background-color: var(--dropdown-label-bg);
+}
+
+.box-num-mult-label:not(.inline) {
+  width: 100%;
+}
+
+.box-body .input-wrap,
+.conf-window-wrap .input-wrap {
+  position: relative;
+}
+
+.box-body .input-wrap .box-selector-label,
+.conf-window-wrap .input-wrap .box-selector-label {
+  /* min-width: 4.7rem; */
+  padding: 0.4rem;
+  padding-left: 0.7rem;
+}
+
+.input-wrap .box-selector-label::after {
+  width: 1.8rem;
+  height: 2.5rem;
+  content: '';
+  background: url(../../assets/sprites.svg) no-repeat 0rem 0rem;
+  background-size: 18.4rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.input-wrap .box-selector-label.disabled::after {
+  display: none;
+}
+
+.box-body .input-wrap .box-selector-label.active::after,
+.conf-window-wrap .input-wrap .box-selector-label.active::after {
+  background-position-y: -3.2rem;
+}
+
+.conf-window-wrap {
+  position: absolute;
+  top: -0.5rem;
+  left: -0.5rem;
+  width: var(--box-width);
+  height: var(--box-height);
+
+  background-color: var(--bg);
+  border: 5px solid var(--box-border);
+  border-radius: 20px;
+  padding: 1rem;
+  padding-block: 0.5rem;
+}
+[data-disabled=true] label,
+[data-disabled=true] input,
+[data-disabled=true] h3 {
+  color: var(--grey) !important;
+}

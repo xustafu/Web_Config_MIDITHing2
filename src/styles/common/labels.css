@@ -1,0 +1,12 @@
+label[for*='voice'] {
+  min-width: 3.1rem !important;
+}
+
+label[for*='assign'],
+label[for*='priority'] {
+  width: 9.8rem;
+}
+
+div[id*='gate-voice'] {
+  width: 100%; /* Force the gate Voice input to be a full line */
+}

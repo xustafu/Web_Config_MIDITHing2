@@ -1,0 +1,30 @@
+.box-func-select {
+  position: relative;
+}
+
+.box-func-select .box-selector-label {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 1px solid;
+  font-size: 2rem;
+  text-align: center;
+  padding-block: .3rem;
+}
+
+.box-func-select .box-selector-label::after {
+  width: 3rem;
+  height: 3rem;
+  content: '';
+  display: block;
+  background-image: url(../../assets/sprites.svg);
+  background-size: 32rem;
+  background-position: -8.2rem -6.1rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.box-func-select .box-selector-label.active::after {
+  background-position-y: -.7rem;
+}

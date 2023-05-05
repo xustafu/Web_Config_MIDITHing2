@@ -1,0 +1,7 @@
+{
+  "liveServer.settings.port": 5502,
+  "html.format.wrapAttributes": "force",
+  "[php]": {
+        "editor.defaultFormatter": "DEVSENSE.phptools-vscode"
+    },
+}

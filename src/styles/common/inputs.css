@@ -1,0 +1,51 @@
+.input-number-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.box-num-mult {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 9.5rem;
+}
+
+.box-body input[data-type='number'],
+.conf-window-wrap input[data-type='number'] {
+  padding: 0.4rem;
+  color: var(--label-title);
+  background-color: transparent;
+  border: 1px solid var(--border);
+  text-align: right;
+  padding-right: 1.75rem;
+}
+
+.box-body input[data-digits='2'],
+.conf-window-wrap input[data-digits='2'] {
+  max-width: 4rem;
+}
+
+.box-body input[data-digits='3'],
+.conf-window-wrap input[data-digits='3'] {
+  max-width: 4.5rem;
+}
+
+.box-body input[data-digits='4'],
+.conf-window-wrap input[data-digits='4'] {
+  max-width: 6rem;
+}
+
+.box-body input[data-digits='5'],
+.conf-window-wrap input[data-digits='5'] {
+  max-width: 7rem;
+}
+
+.box-body .input-wrap[data-type='number']::before,
+.conf-window-wrap input[data-type='number']::before {
+  top: -0.2rem;
+  right: 0.4rem;
+}
+
+.toggle-wrap input {
+  display: none;
+}

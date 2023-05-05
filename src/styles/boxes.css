@@ -1,0 +1,16 @@
+@import url('./common/general-box.css');
+@import url('./common/lists.css');
+@import url('./common/arrows.css');
+@import url('./common/header.css');
+@import url('./common/main-func.css');
+@import url('./common/inputs.css');
+@import url('./common/labels.css');
+@import url('./boxes/sliders.css');
+@import url('./boxes/lfo.css');
+@import url('./boxes/note.css');
+@import url('./boxes/lfo-conf.css');
+@import url('./boxes/clock.css');
+@import url('./boxes/nrpn.css');
+@import url('./boxes/osc.css');
+@import url('./boxes/adsr-conf.css');
+

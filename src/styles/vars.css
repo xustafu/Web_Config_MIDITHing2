@@ -1,0 +1,58 @@
+:root {
+  /* TODO Tree shaking */
+  --box-border: #232323;
+  --heading-white: white;
+  --learn-inactive: #808080;
+  --learn-active: #82dc80;
+  --dropdown-label-bg: #4d4d4d;
+  --label-title: #ccc;
+  --label-title: #d2d2d2;
+  --off-white: #b2b2b2;
+  --arrow-bg: var(--grey3);
+  --list-bg: var(--bg);
+  --list-font: var(--grey3);
+  --border: var(--off-white);
+  --bg: #242424;
+  --graph-line: var(--grey);
+  --graph-bg: #191919;
+  --toggle-border: #707070;
+  --toggle-inactive: black;
+  --toggle-active: #06b900;
+  --transparent: transparent;
+  --grey: #676767;
+  --grey2: #666;
+  --grey3: #999;
+  --body-grey: #333;
+  --dark-grey: #252525;
+  --celeste: #33b7ee;
+  --red: #ff0000;
+  --green: #06b900;
+
+  /* port colours */
+  --color1: #ff0090;
+  --color2: var(--red);
+  --color3: #ff8000;
+  --color4: #eeff00;
+  --color5: #7fff00;
+  --color6: #25a200;
+  --color7: #00dcff;
+  --color8: #005dff;
+  --color9: #0011a7;
+  --color10: #690088;
+  --color11: #d700ff;
+  --color12: #ff8acc;
+
+  /* fonts */
+  --main-font: Roboto, 'Open Sans', 'Helvetica Neue', sans-serif;
+  /* --main-font: Helvetica, 'Helvetica Neue', Roboto, 'Open Sans', sans-serif; */
+  --arrow-font: Consolas, monospace;
+
+  /* sizes */
+  --banner-input-sz: 193px;
+  --volts-input-sz: 4rem;
+  --label-arrow-width: 1.8rem;
+  --label-arrow-height: 2.6rem;
+  --box-width: 26.5rem;
+    --box-height: 26rem;
+    --main-width: 126rem;
+}

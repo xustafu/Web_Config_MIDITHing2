@@ -1,0 +1,61 @@
+.modal-wrap:not(.modal-wrap.hidden) {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--dark-grey);
+}
+
+.modal {
+  width: 40vw;
+  background-color: var(--grey);
+  padding: 5rem;
+  opacity: 1;
+  position: relative;
+  -webkit-animation-name: fromTop;
+  -webkit-animation-duration: .4s;
+  animation-name: fromTop;
+  animation-duration: .4s;
+}
+
+@-webkit-keyframes fromTop {
+  from {
+      top: -30rem;
+      opacity: 0
+    }
+  
+    to {
+      top: 0;
+      opacity: 1
+    }
+}
+
+@keyframes fromTop {
+  from {
+      top: -30rem;
+      opacity: 0
+    }
+  
+    to {
+      top: 0;
+      opacity: 1
+    }
+}
+
+.modal-logo svg {
+  fill: white;
+  width: 40%;
+}
+
+.modal form * {
+  display: block;
+  margin-top: 1rem;
+}
+
+.modal select {
+  padding: .2rem;
+  background: var(--off-white);
+}
