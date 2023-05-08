@@ -35,7 +35,7 @@ export function ADSR() {
         break;
       case this.envState.env_attack:
         this.output = this.attackBase + this.output * this.attackCoef;
-        //console.log(this.output);//+"="+this.decayBase+"+"+this.output+"*"+this.decayCoef);
+        //console.log(this.output+"="+this.decayBase+"+"+this.output+"*"+this.decayCoef);
         if (this.output >= 1.0) {
           this.output = 1.0;
           this.state = this.envState.env_decay;
@@ -175,10 +175,10 @@ export function drawAllADSR(port_id, max_level) {
       (Math.exp((12.0 * curve) / 200) -
         1.0)
   );
-  _drawADSR(port_id, attack, decay, release, predelay, max_level, is_slow_curve);
+  _drawADSR(port_id, attack, decay, sustain, release, predelay, max_level, is_slow_curve);
 }
 
-function _drawADSR(port_id, attack, decay, release, predelay, max_level, is_slow_curve) {
+function _drawADSR(port_id, attack, decay, sustain, release, predelay, max_level, is_slow_curve) {
   var limitAD = attack + decay;
   var envPlot = [];
   envADSR.reset();
@@ -198,20 +198,22 @@ function _drawADSR(port_id, attack, decay, release, predelay, max_level, is_slow
     idy = (is_slow_curve) ? (1 - plotA[plotA.length - idx]) : plotA[idx];
     envPlot.push([idx, idy]);
   }
+  var slow_param = (sustain+100)/100;
   for (idx = plotA.length + 1; idx <= plotA.length + 1 + plotD.length; idx++) {
-    idy = (is_slow_curve) ? (1.5 - plotD[plotD.length - (idx - plotA.length)]) : plotD[idx - (plotA.length + 1)];
+    idy = (is_slow_curve) ? (slow_param - plotD[plotD.length - (idx - plotA.length)]) : plotD[idx - (plotA.length + 1)];
     envPlot.push([idx, idy]);
   }
   envADSR.gate(0);
-  var sustain = (limitAD + release) * 0.25;
-  limitAD = limitAD + sustain;
+  var limitS = (limitAD + release) * 0.25;
+  limitAD = limitAD + limitS;
   for (idx = limitAD; idx < limitAD + release; idx++) {
     envADSR.process();
   }
   plotR = envADSR.plotR;
+  slow_param = sustain/100;
   for (idx = limitAD; idx < limitAD + release; idx++) {
     idy = is_slow_curve
-      ? 0.5 - plotR[plotR.length - (idx - limitAD) - 1]
+      ? slow_param - plotR[plotR.length - (idx - limitAD) - 1]
       : plotR[idx - limitAD];
     envPlot.push([idx, idy]);
   }
