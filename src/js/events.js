@@ -10,7 +10,8 @@ import {
   selectFunction,
   selectDevice,
   selectParameter,
-  setLFOGraph
+  setLFOGraph,
+  dynModal
 } from './domScripts.js';
 import { sendParameterSysex } from './backend/sysexMgt.js';
 import { requestConfig, handleFiles } from './settingsFuncs.js';
@@ -37,6 +38,7 @@ q(`body`).addEventListener('click', e => {
   ) {
     // Go through all <ul>s and hide them
     qA(`ul`).forEach(ul => ul.classList.toggle('hidden', true));
+    window.removeEventListener('scroll', dynModal);
   }
 });
 
@@ -120,7 +122,7 @@ qA('li.volts-sel').forEach(li => {
  * LI parameters inside a body
  */
 qA('.box-body li').forEach(li => {
-  li.addEventListener("click", (e) => {
+  li.addEventListener('click', e => {
     selectParameter(e.target);
   });
 });
@@ -128,8 +130,8 @@ qA('.box-body li').forEach(li => {
 /**
  * LFO > graph quad selector
  */
-qA("li.lfo-quad-graph-sel").forEach((li) => {
-  li.addEventListener("click", (e) => {
+qA('li.lfo-quad-graph-sel').forEach(li => {
+  li.addEventListener('click', e => {
     setLFOGraph(e.target, false);
   });
 });
@@ -138,16 +140,14 @@ qA("li.lfo-quad-graph-sel").forEach((li) => {
  * LFO > global graph selector
  */
 qA('li.lfo-global-graph-sel').forEach(li => {
-  li.addEventListener("click", (e) => {
+  li.addEventListener('click', e => {
     setLFOGraph(e.target, true);
   });
 });
 
-
 /****************************************************/
 /*            END OF LI CLICK FUNCTIONALITY
 /****************************************************/
-
 
 /**
  * Hide <ul>s on blur
@@ -182,7 +182,11 @@ qA('input[class*=num]').forEach(input => {
  * Clicking on the outside of the modal hides it
  */
 q('#modal-wrap').addEventListener('click', e => {
-  if (e.target.classList.contains('modal-wrap')) e.target.classList.toggle('hidden', true);
+  if (e.target.classList.contains('modal-wrap')) {
+    e.target.classList.toggle('hidden', true);
+    window.removeEventListener('scroll', dynModal, true);
+    // genListener.abort();
+  }
 });
 
 /**

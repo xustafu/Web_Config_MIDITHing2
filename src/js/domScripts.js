@@ -6,6 +6,8 @@ import { sendParameterSysex } from './backend/sysexMgt.js';
 import { selectMIDIinput } from './backend/initMidi.js';
 import { saveToFile, loadFromFile, sendToModule, requestConfig, credits } from './settingsFuncs.js';
 
+// export const genListener = new AbortController();
+
 /**
  * Settings functions selector
  * @param {HTMLElement} <li> the settings function selector clicked
@@ -39,14 +41,14 @@ export function selectSettings(li) {
  * @param {HTMLElement} <li> the device selector clicked
  */
 export function selectDevice(li) {
-  if (li.innerHTML == "MIDIThing2") {
+  if (li.innerHTML == 'MIDIThing2') {
     selectMIDIinput(WebMidi.inputs[li.dataset.value]);
     requestConfig();
   } else {
     // not Midi Thing. Show an error
-    showModal("error", "The device selected is not a Midi Thing device");
+    showModal('error', 'The device selected is not a Midi Thing device');
   }
-  
+
   // Change the body classes to show diff. layouts
   /*const main = q('.main');
   const main_class = li.innerHTML === 'MIDI Thingy' ? 'main mt' : 'main mt2';
@@ -60,18 +62,18 @@ export function selectDevice(li) {
  * @param {HTMLElement} <li> the parameter selector clicked
  */
 export function selectParameter(li) {
-  const input_wrap = getParent(li, true, "input-wrap");
+  const input_wrap = getParent(li, true, 'input-wrap');
   const input = q(`#${input_wrap.id} > input`);
-  
+
   // Change the value and label for the input field
-  input.value = li.getAttribute("data-value");
+  input.value = li.getAttribute('data-value');
   q(`#${input_wrap.id} .box-selector-label`).innerHTML = li.innerHTML;
 
   // Hide <ul> after click
-  li.parentElement.classList.toggle("hidden", true);
+  li.parentElement.classList.toggle('hidden', true);
 
   // trigger the "change" event
-  input.dispatchEvent(new Event("change"));
+  input.dispatchEvent(new Event('change'));
 }
 
 /**
@@ -434,7 +436,7 @@ function changeVolts(port_num, gate) {
   const port = DeviceConfig.ports[port_num];
   if (!(gate && [2, 3].includes(port.volts))) {
     q('#volts-' + port.id).setAttribute('value', port.volts);
-    q("label[for='volts-" + port.id + "']").innerHTML = VoltsNames[port.volts - 1][1];
+    q("label[for='volts-" + port.id + "']").innerHTML = VoltsNames[port.volts-1][1];
   }
 }
 
@@ -478,9 +480,9 @@ export function showModal(type, msg) {
     case 'add_to_voice':
       h1.innerHTML = type_to_title[type];
       frag.appendChild(h1);
-      const form = q("#add2voice_voice_selector");
-      const form_select = q("#add2voice_voice_selector > select");
-      if (form_select != null) form.removeChild(form_select);
+      const voice_select_div = q("#add2voice_voice_selector");
+      const voice_select = q('#add2voice_voice_selector > select');
+      if (voice_select != null) voice_select_div.removeChild(voice_select);
 
       const select = document.createElement('select');
       select.setAttribute('id', 'select-voice');
@@ -492,8 +494,8 @@ export function showModal(type, msg) {
       });
 
       const button = document.getElementById('add2voice_submit');
-      form.insertBefore(select, button);
-      form.classList.toggle('hidden', false);
+      voice_select_div.insertBefore(select, button);
+      voice_select_div.classList.toggle("hidden", false);
 
       button.addEventListener('click', e => {
         if (DeviceConfig.voices_port_used == 1) {
@@ -517,6 +519,17 @@ export function showModal(type, msg) {
 
   q(`#modal-body`).appendChild(frag);
   q(`#modal-wrap`).classList.toggle('hidden', false);
+  const scrollPos = window.scrollY;
+  q(`#modal-wrap`).style.top = `${scrollPos}px`;
+  window.addEventListener('scroll', dynModal, true); // using a function ref so we can remove it later
+}
+
+/**
+ * Dynamically places the modal top to whatever scroll position we're in
+ */
+export function dynModal() {
+  const scrollPos = window.scrollY;
+  q(`#modal-wrap`).style.top = `${scrollPos}px`;
 }
 
 /**
@@ -526,22 +539,22 @@ export function showModal(type, msg) {
  * @param {Boolean} is_automatic is selected mamually or from sysex
  */
 export function _handleMainFunc(li, box_id, is_automatic) {
-  const bodyStr = `${li.getAttribute("data-body")}`;
+  const bodyStr = `${li.getAttribute('data-body')}`;
   const port_num = getLiPortNumber(li);
 
   // Hide/unhide the corresponding body types
   _revealBody(li, port_num, is_automatic);
 
   // Change the volts list
-  const is_gate = bodyStr.includes("gate");
+  const is_gate = bodyStr.includes('gate');
   changeVolts(port_num, is_gate);
 
   //new voice function
-  if (li.classList.contains("new_voice")) {
+  if (li.classList.contains('new_voice')) {
     newVoiceFunction(port_num, box_id, li);
   }
   //add function to voice
-  else if (li.classList.contains("add_to_voice")) {
+  else if (li.classList.contains('add_to_voice')) {
     addFunctionToVoice(port_num, li, is_automatic);
   }
   //new non-voice function
@@ -594,7 +607,6 @@ export function getLiPortNumber(li) {
   return parent.dataset.mtPort;
 }
 
-
 /*******  LFO GRAPHS  *******/
 /**
  * Select LFO graph. Global or quad 1-4.
@@ -602,37 +614,43 @@ export function getLiPortNumber(li) {
 export function setLFOGraph(elem, is_global) {
   const port_num = elem.dataset.port;
   const port_id = BoxNames[port_num];
-  const graph_num  = Number(elem.dataset.value);
+  const graph_num = Number(elem.dataset.value);
   const graph_name = LFOCurvesPNG[graph_num];
   const quad_num = is_global ? -1 : elem.dataset.quad;
   if (is_global) {
     for (var i = 1; i <= 4; i++) {
-      var img = q("#lfo-graph-q" + i + "-" + port_num);
-      img.setAttribute("src", "./assets/png/" + graph_name + "_q" + i + ".png");
-      q("#lfo-quad"+i+"-img-"+port_id).setAttribute("src", "./assets/png/" + graph_name + ".png");
+      var img = q('#lfo-graph-q' + i + '-' + port_num);
+      img.setAttribute('src', './assets/png/' + graph_name + '_q' + i + '.png');
+      q('#lfo-quad' + i + '-img-' + port_id).setAttribute(
+        'src',
+        './assets/png/' + graph_name + '.png'
+      );
     }
-    q("#lfo-global-img-"+port_id).setAttribute("src", "./assets/png/" + graph_name + ".png");
+    q('#lfo-global-img-' + port_id).setAttribute('src', './assets/png/' + graph_name + '.png');
   } else {
-    var img = q("#lfo-graph-q" + quad_num + "-" + port_num);
-    img.setAttribute("src", "./assets/png/" + graph_name + "_q" + quad_num + ".png");
-    q("#lfo-quad"+quad_num+"-img-"+port_id).setAttribute("src", "./assets/png/" + graph_name + ".png");
+    var img = q('#lfo-graph-q' + quad_num + '-' + port_num);
+    img.setAttribute('src', './assets/png/' + graph_name + '_q' + quad_num + '.png');
+    q('#lfo-quad' + quad_num + '-img-' + port_id).setAttribute(
+      'src',
+      './assets/png/' + graph_name + '.png'
+    );
   }
 
   // Hide <ul> after click if global.
-  //if (is_global) 
+  //if (is_global)
   //  elem.parentElement.classList.toggle("hidden", true);
 
   //trigger "change" event of 4 quadranst or one
-  const input_wrap = getParent(elem, true, "input-wrap");
+  const input_wrap = getParent(elem, true, 'input-wrap');
   if (is_global) {
     for (var i = 1; i <= 4; i++) {
-      const input = q("#lfo-quad-input-q"+i+"-"+port_id);
-      input.setAttribute("value", graph_num);
-      input.dispatchEvent(new Event("change"));
+      const input = q('#lfo-quad-input-q' + i + '-' + port_id);
+      input.setAttribute('value', graph_num);
+      input.dispatchEvent(new Event('change'));
     }
   } else {
     const input = q(`#${input_wrap.id} > input`);
-    input.setAttribute("value", graph_num);
-    input.dispatchEvent(new Event("change"));
+    input.setAttribute('value', graph_num);
+    input.dispatchEvent(new Event('change'));
   }
 }
