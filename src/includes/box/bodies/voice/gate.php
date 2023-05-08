@@ -4,7 +4,7 @@
   <!-- GATE VOICE -->
   <div class="body-selector-parent input-wrap" id="gate-voice-<?=$port_id?>">
     <h3 class="box-body-select-title inline">Voice</h3>
-    <label for="gate-voice-input-<?=$port_id?>" class="box-selector-label round-sm inline voice-tag voice-tag"><?=$port_id?></label>
+    <label for="gate-voice-input-<?=$port_id?>" class="round-sm inline voice-tag voice-tag"><?=$port_id?></label>
   </div>
   <!-- GATE VOICE END -->
 

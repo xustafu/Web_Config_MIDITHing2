@@ -4,7 +4,7 @@
   <!-- LFO VOICE -->
   <div class="body-selector-parent input-wrap" id="lfo-voice-<?= $port_id ?>">
     <h3 class="box-body-select-title inline">Voice</h3>
-    <label for="lfo-voice-input-<?= $port_id ?>" class="box-selector-label round-sm inline voice-tag"><?= $port_id ?></label>
+    <label for="lfo-voice-input-<?= $port_id ?>" class="round-sm inline voice-tag"><?= $port_id ?></label>
   </div>
   <!-- LFO VOICE END -->
 

@@ -127,7 +127,7 @@ label[class^=box-num] {
   font-size: 1.2rem;
 }
 
-.box-selector-label {
+.box-selector-label, .voice-tag {
   background-color: var(--dropdown-label-bg);
 }
 
@@ -140,6 +140,7 @@ label[class^=box-num] {
   position: relative;
 }
 
+.voice-tag,
 .box-body .input-wrap .box-selector-label,
 .conf-window-wrap .input-wrap .box-selector-label {
   /* min-width: 4.7rem; */
@@ -147,7 +148,7 @@ label[class^=box-num] {
   padding-left: 0.7rem;
 }
 
-.input-wrap .box-selector-label::after :not(.voice-tag){
+.input-wrap .box-selector-label::after{
   width: 1.8rem;
   height: 2.5rem;
   content: '';
