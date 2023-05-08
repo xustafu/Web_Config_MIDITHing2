@@ -17,9 +17,9 @@
     </main>
 
     <!-- for ADD TO VOICE modal -->
-    <form id="add2voice_voice_selector" class="hidden">
+    <div id="add2voice_voice_selector" class="hidden">
       <button type="submit" class="round-l" id="add2voice_submit" data-port data-funct>Select Voice</button>
-    </form>
+    </div>
   </section>
   <!-- MODAL BODY END -->
 

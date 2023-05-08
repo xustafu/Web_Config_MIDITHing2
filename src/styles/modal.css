@@ -50,7 +50,7 @@
   width: 40%;
 }
 
-.modal form * {
+.modal div * {
   display: block;
   margin-top: 1rem;
 }
