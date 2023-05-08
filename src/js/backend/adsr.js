@@ -203,6 +203,8 @@ function _drawADSR(port_id, attack, decay, release, predelay, max_level, is_slow
     envPlot.push([idx, idy]);
   }
   envADSR.gate(0);
+  var sustain = (limitAD + release) * 0.25;
+  limitAD = limitAD + sustain;
   for (idx = limitAD; idx < limitAD + release; idx++) {
     envADSR.process();
   }
