@@ -1,7 +1,7 @@
 //We will store all data from the website to be sent to the device or to a file
 
 class PortConfig {
-  constructor(port_num=0, type=0, volts=0, funct=0, min=0, max=0, midi_ch=0, param=0) {
+  constructor(port_num=0, type=0, volts=1, funct=0, min=0, max=0, midi_ch=0, param=0) {
     this.port_num = port_num;
     this.type = type;
     this.id = BoxNames[port_num-1];

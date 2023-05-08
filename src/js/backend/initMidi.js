@@ -30,13 +30,16 @@ WebMidi.enable(function (err) {
 //initialize data model
 for (var i = 0; i < 16; i++) {
   if (i < 12) {
-    DeviceConfig.ports[i] = new PortConfig();
+    DeviceConfig.ports[i] = new PortConfig(i+1,0,1);
     DeviceConfig.voices_port[i] = new VoiceConfig();
     DeviceConfig.voices[i] = new VoiceConfig();
   }
   DeviceConfig.voices_midi_ch[i] = new VoiceConfig();
   DeviceConfig.midi_channels[i] = new MidiChannelConfig(i + 1);
 }
+DeviceConfig.voices_port_used = [];
+DeviceConfig.voices_port_free = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+  
 
 //set function to be executed every 300 miliseconds
 setInterval(_checkLastSysexRcvd, 300);
@@ -104,6 +107,7 @@ function _initDeviceSelect() {
 }
 
 export function selectMIDIinput(inp) {
+  if (inp == null) return;
   if (MIDIinput != null) MIDIinput.removeListener();
   //MIDIinput = WebMidi.inputs[inp];
   MIDIinput = inp;
