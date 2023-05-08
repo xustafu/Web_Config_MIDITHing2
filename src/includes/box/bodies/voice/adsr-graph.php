@@ -54,7 +54,7 @@
         <input 
           class="box-num-input round-sm adsr-attack redraw_adsr" 
           type="text" 
-          value="1000" 
+          value="100" 
           data-mt-type="VOICE" 
           data-mt-port="<?= $i ?>" 
           data-mt-parameter="ADSRTAttack" 
@@ -78,7 +78,7 @@
         <input 
           class="box-num-input round-sm adsr-decay redraw_adsr" 
           type="text" 
-          value="1000" 
+          value="100" 
           data-mt-type="VOICE" 
           data-mt-port="<?= $i ?>" 
           data-mt-parameter="ADSRTDecay" 
@@ -126,7 +126,7 @@
         <input 
           class="box-num-input round-sm adsr-release redraw_adsr" 
           type="text" 
-          value="2000" 
+          value="200" 
           data-mt-type="VOICE" 
           data-mt-port="<?= $i ?>" 
           data-mt-parameter="ADSRTRelease" 
@@ -150,7 +150,7 @@
         <input 
           class="box-num-input round-sm redraw_adsr" 
           type="text" 
-          value="0" 
+          value="100" 
           data-mt-type="VOICE" 
           data-mt-port="<?= $i ?>" 
           data-mt-parameter="ADSRLMax" 
@@ -220,8 +220,8 @@
         data-mt-parameter="ADSRCurveType"  
         name="adsr-lineal-input-<?= $port_id ?>"
         id="adsr-lineal-input-<?= $port_id ?>"
-        value="0" />
-      <label for="adsr-lineal-input-<?= $port_id ?>" class="box-selector-label round-sm block">Lineal</label>
+        value="1" />
+      <label for="adsr-lineal-input-<?= $port_id ?>" class="box-selector-label round-sm block">Exp.</label>
       <ul class="selector-options hidden round-sm">
         <li class="box-selector-item" data-value="0">Lineal</li>
         <li class="box-selector-item" data-value="1">Exp.</li>

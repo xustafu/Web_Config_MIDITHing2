@@ -4,6 +4,7 @@ import { setAvailableColors, changePortsColors } from './colorHandling.js';
 import { newNonVoiceFunction, newVoiceFunction, addFunctionToVoice } from './voiceHandling.js';
 import { sendParameterSysex } from './backend/sysexMgt.js';
 import { selectMIDIinput } from './backend/initMidi.js';
+import { drawAllADSR } from './backend/adsr.js';
 import { saveToFile, loadFromFile, sendToModule, requestConfig, credits } from './settingsFuncs.js';
 
 // export const genListener = new AbortController();

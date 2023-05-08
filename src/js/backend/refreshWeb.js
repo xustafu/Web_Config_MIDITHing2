@@ -4,7 +4,7 @@
 
 import { q } from "../globals.js";
 import { selectFunction } from "../domScripts.js";
-import { sendSysex } from "./sysexMgt.js";
+import { drawAllADSR } from "./adsr.js";
 
 
 export function setDefaultConfig(num) {
@@ -82,7 +82,7 @@ export function refreshWeb() {
     DeviceConfig.voices_port[port_num] = DeviceConfig.voices[index];
     _setPort(DeviceConfig.ports[port_num]);
   });
-  //in these ports there are no voices
+  //in these ports there are no main voices
   DeviceConfig.voices_port_free.forEach((port_num) => {
     _setPort(DeviceConfig.ports[port_num]);
   });
@@ -318,6 +318,10 @@ function _setADSRParams(port, voice) {
   q("#adsr-lineal-input-" + port.id).setAttribute("value",voice.adsr_curve_type);
   q("label[for='adsr-lineal-input-" + port.id + "']").innerHTML =
     ADSRCurveTypes[Number(voice.adsr_curve_type)];
+  
+  //redraw graph if container visible (restriction from adsr library)
+  if (!q("#adsr-conf-"+port.id).classList.contains('hidden'))
+    drawAllADSR(port.id);
 }
 
 /*********************************************************/
