@@ -1,5 +1,5 @@
 <!-- BOX BODY VOICE NOTE OPTIONS -->
-<main class="box-body hidden" id="note-options-body-<?= $port_id ?>">
+<main class="box-body multiple-box hidden box-note-<?=$port_id?>" id="note-options-body-<?= $port_id ?>" data-sendtype="note-<?= $port_id?>">
 
   <!-- NOTE MIDI RANGES -->
   <div class="box-num-mult input-wrap" id="note-midi-ranges-<?= $port_id ?>">

@@ -1,5 +1,5 @@
 <!-- BOX BODY NEW VOICE ADSR -->
-<main class="box-body hidden" id="adsr-body-<?= $port_id ?>">
+<main class="box-body hidden multiple-box box-adsr-<?=$port_id?>" id="adsr-body-<?= $port_id ?>" data-sendtype="adsr-<?= $port_id?>">
   
   <!-- ADSR VOICE -->
   <div class="body-selector-parent input-wrap" id="adsr-voice-<?= $port_id ?>">

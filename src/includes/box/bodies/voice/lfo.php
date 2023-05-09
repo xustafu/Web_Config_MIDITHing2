@@ -1,5 +1,5 @@
 <!-- BOX BODY NEW VOICE LFO -->
-<main class="box-body hidden" id="lfo-body-<?= $port_id ?>">
+<main class="box-body multiple-box hidden box-lfo-<?=$port_id?>" id="lfo-body-<?= $port_id ?>" data-sendtype="lfo-<?= $port_id?>">
 
   <!-- LFO VOICE -->
   <div class="body-selector-parent input-wrap" id="lfo-voice-<?= $port_id ?>">

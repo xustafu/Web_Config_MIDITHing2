@@ -1,5 +1,5 @@
 <!-- SHAPE CONF BOX -->
-<section id="lfo-shape-<?=$port_id?>" class="conf-window-wrap hidden">
+<section id="lfo-shape-<?=$port_id?>" class="conf-window-wrap multiple-box hidden box-lfo-<?=$port_id?>" data-sendtype="lfo-<?= $port_id?>">
   
   <!-- SHAPES AREA -->
   <section class="wave-shapes-wrap">
@@ -97,7 +97,7 @@
       <h3 class="box-body-select-title inline">Global</h3>
       <input
         type="hidden"
-        class="selector"
+        class="selector ignore-send"
         name="lfo-global-input-<?=$port_id?>"
         id="lfo-global-input-<?=$port_id?>"
         value="0" />

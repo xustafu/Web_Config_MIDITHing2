@@ -1,5 +1,5 @@
 <!-- BOX BODY NEW VOICE NOTE -->
-<main class="box-body hidden" id="note-body-<?= $port_id ?>">
+<main class="box-body multiple-box hidden box-note-<?=$port_id?>" id="note-body-<?= $port_id ?>" data-sendtype="note-<?= $port_id?>">
 
   <!-- NOTE BEND -->
   <div class="box-num-single" id="note-bend-<?= $port_id ?>">

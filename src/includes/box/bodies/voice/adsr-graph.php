@@ -1,5 +1,5 @@
 <!-- ADSR CONFIGURATION BOX -->
-<section id="adsr-conf-<?= $port_id ?>" class="conf-window-wrap hidden">
+<section id="adsr-conf-<?= $port_id ?>" class="conf-window-wrap multiple-box hidden box-adsr-<?=$port_id?>" data-sendtype="adsr-<?= $port_id?>">
   
   <!-- ADSR GRAPH -->
   <!-- TAKEN FROM https://witch.rebeltech.org -->
@@ -21,7 +21,7 @@
   <!-- ADSR GRAPH END -->
 
   <!-- ADSR BODY -->
-  <section id="adsr-conf-body-<?= $port_id ?>" class="box-body box-options">
+  <section id="adsr-conf-body-<?= $port_id ?>" class="box-body ignore-send box-options">
 
     <!-- PREDELAY -->
     <div class="box-num-single" id="adsr-predelay-<?= $port_id ?>">

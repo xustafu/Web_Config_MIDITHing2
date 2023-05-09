@@ -1,5 +1,5 @@
 <!-- BOX BODY NEW VOICE LFO -->
-<main class="box-body hidden" id="lfo-options-<?=$port_id?>">
+<main class="box-body multiple-box hidden box-lfo-<?=$port_id?>" id="lfo-options-<?=$port_id?>" data-sendtype="lfo-<?= $port_id?>">
   
   <!-- LFO PREDELAY -->
   <div class="box-num-single" id="lfo-options-predelay-<?=$port_id?>">

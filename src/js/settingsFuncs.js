@@ -57,16 +57,19 @@ export function sendToModule() {
   qA("input.header-input").forEach((input) => {
     sendParameterSysex(input);
   });
-  qA("input:not(.no-trigger):not(.header-input").forEach((input) => {
-    try {
-      var box = getParent(input, true, 'box-body');
-      if (box.classList.contains('box-options'))
-        box = getParent(box, true, 'conf-window-wrap');
-    } catch (e) {
-      var box = false;
-    }
-    if (box && !box.classList.contains('hidden'))
+  var bodies = qA(".box-body:not(.hidden):not(.multiple-box):not(.ignore-send)");
+  //var inputs = qA("input:not(.no-trigger):not(.header-input");
+  bodies.forEach((body) => {
+    body.qA("input").forEach((input) => {
       sendParameterSysex(input);
+    });
+  });
+  bodies = qA(".multiple-box:not(.hidden)");
+  bodies.forEach((body) => {
+    var send_type = body.dataset.sendtype;
+    qA(".box-"+send_type+" input:not(.ignore-send)").forEach((input) => {
+      sendParameterSysex(input);
+    })
   });
   requestConfig();
   console.log("sending to module");
