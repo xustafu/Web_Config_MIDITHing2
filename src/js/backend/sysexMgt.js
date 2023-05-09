@@ -205,7 +205,7 @@ export function sendParameterSysex(element) {
     if (parameter == "NoteOffOsc") element.checked ? (value = 0) : (value = 1);
   }
   const is_adsr_funct = DeviceConfig.ports[port_num].funct == MIDIVOICEADSR;
-  const is_global_adsr = is_adsr_funct && !DeviceConfig.ports[port_num].use_local_config_adsr;
+  const is_global_adsr = is_adsr_funct && !DeviceConfig.voices[number].use_local_config_adsr;
   const adsr_params = [
     ADSRTPredelay, ADSRLMax, ADSRTAttack, ADSRTDecay, ADSRLSustain, ADSRRSustain,
     ADSRTRelease, ADSRAffectOSC, ADSRCurveType, ADSRRetrigMode, VelAffectADSR];
