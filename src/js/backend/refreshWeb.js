@@ -117,6 +117,7 @@ function _setPort(port) {
 function _setHeaderParams(port) {
   //set midi channels
   q("#midi-ch-" + port.id).setAttribute("value", port.midi_ch);
+  q("#midi-ch-" + port.id).value = port.midi_ch;
   //set volts
   q("#volts-" + port.id).setAttribute("value", port.volts);
   q("label[for='volts-" + port.id + "']").innerHTML = VoltsNames[port.volts - 1][1];

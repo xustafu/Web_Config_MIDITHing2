@@ -46,7 +46,7 @@
         <div class="input-number-wrap round-sm">
         <h2 class="box-header-subtitle">Midi Ch</h2>
           <input
-          class="box-num-field-input round-sm header-input"
+          class="box-num-field-input round-sm header-input midich-sel"
           type="text"
           id="midi-ch-<?=$port_id?>"
           name="midi-ch-<?=$port_id?>"

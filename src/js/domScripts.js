@@ -6,6 +6,7 @@ import { sendParameterSysex } from './backend/sysexMgt.js';
 import { selectMIDIinput } from './backend/initMidi.js';
 import { drawAllADSR } from './backend/adsr.js';
 import { saveToFile, loadFromFile, sendToModule, requestConfig, credits } from './settingsFuncs.js';
+//import { setMidiChVoice } from './events.js';
 
 // export const genListener = new AbortController();
 
@@ -244,6 +245,10 @@ export function arrowsFunc(arrow, is_from_arrows = true) {
 
   // trigger the input change to send the sysex. It doesnt work automagically.
   sendParameterSysex(input);
+  
+  //set midi ch to all functions in voice
+  //setMidiChVoice(input);
+  
   if (input.classList.value.includes('redraw_adsr')) {
     const port_num = input.dataset.mtPort;
     const port_id = BoxNames[port_num];

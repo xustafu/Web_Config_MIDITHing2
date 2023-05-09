@@ -252,11 +252,29 @@ qA('input:not(.no-trigger)').forEach(input => {
   input.addEventListener('change', e => {
     if (TriggerInputChange) {
       sendParameterSysex(e.target);
-      //refreshWeb();
       requestConfig();
     }
+    //setMidiChVoice(input);
   });
 });
 
+/*export function setMidiChVoice(input) {
+  if (input.classList.contains("midich-sel")) {
+    var port = input.dataset.mtPort;
+    var port_id = BoxNames[port];
+    var funct = Number(q("#main-func-box-" + port_id).value);
+    var is_voice_function = funct >= 1 && funct <= 7;
+    if (is_voice_function){
+      var voice = DeviceConfig.ports[port].voice;
+      var midi_ch = DeviceConfig.ports[port].midi_ch;
+      DeviceConfig.ports.forEach((port)=>{
+        if (port.voice == voice) {
+          DeviceConfig.ports[port.port_num-1].midi_ch = midi_ch;
+          q("#midi-ch-" + port.id).setAttribute("value", midi_ch);
+        }
+      });
+    } 
+  }
+}*/
 
 
