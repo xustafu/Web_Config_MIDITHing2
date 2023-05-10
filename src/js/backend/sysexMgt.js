@@ -207,9 +207,9 @@ export function sendParameterSysex(element) {
   const is_adsr_funct = DeviceConfig.ports[port_num].funct == MIDIVOICEADSR;
   const is_global_adsr = is_adsr_funct && !DeviceConfig.voices[number].use_local_config_adsr;
   const adsr_params = [
-    ADSRTPredelay, ADSRLMax, ADSRTAttack, ADSRTDecay, ADSRLSustain, ADSRRSustain,
-    ADSRTRelease, ADSRAffectOSC, ADSRCurveType, ADSRRetrigMode, VelAffectADSR];
-  const is_global_adsr_param = adsr_params.includes(eval(parameter)) && is_global_adsr;
+    "ADSRTPredelay", "ADSRLMax", "ADSRTAttack", "ADSRTDecay", "ADSRLSustain", "ADSRRSustain",
+    "ADSRTRelease", "ADSRAffectOSC", "ADSRCurveType", "ADSRRetrigMode", "VelAffectADSR"];
+  const is_global_adsr_param = adsr_params.includes(parameter) && is_global_adsr;
   if (is_adsr_funct && type == "VOICE" && is_global_adsr_param) {
     var midich = Number(DeviceConfig.ports[port_num].midi_ch);
     sendSysex(type, midich + 17, parameter, value, is_global_adsr_param);

@@ -79,6 +79,7 @@ export function requestConfig() {
   // request all configuration from module
   sendSysex("GENERAL", 0, "REQ_CONFIG", 0);
   console.log('requesting from module');
+  refreshWeb();
 }
 
 export function credits() {
