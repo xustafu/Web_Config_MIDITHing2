@@ -85,6 +85,7 @@ export const colors = [
     darkfont: false,
     used: false,
     port: "",
+    voice: -1,
   },
   {
     id: 9,

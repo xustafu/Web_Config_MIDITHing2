@@ -145,6 +145,25 @@ qA('li.lfo-global-graph-sel').forEach(li => {
   });
 });
 
+/**
+ * LFO > freq/res clock
+ */
+qA('.lfo-radio').forEach(input => {
+  input.addEventListener('change', e => {
+    var use_midi_clock = e.target.classList.contains("lfo-radio-clock");
+    var port_id = BoxNames[Number(e.target.dataset.mtPort)];
+    q("#lfo-freq-" + port_id).dataset.disabled = use_midi_clock;
+    q("#lfo-freq-input-" + port_id).disabled = use_midi_clock;
+    q("#lfo-clock-divider-" + port_id).dataset.disabled = !use_midi_clock;
+    q("#lfo-clock-divider-input-" + port_id).disabled = !use_midi_clock;
+    q("#lfo-clock-multiplier-" + port_id).dataset.disabled = !use_midi_clock;
+    q("#lfo-clock-multiplier-input-" + port_id).disabled = !use_midi_clock;
+    q("#lfo-com-clock-" + port_id).checked = use_midi_clock;
+    q("#lfo-com-freq-" + port_id).checked = !use_midi_clock;
+  });
+});
+
+
 /****************************************************/
 /*            END OF LI CLICK FUNCTIONALITY
 /****************************************************/
@@ -270,7 +289,7 @@ qA('input:not(.no-trigger)').forEach(input => {
       DeviceConfig.ports.forEach((port)=>{
         if (port.voice == voice) {
           DeviceConfig.ports[port.port_num-1].midi_ch = midi_ch;
-          q("#midi-ch-" + port.id).setAttribute("value", midi_ch);
+          q("#midi-ch-" + port_id).setAttribute("value", midi_ch);
         }
       });
     } 

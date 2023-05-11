@@ -161,6 +161,7 @@ export function resetColorObj(currCol) {
     if (currHex === nextCol.hex) {
       colors[a].port = '';
       colors[a].used = false;
+      colors[a].voice = -1;
       break;
     }
   }

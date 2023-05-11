@@ -10,15 +10,15 @@
 
   <!-- LFO FRE/CLOCK COMMUTER -->
   <div class="box-radio" id="lfo-com-<?= $port_id ?>">
-    <form class="input-radio-wrap"> <!-- radio buttons have to be inside a form for the default check to show -->
-      <input type="radio" id="lfo-com-freq-<?= $port_id ?>" class="box-radio" name="lfo-com-radio" data-mt-type="VOICE" data-mt-port="<?= $i ?>" data-mt-parameter="LFOUseMIDIClock" value="0" checked="checked">
-      <input type="radio" id="lfo-com-clock-<?= $port_id ?>" class="box-radio" name="lfo-com-radio" data-mt-type="VOICE" data-mt-port="<?= $i ?>" data-mt-parameter="LFOUseMIDIClock" value="1">
+    <form class="input-radio-wrap lfo-radio"> <!-- radio buttons have to be inside a form for the default check to show -->
+      <input type="radio" id="lfo-com-freq-<?= $port_id ?>" class="box-radio lfo-radio-freq" name="lfo-com-radio" data-mt-type="VOICE" data-mt-port="<?= $i ?>" data-mt-parameter="LFOUseMIDIClock" value="0" checked="checked">
+      <input type="radio" id="lfo-com-clock-<?= $port_id ?>" class="box-radio lfo-radio-clock" name="lfo-com-radio" data-mt-type="VOICE" data-mt-port="<?= $i ?>" data-mt-parameter="LFOUseMIDIClock" value="1">
     </form>
   </div>
   <!-- LFO FRE/CLOCK COMMUTER END -->
 
   <!-- LFO FREQ -->
-  <div class="box-num-single" id="lfo-freq-<?= $port_id ?>" data-disabled="false">
+  <div class="box-num-single" id="lfo-freq-<?= $port_id ?>">
     <div class="input-number-wrap round-sm">
       <label class="box-num-single-label" for="lfo-freq-input-<?= $port_id ?>">Freq. Hz</label>
       <input 
@@ -70,7 +70,7 @@
   <!-- LFO CLOCK RES END -->
 
   <!-- LFO CLOCK MULT -->
-  <div class="box-num-single" id="lfo-clock-multiplier-<?= $port_id ?>">
+  <div class="box-num-single" id="lfo-clock-multiplier-<?= $port_id ?>" data-disabled="true">
     <label for="lfo-clock-multiplier-input-<?= $port_id ?>" class="box-num-single-label">Mult &nbsp; x</label> <!-- inline -->
     <div class="input-number-wrap round-sm">
       <input 
@@ -85,7 +85,8 @@
         data-type="number" 
         data-min="1" 
         data-max="50" 
-        data-digits="2" />
+        data-digits="2" 
+        disabled="true"/>
       <span class="arrow-up"></span>
       <span class="arrow-down"></span>
     </div>

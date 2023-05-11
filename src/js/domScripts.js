@@ -625,21 +625,15 @@ export function setLFOGraph(elem, is_global) {
   const quad_num = is_global ? -1 : elem.dataset.quad;
   if (is_global) {
     for (var i = 1; i <= 4; i++) {
-      var img = q('#lfo-graph-q' + i + '-' + port_num);
-      img.setAttribute('src', './assets/png/' + graph_name + '_q' + i + '.png');
-      q('#lfo-quad' + i + '-img-' + port_id).setAttribute(
-        'src',
-        './assets/png/' + graph_name + '.png'
-      );
+      var img = q("#lfo-graph-q" + i + "-" + port_num);
+      img.setAttribute("src", "./assets/png/" + graph_name + "_q" + i + ".png");
+      q("#lfo-quad" + i + "-img-" + port_id).setAttribute("src","./assets/png/" + graph_name + ".png");
     }
     q('#lfo-global-img-' + port_id).setAttribute('src', './assets/png/' + graph_name + '.png');
   } else {
-    var img = q('#lfo-graph-q' + quad_num + '-' + port_num);
-    img.setAttribute('src', './assets/png/' + graph_name + '_q' + quad_num + '.png');
-    q('#lfo-quad' + quad_num + '-img-' + port_id).setAttribute(
-      'src',
-      './assets/png/' + graph_name + '.png'
-    );
+    var img = q("#lfo-graph-q" + quad_num + "-" + port_num);
+    img.setAttribute("src", "./assets/png/" + graph_name + "_q" + quad_num + ".png");
+    q("#lfo-quad" + quad_num + "-img-" + port_id).setAttribute("src","./assets/png/" + graph_name + ".png");
   }
 
   // Hide <ul> after click if global.

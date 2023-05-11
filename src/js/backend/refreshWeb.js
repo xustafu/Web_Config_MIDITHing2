@@ -129,9 +129,9 @@ function _setBodyParams(port) {
   var voice = DeviceConfig.voices_port[port.voice];
   const is_global_adsr = (funct_name == "adsr") && !voice.use_local_config_adsr;
   if (is_global_adsr) {
-    var voice = DeviceConfig.voices_midi_ch[port.midi_ch-1];
+    voice = DeviceConfig.voices_midi_ch[port.midi_ch-1];
   } else {
-    var voice = DeviceConfig.voices_port[port.voice];
+    voice = DeviceConfig.voices_port[port.voice];
   }
   switch (funct_name) {
     case "note":
@@ -342,8 +342,15 @@ function _setLFOParams(port, voice) {
   //set lfo clock multiplier
   q("#lfo-clock-multiplier-input-" + port.id).setAttribute("value", voice.lfo_midi_clk_mult);
   //set freq-clock toggle
-  q("#lfo-com-clock-" + port.id).checked = voice.lfo_use_midi_clock;
-  q("#lfo-com-freq-" + port.id).checked = !voice.lfo_use_midi_clock;
+  var use_midi_clock = (voice.lfo_use_midi_clock == 1);
+  q("#lfo-freq-" + port.id).dataset.disabled = use_midi_clock;
+  q("#lfo-freq-input-" + port.id).disabled = use_midi_clock;
+  q("#lfo-clock-divider-" + port.id).dataset.disabled = !use_midi_clock;
+  q("#lfo-clock-divider-input-" + port.id).disabled = !use_midi_clock;
+  q("#lfo-clock-multiplier-" + port.id).dataset.disabled = !use_midi_clock;
+  q("#lfo-clock-multiplier-input-" + port.id).disabled = !use_midi_clock;
+  q("#lfo-com-clock-" + port.id).checked = use_midi_clock;
+  q("#lfo-com-freq-" + port.id).checked = !use_midi_clock;
 
   /******************  OPTIONS  ****************/
   //set pre-delay
