@@ -1,8 +1,7 @@
 import { q, qA } from "./globals.js";
 import { sendSysex, sendParameterSysex } from "./backend/sysexMgt.js";
 import { showModal } from "./domScripts.js";
-import { getParent } from "./helpers.js";
-import { refreshWeb } from "./backend/refreshWeb.js";
+import { refreshWeb, setDefaultConfig } from "./backend/refreshWeb.js";
 
 export function saveToFile() {
   const Months = ["Ene", "Feb",'Mar','Abr','May','Jun','Ago','Sep','Oct','Nov','Dic'];
@@ -78,8 +77,16 @@ export function sendToModule() {
 export function requestConfig() {
   // request all configuration from module
   sendSysex("GENERAL", 0, "REQ_CONFIG", 0);
-  console.log('requesting from module');
   refreshWeb();
+  console.log("requesting from module");
+}
+
+export function setPreDefSetup(num) {
+  // set predef config
+  num = Number(num);
+  sendSysex("GENERAL", 0, "SET_DEF_CONFIG", num);
+  setDefaultConfig(num);
+  console.log("setting default config");
 }
 
 export function credits() {

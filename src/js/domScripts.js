@@ -5,7 +5,8 @@ import { newNonVoiceFunction, newVoiceFunction, addFunctionToVoice } from './voi
 import { sendParameterSysex } from './backend/sysexMgt.js';
 import { selectMIDIinput } from './backend/initMidi.js';
 import { drawAllADSR } from './backend/adsr.js';
-import { saveToFile, loadFromFile, sendToModule, requestConfig, credits } from './settingsFuncs.js';
+import { saveToFile, loadFromFile, sendToModule, requestConfig, 
+         credits, setPreDefSetup } from './settingsFuncs.js';
 //import { setMidiChVoice } from './events.js';
 
 // export const genListener = new AbortController();
@@ -28,6 +29,9 @@ export function selectSettings(li) {
       break;
     case 'request':
       requestConfig();
+      break;
+    case 'predef':
+      setPreDefSetup(li.dataset.value);
       break;
     case 'credits':
     default:
