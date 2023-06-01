@@ -32,11 +32,6 @@ export function newVoiceFunction(port_num, box_id, li) {
   }
   if (!isAssigned) changePortsColors(port_num, "NEWVOICE");
 
-  //disable the voice selector
-  const funct = li.dataset.body;
-  const label = q(`.input-wrap label[for=${funct}-voice-input-${port.id}`);
-  label.classList.add("disabled");
-
   // add this voice to voices_port_used
   const index = DeviceConfig.voices_port_used.indexOf(port.port_num-1);
   if (index < 0) {
@@ -101,11 +96,6 @@ export function addFunctionToVoice(port_num, li, is_automatic) {
 
   changePortsColors(port_num, "ADD2VOICE");
   _changeVoice(box_id, li, port_name);
-
-  //disable the voice selector
-  const funct = li.dataset.body;
-  const label = q(`.input-wrap label[for=${funct}-voice-input-${port.id}`);
-  label.classList.add("disabled");
 
   // hide this voice from voice selectors if it was a voice before
   /*const index = DeviceConfig.voices_port_used.indexOf(port.port_num - 1);
