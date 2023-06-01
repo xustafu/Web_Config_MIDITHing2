@@ -142,6 +142,7 @@ qA('li.lfo-quad-graph-sel').forEach(li => {
 qA('li.lfo-global-graph-sel').forEach(li => {
   li.addEventListener('click', e => {
     setLFOGraph(e.target, true);
+    setLFOGraph(e.target, true);
   });
 });
 
