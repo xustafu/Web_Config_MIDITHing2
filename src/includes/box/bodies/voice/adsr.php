@@ -4,7 +4,7 @@
   <!-- ADSR VOICE -->
   <div class="body-selector-parent input-wrap" id="adsr-voice-<?= $port_id ?>">
     <h3 class="box-body-select-title inline">Voice</h3>
-    <label for="adsr-voice-input-<?= $port_id ?>" class="round-sm inline voice-tag"><?= $port_id ?></label>
+    <label class="round-sm inline voice-tag"><?= $port_id ?></label>
   </div>
   <!-- ADSR VOICE END -->
 

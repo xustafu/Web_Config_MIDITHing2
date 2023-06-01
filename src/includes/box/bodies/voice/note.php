@@ -39,7 +39,7 @@
   <!-- NOTE VOICE -->
   <div class="body-selector-parent input-wrap" id="note-voice-<?= $port_id ?>">
     <h3 class="box-body-select-title block">Voice</h3>
-    <label for="note-voice-input-<?= $port_id ?>" class="box-selector-label round-sm block"><?= $port_id ?></label>
+    <label class="box-selector-label round-sm block"><?= $port_id ?></label>
   </div>
   <!-- NOTE VOICE END -->
 
