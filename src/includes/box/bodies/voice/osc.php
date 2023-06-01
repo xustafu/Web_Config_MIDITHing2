@@ -4,7 +4,7 @@
   <!-- OSCILLATOR VOICE -->
   <div class="body-selector-parent input-wrap" id="osc-voice-<?=$port_id?>">
     <h3 class="box-body-select-title inline">Voice</h3>
-    <label class="round-sm inline voice-tag"><?=$port_id?></label>
+    <label id="label-osc-voice-<?=$port_id?>" class="round-sm inline voice-tag"><?=$port_id?></label>
   </div>
   <!-- OSCILLATOR VOICE END -->
 

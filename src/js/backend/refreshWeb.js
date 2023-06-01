@@ -207,7 +207,7 @@ function _setBodyParams(port) {
 
 function _setNoteParams(port, voice, midi_ch) {
   //set voice tag
-  q("label[for='note-voice-input-" + port.id + "']").innerHTML = BoxNames[port.voice];
+  q("#label-note-voice-" + port.id).innerHTML = BoxNames[port.voice];
   //set bend numeric input (MIDI)
   q("#note-bend-input-" + port.id).setAttribute("value", midi_ch.bend_span);
   //set glide mode (VOICE)
@@ -231,14 +231,14 @@ function _setNoteParams(port, voice, midi_ch) {
 
 function _setVelocityParams(port, voice) {
   //set voice tag
-  q("label[for='velocity-voice-input-" + port.id + "']").innerHTML = BoxNames[port.voice];
+  q("#label-velocity-voice-" + port.id).innerHTML = BoxNames[port.voice];
   //set ADSR toggle
   q("#velocity-vel-input-"+port.id).checked = voice.vel_affect_adsr;
 }
 
 function _setDrumParams(port, voice) {
   //set voice tag
-  q("label[for='drum-voice-input-" + port.id + "']").innerHTML = BoxNames[port.voice];
+  q("#label-drum-voice-" + port.id).innerHTML = BoxNames[port.voice];
   //set drum note numeric selector
   q("#drum-note-input-" + port.id).setAttribute("value", voice.vo_min_note);
   //set delay numeric selector
@@ -251,7 +251,7 @@ function _setDrumParams(port, voice) {
 
 function _setGateParams(port, voice) {
   //set voice tag
-  q("label[for='gate-voice-input-" + port.id + "']").innerHTML = BoxNames[port.voice];
+  q("#label-gate-voice-" + port.id).innerHTML = BoxNames[port.voice];
   //set delay numeric selector
   q("#gate-delay-input-" + port.id).setAttribute("value", port.delay);
   //set retrig toggle
@@ -262,7 +262,7 @@ function _setGateParams(port, voice) {
 
 function _setOscParams(port, voice) {
   //set voice tag
-  q("label[for='osc-voice-input-" + port.id + "']").innerHTML = BoxNames[port.voice];
+  q("#label-osc-voice-" + port.id).innerHTML = BoxNames[port.voice];
   //set stop toggle
   q("#osc-stop-input-" + port.id).checked = !voice.note_off_osc;
   //set lfo-osc toggle
@@ -276,7 +276,7 @@ function _setOscParams(port, voice) {
 /*********************************************************/
 function _setADSRParams(port, voice) {
   //set voice tag
-  q("label[for='adsr-voice-input-" + port.id + "']").innerHTML = BoxNames[port.voice];
+  q("#label-adsr-voice-" + port.id).innerHTML = BoxNames[port.voice];
   //set vel-adsr toggle
   q("#adsr-vel-input-" + port.id).checked = voice.vel_affect_adsr;
   //set adsr-osc toggle
@@ -331,7 +331,7 @@ function _setADSRParams(port, voice) {
 
 function _setLFOParams(port, voice) {
   //set voice tag
-  q("label[for='lfo-voice-input-" + port.id + "']").innerHTML = BoxNames[port.voice];
+  q("#label-lfo-voice-" + port.id).innerHTML = BoxNames[port.voice];
   //set lfo freq
   var value = Math.round(10000 / Number(voice.lfo_period));
   q("#lfo-freq-input-" + port.id).setAttribute("value", value);
