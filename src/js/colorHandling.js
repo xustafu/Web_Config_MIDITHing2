@@ -28,6 +28,7 @@ export function changePortsColors(port, type) {
   switch (type) {
     case "RESET": 
       portName.style.borderColor = 'var(--border)';
+      portName.style.color = '#fff';
       portName.color = '#fff';
       if (currCol && currCol !== 'inherit' && currCol !== 'transparent') resetColorObj(currCol);
       setAvailableColors();
@@ -118,10 +119,12 @@ function _changeManualColor(li) {
   const liColor = li.getAttribute("data-color");
   const dark = li.classList.contains("dark-font");
 
-  colors.forEach((color) => {
-    if (color.voice == voice) color.used = false;
-    color.port = "";
-    color.voice = -1;
+  colors.forEach((color, i) => {
+    if (color.voice == voice){ 
+      color.used = false;
+      color.port = "";
+      color.voice = -1;
+    }
     if (color.hex == liColor) {
       color.used = true;
       color.port = "-" + BoxNames[port];

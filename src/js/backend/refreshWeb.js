@@ -7,16 +7,16 @@ import { selectFunction } from "../domScripts.js";
 import { drawAllADSR } from "./adsr.js";
 
 
-export function setDefaultConfig(num) {
+export function setDefaultConfig(num, forced=false) {
   //if it's the same default config as last time, don't do anything
-  if (DefaultConfig != num) {
-    _saveDefaultConfig(num);
+  if (DefaultConfig != num || forced) {
+    _setDefaultConfig(num);
     _setInitialFunctions();
     DefaultConfig = num;
   }
 }
 
-function _saveDefaultConfig(num) {
+function _setDefaultConfig(num) {
   var config = DEFAULT_CONFIGS[num];
   var voice_ids = [];
   config.forEach((item, i) => {

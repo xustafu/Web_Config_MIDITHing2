@@ -85,7 +85,8 @@ export function setPreDefSetup(num) {
   // set predef config
   num = Number(num);
   sendSysex("GENERAL", 0, "SET_DEF_CONFIG", num);
-  setDefaultConfig(num);
+  setDefaultConfig(num, true);
+  refreshWeb();
   console.log("setting default config");
 }
 
