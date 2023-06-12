@@ -132,7 +132,7 @@ qA('.box-body li').forEach(li => {
  */
 qA('li.lfo-quad-graph-sel').forEach(li => {
   li.addEventListener('click', e => {
-    setLFOGraph(e.target, false);
+    setLFOGraph(e.target, e.target.dataset.quad, false);
   });
 });
 
@@ -141,8 +141,11 @@ qA('li.lfo-quad-graph-sel').forEach(li => {
  */
 qA('li.lfo-global-graph-sel').forEach(li => {
   li.addEventListener('click', e => {
-    setLFOGraph(e.target, true);
-    setLFOGraph(e.target, true);
+    setLFOGraph(e.target, 1, true);
+    setLFOGraph(e.target, 2, true);
+    setLFOGraph(e.target, 3, true);
+    setLFOGraph(e.target, 4, true);
+    requestConfig();
   });
 });
 

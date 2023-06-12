@@ -7,6 +7,7 @@ import { selectMIDIinput } from './backend/initMidi.js';
 import { drawAllADSR } from './backend/adsr.js';
 import { saveToFile, loadFromFile, sendToModule, requestConfig, 
          credits, setPreDefSetup } from './settingsFuncs.js';
+import { setPort } from "./backend/refreshWeb.js";
 //import { setMidiChVoice } from './events.js';
 
 // export const genListener = new AbortController();
@@ -445,8 +446,8 @@ function changeVolts(port_num, gate) {
   //Set value stored
   const port = DeviceConfig.ports[port_num];
   if (!(gate && [2, 3].includes(port.volts))) {
-    q('#volts-' + port.id).setAttribute('value', port.volts);
-    q("label[for='volts-" + port.id + "']").innerHTML = VoltsNames[port.volts-1][1];
+    q('#volts-' + port_id).setAttribute('value', port.volts);
+    q("label[for='volts-" + port_id + "']").innerHTML = VoltsNames[port.volts-1][1];
   }
 }
 
@@ -571,6 +572,24 @@ export function _handleMainFunc(li, box_id, is_automatic) {
   else {
     newNonVoiceFunction(port_num, box_id);
   }
+
+  // if (!is_automatic) {
+  //   var prev_port = DeviceConfig.ports[port_num];
+  //   var new_port = new PortConfig(Number(port_num) + 1);
+  //   new_port.funct = prev_port.funct;
+  //   new_port.isAddToVoice = prev_port.isAddToVoice;
+  //   new_port.isNewVoice = prev_port.isNewVoice;
+  //   new_port.isVoiceFunction = prev_port.isVoiceFunction;
+  //   new_port.voice = prev_port.voice;
+  //   new_port.midi_ch = prev_port.midi_ch;
+  //   new_port.volts = prev_port.volts;
+  //   DeviceConfig.ports[port_num] = new_port;
+  //   DeviceConfig.voices_port[port_num] = new VoiceConfig();
+  //   var index = DeviceConfig.voices_port_used.indexOf(Number(port_num));
+  //   if (index >= 0)
+  //     DeviceConfig.voices[index] = new VoiceConfig();
+  //   setPort(new_port);
+  // }
 }
 
 /**
@@ -621,40 +640,20 @@ export function getLiPortNumber(li) {
 /**
  * Select LFO graph. Global or quad 1-4.
  */
-export function setLFOGraph(elem, is_global) {
+export function setLFOGraph(elem, quad_num, is_global) {
   const port_num = elem.dataset.port;
   const port_id = BoxNames[port_num];
   const graph_num = Number(elem.dataset.value);
   const graph_name = LFOCurvesPNG[graph_num];
-  const quad_num = is_global ? -1 : elem.dataset.quad;
-  if (is_global) {
-    for (var i = 1; i <= 4; i++) {
-      var img = q("#lfo-graph-q" + i + "-" + port_num);
-      img.setAttribute("src", "./assets/png/" + graph_name + "_q" + i + ".png");
-      q("#lfo-quad" + i + "-img-" + port_id).setAttribute("src","./assets/png/" + graph_name + ".png");
-    }
-    q('#lfo-global-img-' + port_id).setAttribute('src', './assets/png/' + graph_name + '.png');
-  } else {
-    var img = q("#lfo-graph-q" + quad_num + "-" + port_num);
-    img.setAttribute("src", "./assets/png/" + graph_name + "_q" + quad_num + ".png");
-    q("#lfo-quad" + quad_num + "-img-" + port_id).setAttribute("src","./assets/png/" + graph_name + ".png");
-  }
-
-  // Hide <ul> after click if global.
-  //if (is_global)
-  //  elem.parentElement.classList.toggle("hidden", true);
-
+  var img = q("#lfo-graph-q" + quad_num + "-" + port_num);
+  img.setAttribute("src", "./assets/png/" + graph_name + "_q" + quad_num + ".png");
+  q("#lfo-quad" + quad_num + "-img-" + port_id).setAttribute("src","./assets/png/" + graph_name + ".png");
+  
   //trigger "change" event of 4 quadranst or one
   const input_wrap = getParent(elem, true, 'input-wrap');
-  if (is_global) {
-    for (var i = 1; i <= 4; i++) {
-      const input = q('#lfo-quad-input-q' + i + '-' + port_id);
-      input.setAttribute('value', graph_num);
-      input.dispatchEvent(new Event('change'));
-    }
-  } else {
-    const input = q(`#${input_wrap.id} > input`);
-    input.setAttribute('value', graph_num);
-    input.dispatchEvent(new Event('change'));
-  }
+  const input = is_global
+    ? q("#lfo-quad-input-q" + quad_num + "-" + port_id)
+    : q(`#${input_wrap.id} > input`);
+  input.setAttribute('value', graph_num);
+  input.dispatchEvent(new Event('change'));
 }
