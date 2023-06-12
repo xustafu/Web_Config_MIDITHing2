@@ -52,6 +52,11 @@ export function handleFiles(files) {
 }
 
 export function sendToModule() {
+  //first we send all functions
+  DeviceConfig.ports.forEach((port) => {
+    sendSysex("PORT", port.port_num-1, "PORTFUNCTION", port.funct,  false);
+  })
+
   // send all web to module
   qA("input.header-input").forEach((input) => {
     sendParameterSysex(input);
@@ -59,7 +64,7 @@ export function sendToModule() {
   var bodies = qA(".box-body:not(.hidden):not(.multiple-box):not(.ignore-send)");
   //var inputs = qA("input:not(.no-trigger):not(.header-input");
   bodies.forEach((body) => {
-    body.qA("input").forEach((input) => {
+    body.querySelectorAll("input").forEach((input) => {
       sendParameterSysex(input);
     });
   });
