@@ -80,11 +80,11 @@ export function refreshWeb() {
     //    at port 8 where the second voice is (DeviceConfing.voices_port[8])
     DeviceConfig.voices[index].midi_ch = DeviceConfig.ports[port_num].midi_ch; //first we save the midi_ch of the voice for ADSR global/local config
     DeviceConfig.voices_port[port_num] = DeviceConfig.voices[index];
-    _setPort(DeviceConfig.ports[port_num]);
+    setPort(DeviceConfig.ports[port_num]);
   });
   //in these ports there are no main voices
   DeviceConfig.voices_port_free.forEach((port_num) => {
-    _setPort(DeviceConfig.ports[port_num]);
+    setPort(DeviceConfig.ports[port_num]);
   });
 }
 
@@ -105,7 +105,7 @@ function _initVoicesUsed() {
     });
 }
 
-function _setPort(port) {
+export function setPort(port) {
   //set header params (volts, midi channel)
   _setHeaderParams(port);
   _selectWebFunction(port);
@@ -205,27 +205,30 @@ function _setBodyParams(port) {
 /*              VOICE FUNCTIONS             */
 /********************************************/
 
+function _setParamValue(id, value){
+  q("#"+id).setAttribute("value",value);
+  q("#"+id).value = value;
+}
+
 function _setNoteParams(port, voice, midi_ch) {
   //set voice tag
   q("#label-note-voice-" + port.id).innerHTML = BoxNames[port.voice];
   //set bend numeric input (MIDI)
   q("#note-bend-input-" + port.id).setAttribute("value", midi_ch.bend_span);
   //set glide mode (VOICE)
-  q("#note-glide-mode-input-" + port.id).setAttribute("value", voice.portamento_type);
+  _setParamValue("note-glide-mode-input-" + port.id, voice.portamento_type);
   q("label[for='note-glide-mode-input-" + port.id + "']").innerHTML = GlideModes[voice.portamento_type]
   //set glide time (VOICE)
   var value = Number(voice.portamento_time)/10;
-  q("#note-glide-time-input-" + port.id).setAttribute("value", value);
-  q("#note-glide-time-input-" + port.id).value = value;
+  _setParamValue("note-glide-time-input-" + port.id, value);
   //set midi range (VOICE)
-  q("#note-midi-range1-" + port.id).setAttribute("value", port.clip_min);
-  q("#note-midi-range2-" + port.id).setAttribute("value", port.clip_max);
+  _setParamValue("note-midi-range1-" + port.id,port.clip_min);
+  _setParamValue("note-midi-range2-" + port.id, port.clip_max);
   // set assign selector (MIDI)
-  q("#note-input-assign-" + port.id).setAttribute("value", midi_ch.voice_sel);
-  q("label[for='note-input-assign-" + port.id + "']").innerHTML =
-    AssignNames[midi_ch.voice_sel];
+  _setParamValue("note-input-assign-" + port.id, midi_ch.voice_sel);
+  q("label[for='note-input-assign-" + port.id + "']").innerHTML = AssignNames[midi_ch.voice_sel];
   //set priority (MIDI)
-  q("#note-priority-input-" + port.id).setAttribute("value", midi_ch.priority);
+  _setParamValue("note-priority-input-" + port.id, midi_ch.priority);
   q("label[for='note-priority-input-" + port.id + "']").innerHTML = PriorityNames[midi_ch.priority];
 }
 
@@ -240,9 +243,9 @@ function _setDrumParams(port, voice) {
   //set voice tag
   q("#label-drum-voice-" + port.id).innerHTML = BoxNames[port.voice];
   //set drum note numeric selector
-  q("#drum-note-input-" + port.id).setAttribute("value", voice.vo_min_note);
+  _setParamValue("drum-note-input-" + port.id, voice.vo_min_note);
   //set delay numeric selector
-  q("#drum-delay-input-" + port.id).setAttribute("value", port.delay);
+  _setParamValue("drum-delay-input-" + port.id, port.delay);
   //set retrig toggle
   q("#drum-retrig-input-" + port.id).checked = voice.voice_retrigger;
   //set pulse toggle
@@ -253,7 +256,7 @@ function _setGateParams(port, voice) {
   //set voice tag
   q("#label-gate-voice-" + port.id).innerHTML = BoxNames[port.voice];
   //set delay numeric selector
-  q("#gate-delay-input-" + port.id).setAttribute("value", port.delay);
+  _setParamValue("gate-delay-input-" + port.id, port.delay);
   //set retrig toggle
   q("#gate-retrig-input-" + port.id).checked = voice.voice_retrigger;
   //set pulse toggle
@@ -283,42 +286,33 @@ function _setADSRParams(port, voice) {
   q("#adsr-osc-input-" + port.id).checked = voice.adsr_affect_osc;
   //set adsr-retrigg selector
   var retrig = Number(voice.adsr_retrig_mode);
-  q("#adsr-retrig-input-" + port.id).setAttribute("value", retrig);
-  q("label[for='adsr-retrig-input-" + port.id + "']").innerHTML =
-    ADSRRetrigNames[retrig];
+  _setParamValue("adsr-retrig-input-" + port.id, retrig);
+  q("label[for='adsr-retrig-input-" + port.id + "']").innerHTML = ADSRRetrigNames[retrig];
 
   /******************  GRAPH  ****************/
   //set predelay
   var value = Math.round(Number(voice.adsr_tpredelay) / 10);
-  q("#adsr-predelay-input-" + port.id).setAttribute("value", value);
-  q("#adsr-predelay-input-" + port.id).value = value;
+  _setParamValue("adsr-predelay-input-" + port.id, value);
   //set attack
   value = Math.round(Number(voice.adsr_tattack) / 10);
-  q("#adsr-attack-input-" + port.id).setAttribute("value", value);
-  q("#adsr-attack-input-" + port.id).value = value;
+  _setParamValue("adsr-attack-input-" + port.id, value);
   //set decay
   value = Math.round(Number(voice.adsr_tdecay) / 10);
-  q("#adsr-decay-input-" + port.id).setAttribute("value", value);
-  q("#adsr-decay-input-" + port.id).value = value;
+  _setParamValue("adsr-decay-input-" + port.id, value);
   //set sustain
-  q("#adsr-sustain-input-" + port.id).setAttribute("value", voice.adsr_lsustain);
-  q("#adsr-sustain-input-" + port.id).value = voice.adsr_lsustain;
+  _setParamValue("adsr-sustain-input-" + port.id, voice.adsr_lsustain);
   //set release
   value = Math.round(Number(voice.adsr_trelease) / 10);
-  q("#adsr-release-input-" + port.id).setAttribute("value", value);
-  q("#adsr-release-input-" + port.id).value = value;
+  _setParamValue("adsr-release-input-" + port.id, value);
   //set max level
-  q("#adsr-maxlevel-input-" + port.id).setAttribute("value", voice.adsr_lmax);
-  q("#adsr-maxlevel-input-" + port.id).value = voice.adsr_lmax;
+  _setParamValue("adsr-maxlevel-input-" + port.id, voice.adsr_lmax);
   //set global selector
   var global = Number(voice.use_local_config_adsr);
-  q("#adsr-global-input-" + port.id).setAttribute("value", global);
-  q("label[for='adsr-global-input-" + port.id + "']").innerHTML =
-    ADSRGlobalNames[global];
+  _setParamValue("adsr-global-input-" + port.id, global);
+  q("label[for='adsr-global-input-" + port.id + "']").innerHTML = ADSRGlobalNames[global];
   //set lineal selector
-  q("#adsr-lineal-input-" + port.id).setAttribute("value",voice.adsr_curve_type);
-  q("label[for='adsr-lineal-input-" + port.id + "']").innerHTML =
-    ADSRCurveTypes[Number(voice.adsr_curve_type)];
+  _setParamValue("adsr-lineal-input-" + port.id, voice.adsr_curve_type);
+  q("label[for='adsr-lineal-input-" + port.id + "']").innerHTML = ADSRCurveTypes[Number(voice.adsr_curve_type)];
   
   //redraw graph if container visible (restriction from adsr library)
   if (!q("#adsr-conf-"+port.id).classList.contains('hidden'))
@@ -334,13 +328,12 @@ function _setLFOParams(port, voice) {
   q("#label-lfo-voice-" + port.id).innerHTML = BoxNames[port.voice];
   //set lfo freq
   var value = Math.round(10000 / Number(voice.lfo_period));
-  q("#lfo-freq-input-" + port.id).setAttribute("value", value);
-  q("#lfo-freq-input-" + port.id).value = value;
+  _setParamValue("lfo-freq-input-" + port.id, value);
   //set lfo clock divider
-  q("#lfo-clock-divider-input-" + port.id).setAttribute("value", voice.lfo_midi_clk_div);
+  _setParamValue("lfo-clock-divider-input-" + port.id, voice.lfo_midi_clk_div);
   q("label[for='lfo-clock-divider-input-" + port.id + "']").innerHTML = MIDIClockNames[voice.lfo_midi_clk_div];
   //set lfo clock multiplier
-  q("#lfo-clock-multiplier-input-" + port.id).setAttribute("value", voice.lfo_midi_clk_mult);
+  _setParamValue("lfo-clock-multiplier-input-" + port.id, voice.lfo_midi_clk_mult);
   //set freq-clock toggle
   var use_midi_clock = (voice.lfo_use_midi_clock == 1);
   q("#lfo-freq-" + port.id).dataset.disabled = use_midi_clock;
@@ -355,8 +348,7 @@ function _setLFOParams(port, voice) {
   /******************  OPTIONS  ****************/
   //set pre-delay
   value = Math.round(Number(voice.lfo_pre_delay) / 10);
-  q("#lfo-options-predelay-input-" + port.id).setAttribute("value", value);
-  q("#lfo-options-predelay-input-" + port.id).value = value;
+  _setParamValue("lfo-options-predelay-input-" + port.id, value);
   //set single shot toggle
   q("#lfo-options-singleshot-input-" + port.id).checked = voice.lfo_single_cycle;
   //set lfo-osc toggle
@@ -364,7 +356,7 @@ function _setLFOParams(port, voice) {
 
   /******************  GRAPH  ****************/
   //set attenuate
-  q("#lfo-attenuate-input-" + port.id).setAttribute("value", voice.lfo_max_level);
+  _setParamValue("lfo-attenuate-input-" + port.id, voice.lfo_max_level);
   //quad graphs
   const q1 = voice.lfo_curve_type_q1;
   const q2 = voice.lfo_curve_type_q2;
@@ -394,20 +386,20 @@ function _setLFOParams(port, voice) {
 
 function _setCCParams(port) {
   //set CC number
-  q("#cc-ccnum-input-" + port.id).setAttribute("value", port.param);
+  _setParamValue("cc-ccnum-input-" + port.id, port.param);
   //set CLIP low and high
-  q("#cc-clip-low-input-" + port.id).setAttribute("value", port.clip_min);
-  q("#cc-clip-high-input-" + port.id).setAttribute("value", port.clip_max);
+  _setParamValue("cc-clip-low-input-" + port.id, port.clip_min);
+  _setParamValue("cc-clip-high-input-" + port.id, port.clip_max);
 }
 
 function _setClockParams(port) {
   //set start/stop toggle
   q("#clock-stop-input-" + port.id).checked = port.start_stop_clock;
   //set clock divider
-  q("#clock-divider-input-" + port.id).setAttribute("value", port.clk_div);
+  _setParamValue("clock-divider-input-" + port.id, port.clk_div);
   q("label[for='clock-divider-input-" + port.id + "']").innerHTML = MIDIClockNames[port.clk_div];
   //set clock multiplier
-  q("#clock-multiplier-input-" + port.id).setAttribute("value", port.clk_mult);
+  _setParamValue("clock-multiplier-input-" + port.id, port.clk_mult);
 }
 
 function _setStartStopParams(port) {
@@ -417,46 +409,46 @@ function _setStartStopParams(port) {
 function _setStSpLatchParams(port) {
   var funct_name = FirmwareFunctions2Web[port.funct];
   //set pulse ms
-  q("#" + funct_name + "-input-" + port.id).setAttribute("value",port.pulse_time);
+  _setParamValue(funct_name + "-input-" + port.id, port.pulse_time);
 }
 
 function _setRPNParams(port) {
   //set param
-  q("#rpn-param-input-" + port.id).setAttribute("value", port.param);
+  _setParamValue("rpn-param-input-" + port.id, port.param);
   //set clip low and high
-  q("#rpn-clip-low-input-" + port.id).setAttribute("value", port.clip_min);
-  q("#rpn-clip-high-input-" + port.id).setAttribute("value", port.clip_max);
+  _setParamValue("rpn-clip-low-input-" + port.id, port.clip_min);
+  _setParamValue("rpn-clip-high-input-" + port.id, port.clip_max);
 }
 
 function _setNRPNParams(port) {
   //set param
   const value = Number(port.param);
-  q("#nrpn-param-input-" + port.id).setAttribute("value", value);
+  _setParamValue("nrpn-param-input-" + port.id, value);
   //set MSB y LSB
   const msb = (value >> 7) & 0x07F;
   const lsb = value & 0x07F;
-  q("#nrpn-msb-input-" + port.id).setAttribute("value", msb);
-  q("#nrpn-lsb-input-" + port.id).setAttribute("value", lsb);
+  _setParamValue("nrpn-msb-input-" + port.id, msb);
+  _setParamValue("nrpn-lsb-input-" + port.id, lsb);
   //set clip low and high
-  q("#nrpn-clip-low-input-" + port.id).setAttribute("value", port.clip_min);
-  q("#nrpn-clip-high-input-" + port.id).setAttribute("value", port.clip_max);
+  _setParamValue("nrpn-clip-low-input-" + port.id, port.clip_min);
+  _setParamValue("nrpn-clip-high-input-" + port.id, port.clip_max);
 }
 
 function _setChPressParams(port) {
   //set clip low and high
-  q("#ch-press-clip-low-input-" + port.id).setAttribute("value", port.clip_min);
-  q("#ch-press-clip-high-input-" + port.id).setAttribute("value", port.clip_max);
+  _setParamValue("ch-press-clip-low-input-" + port.id, port.clip_min);
+  _setParamValue("ch-press-clip-high-input-" + port.id, port.clip_max);
 }
 
 function _setPrChParams(port) {
   //set clip low and high
-  q("#pr-ch-clip-low-input-" + port.id).setAttribute("value", port.clip_min);
-  q("#pr-ch-clip-high-input-" + port.id).setAttribute("value", port.clip_max);
+  _setParamValue("pr-ch-clip-low-input-" + port.id, port.clip_min);
+  _setParamValue("pr-ch-clip-high-input-" + port.id, port.clip_max);
 }
 
 function _setPitchBendParams(port, midi_ch) {
   //set semitones
-  q("#pitch-bend-semit-input-" + port.id).setAttribute("value", midi_ch.bend_span);
+  _setParamValue("pitch-bend-semit-input-" + port.id, midi_ch.bend_span);
 }
 
 
