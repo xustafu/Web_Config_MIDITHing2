@@ -18,6 +18,9 @@ self.DefaultConfig = -1;
 //for ADSR graph
 self.envADSR = new ADSR();
 
+//for LFO global graph
+self.RequestConfig = true;
+
 // Empty array of voices on document load
 export const voices = [];
 

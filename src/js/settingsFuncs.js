@@ -76,9 +76,11 @@ export function sendToModule() {
 
 export function requestConfig() {
   // request all configuration from module
-  sendSysex("GENERAL", 0, "REQ_CONFIG", 0);
-  refreshWeb();
-  console.log("requesting from module");
+  if (RequestConfig) {
+    sendSysex("GENERAL", 0, "REQ_CONFIG", 0);
+    refreshWeb();
+    console.log("requesting from module");
+  }
 }
 
 export function setPreDefSetup(num) {
