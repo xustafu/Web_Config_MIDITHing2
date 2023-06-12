@@ -344,12 +344,16 @@ function _storeWebData(type, number, attr, value, is_global_adsr){
   } else {
     switch (type) {
       case PORT:
-        if (attr == "funct" && value == MIDIDRUMTRIG){
-          // special case of DRUM function. 
-          // at module it's gate function, and clip_min and clip_max get 0-120
-          DeviceConfig.ports[number].funct == MIDIVOICEGATE;
-          DeviceConfig.voices_port[number].vo_min_note = 60;
-          DeviceConfig.voices_port[number].vo_max_note = 60;
+        if (attr == "funct"){
+          // reset default values
+          _resetValues(number)
+          if (value == MIDIDRUMTRIG){
+            // special case of DRUM function.
+            // at module it's gate function, and clip_min and clip_max get 0-120
+            DeviceConfig.ports[number].funct == MIDIVOICEGATE;
+            DeviceConfig.voices_port[number].vo_min_note = 60;
+            DeviceConfig.voices_port[number].vo_max_note = 60;
+          }
         }else {
           DeviceConfig.ports[number][attr] = value;
         }
@@ -366,6 +370,24 @@ function _storeWebData(type, number, attr, value, is_global_adsr){
         break;
     }
   }
+}
+
+function _resetValues(num)
+{
+  DeviceConfig.ports[num].clip_min = 0;
+  DeviceConfig.ports[num].clip_max = 0;
+  DeviceConfig.ports[num].delay = 0;
+  DeviceConfig.ports[num].pulse_time = 10;
+  DeviceConfig.ports[num].period = 1136;
+  DeviceConfig.ports[num].clk_div = 24;
+  DeviceConfig.ports[num].clk_pulse_width = 99;
+  DeviceConfig.ports[num].clk_mult = 1;
+  DeviceConfig.ports[num].start_stop_clock = true;
+  DeviceConfig.ports[num].use_midi_clock = true;
+  DeviceConfig.ports[num].gate_pulse = false;
+  DeviceConfig.voices_port[num] = new VoiceConfig();
+  var index = DeviceConfig.voices_port_used.indexOf(num);
+  if (index >= 0) DeviceConfig.voices[index] = new VoiceConfig();
 }
 
 /*! \brief Encode System Exclusive messages.

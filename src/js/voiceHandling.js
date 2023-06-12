@@ -35,10 +35,10 @@ export function newVoiceFunction(port_num, box_id, li) {
   // add this voice to voices_port_used
   const index = DeviceConfig.voices_port_used.indexOf(port.port_num-1);
   if (index < 0) {
-    DeviceConfig.voices_port_used.push(port.port_num);
+    DeviceConfig.voices_port_used.push(port.port_num-1);
     DeviceConfig.voices_port_used.sort();
     DeviceConfig.voices_port_free.splice(
-      DeviceConfig.voices_port_free.indexOf(port.port_num)
+      DeviceConfig.voices_port_free.indexOf(port.port_num-1)
     );
   }
   //_reorganizeVoiceSelectors();
