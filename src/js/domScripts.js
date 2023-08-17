@@ -5,9 +5,15 @@ import { newNonVoiceFunction, newVoiceFunction, addFunctionToVoice } from './voi
 import { sendParameterSysex } from './backend/sysexMgt.js';
 import { selectMIDIinput } from './backend/initMidi.js';
 import { drawAllADSR } from './backend/adsr.js';
-import { saveToFile, loadFromFile, sendToModule, requestConfig, 
-         credits, setPreDefSetup } from './settingsFuncs.js';
-import { setPort } from "./backend/refreshWeb.js";
+import {
+  saveToFile,
+  loadFromFile,
+  sendToModule,
+  requestConfig,
+  credits,
+  setPreDefSetup
+} from './settingsFuncs.js';
+import { setPort } from './backend/refreshWeb.js';
 //import { setMidiChVoice } from './events.js';
 
 // export const genListener = new AbortController();
@@ -87,50 +93,57 @@ export function selectParameter(li) {
  * Deals with the expansion of menus
  * @param {HTMLElement} el The element that receives the click
  */
-export function expandSubmenu(el) {
-  // Parameters to set the position of the submenus
+export function expandMenu(el) {
+  // Parameters to set the position of the menus
   const elRect = el.getBoundingClientRect();
   const elTop = elRect.top;
   const elHeight = elRect.height;
   //const elX = elRect.left;
-  const viewPortHeight = window.innerHeight;
-  //const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  const viewportWidth = window.innerWidth;
   const is_lfo_quad = el.classList.contains('lfo-quad-sel');
   const quad = is_lfo_quad ? el.dataset.quad : '';
-  let submenu, submenuHeight, submenuLeft;
+  let menu, menuHeight, menuLeft, menuWidth;
 
   if (el.classList.value.includes('selector-label') && !el.classList.value.includes('disabled')) {
     el.classList.toggle('active');
 
     if (is_lfo_quad) {
-      submenu = q(`#${el.parentElement.id} > ul[class*="selector-lfo-quad-${quad}"]`);
+      menu = q(`#${el.parentElement.id} > ul[class*="selector-lfo-quad-${quad}"]`);
     } else {
-      submenu = q(`#${el.parentElement.id} > ul[class*="selector-options"]`);
+      menu = q(`#${el.parentElement.id} > ul[class*="selector-options"]`);
     }
-    submenu.style.top = 0; // resetting top
-    submenu.classList.toggle('hidden');
-    submenuHeight = submenu.getBoundingClientRect().height;
-    submenuLeft = submenu.getBoundingClientRect().left;
+    menu.style.top = 0; // resetting top
+    menu.classList.toggle('hidden');
+    menuHeight = menu.getBoundingClientRect().height;
+    menuWidth = menu.getBoundingClientRect().width;
+    menuLeft = menu.getBoundingClientRect().left;
 
-    if (submenuHeight + elTop > viewPortHeight) {
-      submenu.style.top = `-${submenuHeight + 2}px`;
+    // deals with height
+    if (menuHeight + elTop > viewportHeight) {
+      menu.style.top = `-${menuHeight + 2}px`;
     } else if (q(`#${el.parentElement.id} > h3.block`)) {
-      submenu.style.top = `${2 * elHeight - 6}px`;
+      menu.style.top = `${2 * elHeight - 6}px`;
     } else {
-      submenu.style.top = `${elHeight + 2}px`;
+      menu.style.top = `${elHeight + 2}px`;
+    }
+
+    // deals with width
+    if (menuWidth + menuLeft > viewportWidth) {
+      menu.style.left = viewportWidth - (menuWidth + menuLeft) + 'px';
     }
   } else if (el.classList.contains('color-selector')) {
     const box_id = 'box-' + BoxNames[Number(el.dataset.port)];
     if (q(`#${box_id} .port-color-drop-arrow`).classList.contains('hidden')) return;
-    submenu = q(`#${box_id} .box-port-color-selector-options`);
-    submenu.style.top = 0;
-    submenu.classList.toggle('hidden');
-    submenuHeight = submenu.getBoundingClientRect().height;
+    menu = q(`#${box_id} .box-port-color-selector-options`);
+    menu.style.top = 0;
+    menu.classList.toggle('hidden');
+    menuHeight = menu.getBoundingClientRect().height;
 
-    if (submenuHeight + elTop > viewPortHeight) {
-      submenu.style.top = `-${submenuHeight}px`;
+    if (menuHeight + elTop > viewportHeight) {
+      menu.style.top = `-${menuHeight}px`;
     } else {
-      submenu.style.top = `${elHeight + 2}px`;
+      menu.style.top = `${elHeight - 1}px`;
     }
   } else if (
     el.classList.value.includes('has-submenu') &&
@@ -141,13 +154,13 @@ export function expandSubmenu(el) {
     qA(`.box-selector-suboptions`).forEach(ul => {
       ul.classList.toggle('hidden', true);
     });
+    const suboptions = el.children[0];
     // Reveal the appropriate suboptions menu
-    el.children[0].classList.toggle('hidden');
-    el.children[0].style.top = '-1px';
-    // const submenuHeight = el.children[0].getBoundingClientRect().height;
-    // if (elTop + submenuHeight > viewPortHeight) {
-    //   el.children[0].style.top = `-${submenuHeight - 30}px`;
-    // }
+    suboptions.classList.toggle('hidden');
+    suboptions.style.top = '-1px';
+    if (suboptions.getBoundingClientRect().left > viewportWidth) {
+      suboptions.style.left = `-${suboptions.getBoundingClientRect().width}px`;
+    }
   }
 }
 
@@ -193,12 +206,21 @@ export function selectFunction(li, is_automatic = false) {
 
 /**
  * Hides <ul>s on blur and deactivates all labels
+ * @param {HTMLElement} element The element that was being hovered
  */
-export function hideList() {
-  qA('ul[class*="options"').forEach(optionList => {
-    optionList.classList.toggle('hidden', true);
+export function hideList(element) {
+  let reEnter = false;
+  element.addEventListener('mouseenter', () => {
+    reEnter = true;
   });
-  qA(`label[class*="selector-label"]`).forEach(label => label.classList.remove('active'));
+  setTimeout(() => {
+    if (!reEnter) {
+      qA('ul[class*="options"').forEach(optionList => {
+        optionList.classList.toggle('hidden', true);
+      });
+      qA(`label[class*="selector-label"]`).forEach(label => label.classList.remove('active'));
+    }
+  }, 1000);
 }
 
 /**
@@ -446,8 +468,8 @@ function changeVolts(port_num, gate) {
   //Set value stored
   const port = DeviceConfig.ports[port_num];
   if (!(gate && [2, 3].includes(port.volts))) {
-    q('#volts-' + port_id).setAttribute('value', port.volts);
-    q("label[for='volts-" + port_id + "']").innerHTML = VoltsNames[port.volts-1][1];
+    q('#volts-' + port.id).setAttribute('value', port.volts);
+    q("label[for='volts-" + port.id + "']").innerHTML = VoltsNames[port.volts - 1][1];
   }
 }
 
@@ -457,13 +479,15 @@ function changeVolts(port_num, gate) {
  * @param {String} error The error string
  */
 export function showModal(type, msg) {
+  // reset screen
+  q('body').dispatchEvent(new Event('click'));
   // reset any previous modal content
   q(`#modal-body`).innerHTML = '';
   // get title depending on type
   const type_to_title = {
-    warning: 'WARNING:',
+    warning: 'Warning:',
     error: 'Sorry, there is an error',
-    add_to_voice: 'Please select the voice to add the function to:'
+    add_to_voice: 'Select the voice to add the function to:'
   };
   // Create a fragment to hold all the content for the modal
   const frag = document.createDocumentFragment();
@@ -477,7 +501,8 @@ export function showModal(type, msg) {
       for (let a = 0; a < contributors.length; a++) {
         h1.innerHTML = contributors[a].name;
         p.innerHTML = contributors[a].content;
-        frag.appendChild(h1).appendChild(p);
+        frag.appendChild(h1);
+        frag.appendChild(p);
       }
       break;
 
@@ -485,18 +510,22 @@ export function showModal(type, msg) {
     case 'warning':
       h1.innerHTML = type_to_title[type];
       p.innerHTML = msg;
-      frag.appendChild(h1).appendChild(p);
+      frag.appendChild(h1);
+      frag.appendChild(p);
       break;
 
     case 'add_to_voice':
-      h1.innerHTML = type_to_title[type];
-      frag.appendChild(h1);
-      const voice_select_div = q("#add2voice_voice_selector");
+      const h2 = document.createElement('h2');
+      h2.classList = 'modal-h2';
+      h2.innerHTML = type_to_title[type];
+      frag.appendChild(h2);
+      const voice_select_div = q('#add2voice_voice_selector');
       const voice_select = q('#add2voice_voice_selector > select');
       if (voice_select != null) voice_select_div.removeChild(voice_select);
 
       const select = document.createElement('select');
       select.setAttribute('id', 'select-voice');
+      select.classList = 'round-sm';
       DeviceConfig.voices_port_used.forEach(voice => {
         const option = document.createElement('option');
         option.setAttribute('value', voice);
@@ -506,7 +535,7 @@ export function showModal(type, msg) {
 
       const button = document.getElementById('add2voice_submit');
       voice_select_div.insertBefore(select, button);
-      voice_select_div.classList.toggle("hidden", false);
+      voice_select_div.classList.toggle('hidden', false);
 
       button.addEventListener('click', e => {
         if (DeviceConfig.voices_port_used == 1) {
@@ -553,9 +582,6 @@ export function _handleMainFunc(li, box_id, is_automatic) {
   const bodyStr = `${li.getAttribute('data-body')}`;
   const port_num = getLiPortNumber(li);
 
-  // Hide/unhide the corresponding body types
-  _revealBody(li, port_num, is_automatic);
-
   // Change the volts list
   const is_gate = bodyStr.includes('gate');
   changeVolts(port_num, is_gate);
@@ -590,6 +616,8 @@ export function _handleMainFunc(li, box_id, is_automatic) {
   //     DeviceConfig.voices[index] = new VoiceConfig();
   //   setPort(new_port);
   // }
+  // Hide/unhide the corresponding body types
+  _revealBody(li, port_num, is_automatic);
 }
 
 /**
@@ -598,7 +626,7 @@ export function _handleMainFunc(li, box_id, is_automatic) {
 export function domInit() {
   // Populate the colours
   setAvailableColors();
-  _setLabelWidths();
+  setLabelWidths();
 }
 
 /**
@@ -614,7 +642,7 @@ export function checkBox(box) {
 /**
  * Sets the min-width in all labels based on the content of its longest child
  */
-function _setLabelWidths() {
+export function setLabelWidths() {
   qA(`.box-body .selector-options:not(.voice-selector)`).forEach(list => {
     const children = Array.from(list.children); // an HTMLCollection is not really an array
 
@@ -624,7 +652,11 @@ function _setLabelWidths() {
     });
 
     const parent = getParent(list, true, 'input-wrap');
-    q(`#${parent.id} .box-selector-label`).style.minWidth = `${longestChild.innerText.length}rem`;
+    const listFontSize = parseInt(window.getComputedStyle(list, null).fontSize);
+
+    const newWidth = `${longestChild.innerText.length / (listFontSize / 10) + 1.75}rem`;
+
+    q(`#${parent.id} .box-selector-label`).style.width = newWidth;
   });
 }
 
@@ -645,14 +677,41 @@ export function setLFOGraph(elem, quad_num, is_global) {
   const port_id = BoxNames[port_num];
   const graph_num = Number(elem.dataset.value);
   const graph_name = LFOCurvesPNG[graph_num];
-  var img = q("#lfo-graph-q" + quad_num + "-" + port_num);
-  img.setAttribute("src", "./assets/png/" + graph_name + "_q" + quad_num + ".png");
-  q("#lfo-quad" + quad_num + "-img-" + port_id).setAttribute("src","./assets/png/" + graph_name + ".png");
-  
+  var img = q('#lfo-graph-q' + quad_num + '-' + port_num);
+  img.setAttribute('src', './assets/png/' + graph_name + '_q' + quad_num + '.png');
+  q('#lfo-quad' + quad_num + '-img-' + port_id).setAttribute(
+    'src',
+    './assets/png/' + graph_name + '.png'
+  );
+
+  // const quad_num = is_global ? -1 : elem.dataset.quad;
+  // if (is_global) {
+  //   for (var i = 1; i <= 4; i++) {
+  //     var img = q('#lfo-graph-q' + i + '-' + port_num);
+  //     img.setAttribute('src', './assets/png/' + graph_name + '_q' + i + '.png');
+  //     q('#lfo-quad' + i + '-img-' + port_id).setAttribute(
+  //       'src',
+  //       './assets/png/' + graph_name + '.png'
+  //     );
+  //   }
+  //   q('#lfo-global-img-' + port_id).setAttribute('src', './assets/png/' + graph_name + '.png');
+  // } else {
+  //   var img = q('#lfo-graph-q' + quad_num + '-' + port_num);
+  //   img.setAttribute('src', './assets/png/' + graph_name + '_q' + quad_num + '.png');
+  //   q('#lfo-quad' + quad_num + '-img-' + port_id).setAttribute(
+  //     'src',
+  //     './assets/png/' + graph_name + '.png'
+  //   );
+  // }
+
+  // Hide <ul> after click if global.
+  //if (is_global)
+  //  elem.parentElement.classList.toggle("hidden", true);
+
   //trigger "change" event of 4 quadranst or one
   const input_wrap = getParent(elem, true, 'input-wrap');
   const input = is_global
-    ? q("#lfo-quad-input-q" + quad_num + "-" + port_id)
+    ? q('#lfo-quad-input-q' + quad_num + '-' + port_id)
     : q(`#${input_wrap.id} > input`);
   input.setAttribute('value', graph_num);
   input.dispatchEvent(new Event('change'));

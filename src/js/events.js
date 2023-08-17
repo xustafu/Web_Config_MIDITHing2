@@ -1,6 +1,6 @@
 import { q, qA, LiveSend } from './globals.js';
 import {
-  expandSubmenu,
+  expandMenu,
   hideList,
   arrowsFunc,
   minMax,
@@ -9,6 +9,7 @@ import {
   selectSettings,
   selectFunction,
   selectDevice,
+  setLabelWidths,
   selectParameter,
   setLFOGraph,
   dynModal
@@ -21,6 +22,13 @@ import { drawAllADSR } from './backend/adsr.js';
  * Paint the list of available colours under the port name
  */
 window.addEventListener('DOMContentLoaded', domInit());
+window.addEventListener('resize', () => {
+  setLabelWidths();
+  const activeADSRWrappers = qA('section[id^=adsr-conf][class^=conf-window]:not(.hidden)');
+  activeADSRWrappers.forEach(wrapper =>
+    drawAllADSR(document.querySelector(`${wrapper.id} .adsr-container`))
+  );
+});
 
 /**
  * hide everything on click outside inactive elements
@@ -38,6 +46,7 @@ q(`body`).addEventListener('click', e => {
   ) {
     // Go through all <ul>s and hide them
     qA(`ul`).forEach(ul => ul.classList.toggle('hidden', true));
+    qA(`label.box-selector-label`).forEach(label => label.classList.remove('active'));
     window.removeEventListener('scroll', dynModal);
   }
 });
@@ -52,35 +61,37 @@ q('#live').addEventListener('click', e => {
 });*/
 
 /**
- * Expand selector menus on click on any selector label
+ * Expand selector menus on click on any selector and selectors with
+ * submenus
  * NOTE: the parameter for the expand function is the actual
  * element that originated the click to prevent bubbling errors.
  */
 [
-  qA('label[class*="selector-label"]'),
+  qA('label[class*=selector-label]'),
   qA('.color-selector'),
   //qA('.port-color-drop-arrow'),
-  qA('[for^=lfo-global-input] img')
+  qA('[for^=lfo-global-input] img'),
+  qA('li.has-submenu')
 ].forEach(item => {
   item.forEach(selector => {
     selector.addEventListener('click', () => {
-      expandSubmenu(selector);
+      expandMenu(selector);
     });
+  });
+});
+
+// /**
+//  * Menu with submenu > on hover
+//  */
+qA('li.has-submenu').forEach(li => {
+  li.addEventListener('mouseover', e => {
+    expandMenu(e.target);
   });
 });
 
 /****************************************************/
 /*              LI CLICK FUNCTIONALITY
 /****************************************************/
-
-/**
- * Menu with submenu > on click
- */
-qA('li.has-submenu').forEach(li => {
-  li.addEventListener('click', e => {
-    expandSubmenu(e.target);
-  });
-});
 
 /**
  * Settings > functions > on click
@@ -156,19 +167,18 @@ qA('li.lfo-global-graph-sel').forEach(li => {
  */
 qA('.lfo-radio').forEach(input => {
   input.addEventListener('change', e => {
-    var use_midi_clock = e.target.classList.contains("lfo-radio-clock");
+    var use_midi_clock = e.target.classList.contains('lfo-radio-clock');
     var port_id = BoxNames[Number(e.target.dataset.mtPort)];
-    q("#lfo-freq-" + port_id).dataset.disabled = use_midi_clock;
-    q("#lfo-freq-input-" + port_id).disabled = use_midi_clock;
-    q("#lfo-clock-divider-" + port_id).dataset.disabled = !use_midi_clock;
-    q("#lfo-clock-divider-input-" + port_id).disabled = !use_midi_clock;
-    q("#lfo-clock-multiplier-" + port_id).dataset.disabled = !use_midi_clock;
-    q("#lfo-clock-multiplier-input-" + port_id).disabled = !use_midi_clock;
-    q("#lfo-com-clock-" + port_id).checked = use_midi_clock;
-    q("#lfo-com-freq-" + port_id).checked = !use_midi_clock;
+    q('#lfo-freq-' + port_id).dataset.disabled = use_midi_clock;
+    q('#lfo-freq-input-' + port_id).disabled = use_midi_clock;
+    q('#lfo-clock-divider-' + port_id).dataset.disabled = !use_midi_clock;
+    q('#lfo-clock-divider-input-' + port_id).disabled = !use_midi_clock;
+    q('#lfo-clock-multiplier-' + port_id).dataset.disabled = !use_midi_clock;
+    q('#lfo-clock-multiplier-input-' + port_id).disabled = !use_midi_clock;
+    q('#lfo-com-clock-' + port_id).checked = use_midi_clock;
+    q('#lfo-com-freq-' + port_id).checked = !use_midi_clock;
   });
 });
-
 
 /****************************************************/
 /*            END OF LI CLICK FUNCTIONALITY
@@ -179,8 +189,12 @@ qA('.lfo-radio').forEach(input => {
  */
 [qA('ul[class*="selector-options"]'), qA('ul[class*="selector-suboptions"]')].forEach(list => {
   list.forEach(ul => {
-    ul.addEventListener('mouseleave', () => hideList());
-    ul.removeEventListener('mouseleave', () => hideList()); // cleaning up to save memory
+    ul.addEventListener('mouseleave', e => {
+      hideList(e.target);
+    });
+    ul.removeEventListener('mouseleave', e => {
+      hideList(e.target);
+    }); // cleaning up to save memory
   });
 });
 
@@ -219,12 +233,11 @@ q('#modal-wrap').addEventListener('click', e => {
  */
 qA('button.reveal').forEach(button => {
   button.addEventListener('click', e => {
-    q("#" + button.dataset.hide).classList.toggle("hidden", true);
-    q("#" + button.dataset.show).classList.toggle("hidden", false);
+    q('#' + button.dataset.hide).classList.toggle('hidden', true);
+    q('#' + button.dataset.show).classList.toggle('hidden', false);
   });
   //draw ADSR in canvas
-  if (button.classList.contains("draw_adsr")) {
-    
+  if (button.classList.contains('draw_adsr')) {
   }
 });
 
@@ -265,7 +278,6 @@ q('#file_load').addEventListener('change', e => {
   handleFiles(e.target.files);
 });
 
-
 /****************************************************/
 /****************************************************/
 /*    MAIN PIECE OF CODE THAT SENDS INFO TO MODULE
@@ -301,5 +313,3 @@ qA('input:not(.no-trigger)').forEach(input => {
     } 
   }
 }*/
-
-
