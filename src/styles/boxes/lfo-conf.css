@@ -1,6 +1,8 @@
 .wave-shapes-wrap {
   --q-height: 10.5rem;
+}
 
+.wave-shapes-wrap {
   display: grid;
   grid-template-areas: 'q1 q2 q3 q4';
   width: calc(var(--box-width) -1rem);
@@ -48,6 +50,7 @@ div[id^=lfo-quad] {
   margin-top: 1.7rem;
   display: flex;
   gap: 2.4rem;
+  margin-bottom: 1rem;
 }
 
 .conf-window-wrap .shapes-globals .box-selector-label[for*=global] {
@@ -62,6 +65,35 @@ div[id^=lfo-quad] {
   align-items: center;
 }
 
-.conf-window-wrap .back-button {
+[class^='box-lfo'] .conf-window-wrap .back-button {
   margin-top: 0.9rem;
+}
+
+@media only screen and (max-width: 1200px) {
+  .wave-shapes-wrap {
+    --q-height: 7.9rem;
+    grid-template-columns: repeat(4, 5.8rem);
+    height: calc(var(--q-height) - -0.1rem);
+  }
+  
+  .wave-shapes-wrap img {
+    height: var(--q-height);
+    width: 5.5rem;
+  }
+}
+
+@media only screen and (max-width: 821px) {
+  .wave-shapes-wrap {
+    --q-height: 10rem;
+    grid-template-columns: repeat(4, 6.7rem);
+  }
+
+  .wave-shapes-wrap img {
+    width: 6.7rem;
+  }
+
+
+  .shapes-selectors-wrap {
+    margin-top: 3rem;
+  }
 }

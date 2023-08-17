@@ -8,13 +8,18 @@
   --label-title: #ccc;
   --label-title: #d2d2d2;
   --off-white: #b2b2b2;
-  --arrow-bg: var(--grey3);
-  --list-bg: var(--bg);
-  --list-font: var(--grey3);
-  --border: var(--off-white);
+  --arrow-bg: var(
+  --grey3);
+  --list-bg: var(
+  --bg);
+  --list-font: var(
+  --grey3);
+  --border: var(
+  --off-white);
   --bg: #242424;
   --box-bg: #262626;
-  --graph-line: var(--grey);
+  --graph-line: var(
+  --grey);
   --graph-bg: #191919;
   --toggle-border: #707070;
   --toggle-inactive: black;
@@ -31,7 +36,8 @@
 
   /* port colours */
   --color1: #ff0090;
-  --color2: var(--red);
+  --color2: var(
+  --red);
   --color3: #ff8000;
   --color4: #eeff00;
   --color5: #7fff00;
@@ -44,7 +50,8 @@
   --color12: #ff8acc;
 
   /* fonts */
-  --main-font: Roboto, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --main-font: Roboto,
+  'Open Sans', 'Helvetica Neue', sans-serif;
   /* --main-font: Helvetica, 'Helvetica Neue', Roboto, 'Open Sans', sans-serif; */
   --arrow-font: Consolas, monospace;
 
@@ -56,4 +63,5 @@
   --box-width: 26.5rem;
     --box-height: 26rem;
     --main-width: 126rem;
+    /* --main-width-sm: 100rem; */
 }

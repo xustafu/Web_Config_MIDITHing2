@@ -110,7 +110,7 @@ the same as Chrome */
 }
 
 h3.inline,
-label[class^=box-num] {
+label[class^='box-num'] {
   margin-right: 0.3rem;
 }
 
@@ -127,7 +127,8 @@ label[class^=box-num] {
   font-size: 1.2rem;
 }
 
-.box-selector-label, .voice-tag {
+.box-selector-label,
+.voice-tag {
   background-color: var(--dropdown-label-bg);
 }
 
@@ -143,12 +144,11 @@ label[class^=box-num] {
 .voice-tag,
 .box-body .input-wrap .box-selector-label,
 .conf-window-wrap .input-wrap .box-selector-label {
-  /* min-width: 4.7rem; */
   padding: 0.4rem;
   padding-left: 0.7rem;
 }
 
-.input-wrap .box-selector-label::after{
+.input-wrap .box-selector-label::after {
   width: 1.8rem;
   height: 2.5rem;
   content: '';
@@ -181,8 +181,35 @@ label[class^=box-num] {
   padding: 1rem;
   padding-block: 0.5rem;
 }
-[data-disabled=true] label,
-[data-disabled=true] input,
-[data-disabled=true] h3 {
+[data-disabled='true'] label,
+[data-disabled='true'] input,
+[data-disabled='true'] h3 {
   color: var(--grey) !important;
+}
+
+@media screen and (max-width: 821px) {
+   .box-body label, .box-body h3, .conf-window-wrap label, .conf-window-wrap h3 {
+     font-size: 1.4rem;
+   }
+  
+  .box {
+    --box-width: 30rem;
+    --box-height: 30rem;
+  }
+
+  .box-header {
+    grid-template-columns: repeat(4, 6.2rem);
+  }
+
+  .body-types-wrap {
+    width: 27.1rem;
+    height: 7.2rem;
+  }
+  .box-body .input-wrap .box-selector-label::after {
+    background-size: 20.8rem;
+    height: 2.8rem;
+  }
+  .box-body .input-wrap .box-selector-label.active::after {
+    background-position-y: -3.6rem;
+  }
 }

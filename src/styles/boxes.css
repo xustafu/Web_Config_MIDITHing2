@@ -5,7 +5,7 @@
 @import url('./common/main-func.css');
 @import url('./common/inputs.css');
 @import url('./common/labels.css');
-@import url('./boxes/sliders.css');
+@import url('./common/sliders.css');
 @import url('./boxes/lfo.css');
 @import url('./boxes/note.css');
 @import url('./boxes/lfo-conf.css');

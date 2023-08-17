@@ -21,8 +21,8 @@ span[class^='arrow']:focus {
   background-position-x: -10.2rem;
 }
 
-.box-body span[class^=arrow],
-.conf-window-wrap span[class^=arrow] {
+.box-body span[class^='arrow'],
+.conf-window-wrap span[class^='arrow'] {
   width: 1.4rem;
   background-position-x: -3.2rem;
 }
@@ -35,15 +35,15 @@ span[class^='arrow']:focus {
 .box-body span.arrow-down,
 .conf-window-wrap span.arrow-down {
   background-position-y: -4rem;
-  top: .8rem;
+  top: 0.8rem;
 }
 
-.box-body span[class^=arrow]:hover,
-.box-body span[class^=arrow]:active,
-.box-body span[class^=arrow]:focus,
-.conf-window-wrap span[class^=arrow]:hover,
-.conf-window-wrap span[class^=arrow]:active,
-.conf-window-wrap span[class^=arrow]:focus {
+.box-body span[class^='arrow']:hover,
+.box-body span[class^='arrow']:active,
+.box-body span[class^='arrow']:focus,
+.conf-window-wrap span[class^='arrow']:hover,
+.conf-window-wrap span[class^='arrow']:active,
+.conf-window-wrap span[class^='arrow']:focus {
   background-position-x: -5.12rem;
 }
 
@@ -73,4 +73,17 @@ span[class^='arrow']:focus {
   background-position-x: -12.7rem !important;
   background-position-y: -0.3rem !important;
   right: 0.2rem;
+}
+
+@media only screen and (max-width: 1200px) {
+  .arrow-for {
+    background-position-x: -13rem !important;
+  }
+}
+
+@media only screen and (max-width: 821px) {
+  .arrow-for,
+  .arrow-back {
+    background-position-y: -1px !important;
+  }
 }

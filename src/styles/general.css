@@ -56,7 +56,6 @@ li.dark-font {
   color: #000 !important;
 }
 
-
 /**
 Selectors
 */
@@ -83,7 +82,7 @@ Selectors
 .selector-label.active::after {
   border-top: none;
   border-bottom: 8px solid var(--dark-grey);
-  top: .5rem;
+  top: 0.5rem;
 }
 
 .selector-options {
@@ -95,13 +94,13 @@ Selectors
   width: 100%;
 }
 
-li[class*="selector-item"] {
+li[class*='selector-item'] {
   color: white;
-  padding-block: .2rem;
+  padding-block: 0.2rem;
 }
 
-li[class*="selector-item"]:hover,
-li[class*="selector-item"]:active {
+li[class*='selector-item']:hover,
+li[class*='selector-item']:active {
   background-color: black;
 }
 
@@ -110,8 +109,8 @@ label {
 }
 
 /* Buttons */
-button[type=button],
-button[type=submit] {
+button[type='button'],
+button[type='submit'] {
   background: var(--bg);
   color: var(--off-white);
   padding-inline: 1rem;
@@ -127,4 +126,29 @@ button[type=submit] {
 
 .box .for-button {
   padding-right: 2.3rem;
+}
+
+@media only screen and (max-width: 1200px) {
+  html {
+    font-size: 8px;
+  }
+
+  .box .for-button {
+    font-size: 1.6rem;
+    padding-right: 2.5rem;
+  }
+}
+
+@media only screen and (max-width: 821px){
+  main.main {
+    width: var(--main-width-sm);
+    margin: 4rem 0;
+  }
+
+  .main.mt {
+    gap: 1.5rem;
+    width: 100%;
+    justify-content: center;
+    padding-inline: 5.6rem;
+  }
 }

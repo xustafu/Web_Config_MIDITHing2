@@ -1,8 +1,7 @@
 .banner {
   display: grid;
   grid-template-columns: 12rem 21rem 2fr repeat(2, 5.5rem) repeat(2, 1fr) 12rem;
-  grid-template-areas:
-    'container-left logo title . live device settings container-right';
+  grid-template-areas: 'container-left logo title . live device settings container-right';
   column-gap: 1rem;
   justify-items: start;
   align-items: center;
@@ -89,7 +88,7 @@
   top: 1.8rem;
 }
 
-.banner .input-wrap li{
+.banner .input-wrap li {
   border-bottom: 2px solid var(--border);
   padding-block: 0.5rem;
   text-indent: 0.6rem;
@@ -103,7 +102,6 @@
   color: var(--list-font);
 }
 
-
 .banner .input-wrap li:last-of-type {
   border: none;
 }
@@ -113,4 +111,64 @@
 .banner .input-wrap a:hover,
 .banner .input-wrap a:focus {
   color: white;
+}
+
+@media only screen and (max-width: 1200px) {
+  .banner {
+    grid-template-columns: 12rem 7rem 26rem 45rem 4rem 22.9rem 10rem 1fr;
+    padding-block: 1.5rem;
+  }
+
+  .banner-logo-mob {
+    display: block;
+    width: 7rem;
+  }
+
+  .banner-logo-gen {
+    display: none;
+  }
+
+  .banner-title {
+    align-self: end;
+    margin-bottom: -8px;
+  }
+
+  .banner-subtitle {
+    display: none;
+  }
+
+  .banner-device-select .selector-label,
+  .banner-settings-select .selector-label {
+    text-indent: 0;
+    padding-inline: 1rem;
+    padding-top: 0.9rem;
+  }
+
+  #banner-device-selector-wrap {
+    width: 67%;
+  }
+
+  #banner-settings-select-wrap {
+    width: 100%;
+  }
+
+  .banner-settings-select label {
+    background-color: green;
+    text-indent: -99999px !important;
+    background: url(../assets/sprites.svg);
+    background-position-y: -31.1rem;
+    background-position-x: -0.8rem;
+    background-size: 59.5rem;
+    background-repeat: no-repeat;
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  .banner {
+    grid-template-columns: 12rem 7rem 26rem 7rem 4rem 22.9rem 10rem 1fr;
+    padding-block: 1.5rem;
+  }
+  .banner-logo-mob {
+    width: 6rem;
+  }
 }

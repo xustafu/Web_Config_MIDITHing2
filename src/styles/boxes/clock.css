@@ -19,3 +19,9 @@
 [id^=clock-div] {
   order: 2;
 }
+
+@media only screen and (max-width: 821px) {
+  [id^=clock-stop] {
+    margin-left: 20rem;
+  }
+}

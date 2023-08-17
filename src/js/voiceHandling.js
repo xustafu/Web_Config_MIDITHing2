@@ -48,7 +48,7 @@ export function newVoiceFunction(port_num, box_id, li) {
  * Adds the function selected to the voice selected
  * @param {String} "port_num" > number of port we are in
  * @param {HTMLElement} "li" > The element that receives the click
- * @param {Boolean} is_automatic > is selected mamually or from sysex
+ * @param {Boolean} is_automatic > is selected maually or from sysex
  */
 export function addFunctionToVoice(port_num, li, is_automatic) {
   port_num = Number(port_num);
@@ -62,8 +62,8 @@ export function addFunctionToVoice(port_num, li, is_automatic) {
     //if manual selection (click), if no voices used, return error
     if (DeviceConfig.voices_port_used.length == 0) {
       showModal(
-        "warning",
-        "There is no voice available to add a function to. Please create a voice first."
+        'warning',
+        'There is no voice available to add a function to. A new voice will be created instead.'
       );
       return;
     }

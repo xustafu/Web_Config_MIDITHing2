@@ -9,10 +9,11 @@
 
 .box-selector-suboptions {
   position: absolute;
-  left: 100%;
+  left: 102%;
   background: var(--dark-grey);
   border: 1px solid;
   width: max-content;
+  border-color: var(--border);
 }
 
 .box-suboptions-item {
@@ -38,6 +39,11 @@
   height: 1.6rem;
 }
 
+.box-func-select-list {
+  width: 90%;
+  right: 1.1rem;
+  border-color: var(--border);
+}
 .box-func-select-list .box-selector-item {
   padding-inline: 1rem;
   padding-block: 0.3rem;

@@ -28,3 +28,18 @@
   transform: translateX(2.2rem);
   background-color: var(--green);
 }
+
+@media only screen and (max-width: 821px) {
+  .slider {
+    top: 2.25rem;
+    left: 1.1rem;
+  }
+
+  .toggle-wrap {
+    min-width: 6.4rem;
+  }
+
+  .toggle-wrap input:checked + .slider-wrap .slider {
+    transform: translateX(2.3rem);
+  }
+}

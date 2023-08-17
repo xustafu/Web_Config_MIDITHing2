@@ -49,3 +49,14 @@
 .toggle-wrap input {
   display: none;
 }
+@media only screen and (max-width: 1200px) {
+
+  .box-body input[data-digits='3'],
+  .conf-window-wrap input[data-digits='3'] {
+    max-width: 5.1rem;
+  }
+
+  .box-num-mult {
+    max-width: 10.4rem;
+  }
+}
