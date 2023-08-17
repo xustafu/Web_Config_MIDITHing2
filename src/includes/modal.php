@@ -13,15 +13,23 @@
       </figure>
     </header>
 
-    <main id="modal-body">
+    <main id="modal-body"
+      class="modal-body">
     </main>
 
     <!-- for ADD TO VOICE modal -->
     <div id="add2voice_voice_selector" class="hidden">
-      <button type="submit" class="round-l" id="add2voice_submit" data-port data-funct>Select Voice</button>
+      <button type="submit"
+        class="round-l"
+        id="add2voice_submit"
+        data-port
+        data-funct>Confirm</button>
     </div>
-  </section>
-  <!-- MODAL BODY END -->
+    <!-- MODAL BODY END -->
+    <!-- MODAL FOOTER -->
+    <footer class="modal-footer">befaco.org/midithing2</footer>
+    <!-- MODAL FOOTER END -->
+    </section>
 
 </div>
 <!-- MODAL END-->

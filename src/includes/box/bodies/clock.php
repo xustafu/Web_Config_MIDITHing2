@@ -55,7 +55,7 @@
 
   <!-- CLOCK STOP -->
   <div class="toggle-wrap" id="clock-stop-<?=$port_id?>">
-    <h3 class="box-body-select-title">Start/Stop</h3>
+    <h3 class="box-body-select-title">St/Sp</h3>
     <label for="clock-stop-input-<?=$port_id?>" class="toggle round-l"></label>
     <input 
       type="checkbox" 

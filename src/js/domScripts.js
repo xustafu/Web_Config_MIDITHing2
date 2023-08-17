@@ -250,10 +250,10 @@ export function arrowsFunc(arrow, is_from_arrows = true) {
 
   // trigger the input change to send the sysex. It doesnt work automagically.
   sendParameterSysex(input);
-  
+
   //set midi ch to all functions in voice
   //setMidiChVoice(input);
-  
+
   if (input.classList.value.includes('redraw_adsr')) {
     const port_num = input.dataset.mtPort;
     const port_id = BoxNames[port_num];

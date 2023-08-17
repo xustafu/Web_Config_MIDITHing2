@@ -6,7 +6,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--dark-grey);
+  background-color: rgba(1, 1, 1, 0.6);
 }
 
 .modal {
@@ -21,12 +21,37 @@
   animation-duration: .4s;
 }
 
+.modal-body {
+  margin-top: 1.2rem;
+  position: relative;
+}
+
+.modal-heading {
+  font-weight: bold;
+  font-size: 1.6rem;
+}
+
+.modal-h2 {
+  margin-top: 2rem;
+  font-size: 2rem;
+  color: white;
+}
+
+.modal-par {
+  color: white;
+}
+
+.modal-footer {
+  position: absolute;
+  bottom: 1rem;
+  right: 2rem;
+}
 @-webkit-keyframes fromTop {
   from {
-      top: -30rem;
-      opacity: 0
+    top: -30rem;
+    opacity: 0
     }
-  
+    
     to {
       top: 0;
       opacity: 1
@@ -35,10 +60,10 @@
 
 @keyframes fromTop {
   from {
-      top: -30rem;
-      opacity: 0
+    top: -30rem;
+    opacity: 0
     }
-  
+    
     to {
       top: 0;
       opacity: 1
@@ -51,11 +76,20 @@
 }
 
 .modal div * {
-  display: block;
-  margin-top: 1rem;
+  display: inline-block;
+    margin-left: 1rem;
+    padding: 1.1rem;
+    border-radius: 10px;
 }
 
 .modal select {
-  padding: .2rem;
-  background: var(--off-white);
+  padding: 1.1rem;
+    background: var(--label-title);
+    border-radius: 10px;
+    font-weight: bold;
+    margin-top: 2rem;
+  }
+  
+  .modal button {
+    color: white;
 }
