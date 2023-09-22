@@ -136,7 +136,7 @@ const GENDIGINPUT = 26; // Generic functions for digital input
 const MIDIOTHERFUNC = 27;
 
 DEF_FUNCT_VALUES = {
-  [MIDINOFUNCTION] : { volts: MODE10V, min: 0, max: 120, midich: 1, param: 0},
+  [MIDINOFUNCTION] : { volts: MODE10V, min: 0, max: 127, midich: 1, param: 0},
   [MIDIVOICENOTE]: { volts: MODE10V,  min: 0, max: 120, midich: 1, param: 0},
   [MIDIVOICEVEL]: { volts: MODE10V,   min: 0, max: 120, midich: 1, param: 0},
   [MIDIVOICEGATE]: { volts: MODE10V,  min: 0, max: 120, midich: 1, param: 0},

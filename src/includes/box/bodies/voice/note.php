@@ -29,7 +29,7 @@
   <div class="box-num-single" id="note-glide-time-<?= $port_id ?>">
     <label class="box-num-single-label block" for="note-glide-time-<?= $port_id ?>">Glide Time ms</label>
     <div class="input-number-wrap round-sm">
-      <input class="box-num-input round-sm" type="text" value="1000" data-mt-type="VOICE" data-mt-port="<?= $i ?>" data-mt-parameter="PORTAMENTOTime" name="note-glide-time-input-<?= $port_id ?>" id="note-glide-time-input-<?= $port_id ?>" data-type="number" data-min="1" data-max="9999" data-digits="4" />
+      <input class="box-num-input round-sm" type="text" value="0" data-mt-type="VOICE" data-mt-port="<?= $i ?>" data-mt-parameter="PORTAMENTOTime" name="note-glide-time-input-<?= $port_id ?>" id="note-glide-time-input-<?= $port_id ?>" data-type="number" data-min="1" data-max="9999" data-digits="4" />
       <span class="arrow-up"></span>
       <span class="arrow-down"></span>
     </div>

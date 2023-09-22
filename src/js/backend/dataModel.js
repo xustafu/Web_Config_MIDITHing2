@@ -12,7 +12,7 @@ class PortConfig {
     this.midi_ch = midi_ch;
     this.param = param;
     this.clip_min = 0;
-    this.clip_max = 127;
+    this.clip_max = 120;
     this.delay = 0;
     this.pulse_time = 10;
     this.period = 1136;
@@ -53,7 +53,7 @@ class VoiceConfig {
     this.lfo_midi_clk_div = 24;
     this.lfo_max_level = 20;
     this.lfo_pre_delay = 0;
-    this.portamento_time = 1000;
+    this.portamento_time = 0;
     this.portamento_type = 0;
     this.adsr_retrig_mode = 0;
     this.adsr_affect_osc = true;
