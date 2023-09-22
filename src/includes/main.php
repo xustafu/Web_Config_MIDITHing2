@@ -5,7 +5,7 @@
   <!--HUGO: atributo data-midithing-type de inputs: los valores que se pasan al módulo por sysex pueden ser
   de tres tipos: PORT / VOICE / MIDI. Necesitamos saber cual para construir el correspondiente sysex -->
   <?php
-  $boxnames = ["A1", "B1", "C1", "A2", "B2", "C2", "A3", "B3", "C3", "A4", "B4", "C4"];
+  $boxnames = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
 
   for ($i = 0; $i < sizeof($boxnames); $i++) { 
     
