@@ -6,7 +6,7 @@
   display: block;
   width: 100%;
   background: transparent;
-  border: 1px solid;
+  border: 1px solid var(--border);
   font-size: 2rem;
   text-align: center;
   padding-block: .3rem;

@@ -1,8 +1,10 @@
-[id^=lfo-body-] {
+[id^=lfo-body] {
   display: grid;
-  grid-template-columns: repeat(12 1fr);
-  grid-template-rows: repeat(3 1fr);
+  /* grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(3, 1fr); */
   row-gap: 1rem;
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: 2rem 11rem 10.5rem;
 }
 
 [id^=lfo-voice] {
@@ -14,8 +16,7 @@
 }
 
 [id^=lfo-clock-mult] {
-  grid-column-start: 4;
-  grid-column-end: 6;
+  grid-column-start: 3;
   grid-row-start: 3;
   grid-row-end: 3;
 }
@@ -64,15 +65,24 @@
 }
 
 [id^=lfo-body] button[data-css=shape] {
-  grid-column-start: 4;
-  grid-column-end: 6;
+  grid-column-start: 3;
   grid-row-start: 1;
   grid-row-end: 1;
 }
 
 [id^=lfo-body] button[data-css=options] {
-  grid-column-start: 4;
-  grid-column-end: 6;
+  grid-column-start: 3;
   grid-row-start: 2;
   grid-row-end: 2;
+}
+
+@media only screen and (max-width: 668px) {
+  [id^=lfo-body] {
+    grid-template-columns: 3rem 18rem  10rem;
+    row-gap: 2rem;
+  }
+
+  [id^=lfo-com-clock] {
+    top: 4.1rem;
+  }
 }

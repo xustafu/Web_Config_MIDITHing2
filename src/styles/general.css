@@ -128,7 +128,7 @@ button[type='submit'] {
   padding-right: 2.3rem;
 }
 
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 1181px) {
   html {
     font-size: 8px;
   }
@@ -136,6 +136,10 @@ button[type='submit'] {
   .box .for-button {
     font-size: 1.6rem;
     padding-right: 2.5rem;
+  }
+
+  .box .back-button {
+    font-size: 1.6rem;
   }
 }
 
@@ -150,5 +154,19 @@ button[type='submit'] {
     width: 100%;
     justify-content: center;
     padding-inline: 5.6rem;
+  }
+}
+
+@media only screen and (max-width: 668px) {
+  html {
+    font-size: 6.5px;
+  }
+
+  body {
+    font-size: 1.6rem;
+  }
+
+   .box .for-button, .box .back-button {
+    font-size: 1.4rem;
   }
 }

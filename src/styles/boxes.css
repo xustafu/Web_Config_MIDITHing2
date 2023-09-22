@@ -7,7 +7,11 @@
 @import url('./common/labels.css');
 @import url('./common/sliders.css');
 @import url('./boxes/lfo.css');
+@import url('./boxes/adsr.css');
+@import url('./boxes/gate.css');
 @import url('./boxes/note.css');
+@import url('./boxes/drum.css');
+@import url('./boxes/velocity.css');
 @import url('./boxes/lfo-conf.css');
 @import url('./boxes/clock.css');
 @import url('./boxes/nrpn.css');

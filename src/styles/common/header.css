@@ -1,143 +1,151 @@
-  .box-header {
-    padding-top: 0.5rem;
-  }
-  
-  .box-header-title {
-    position: relative;
-    border: 2px solid var(--border);
-    padding-block: 1rem;
-    font-size: 2rem;
-  }
-  
-  .box-header-subtitle {
-    text-transform: uppercase;
-    font-size: 1.2rem;
-    color: var(--label-title);
-  }
-  
-  .box-header .port-color-drop-arrow {
-    content: '';
-    border: 0.8rem solid transparent;
-    border-bottom-color: var(--border);
-    border-right-color: var(--border);
-    border-bottom-right-radius: 0.6rem;
-    bottom: -0.2rem;
-    right: -0.2rem;
-    width: 0;
-  }
-  
-  .box-header-field-v,
-  .box-header-field-mc {
-    font-size: 1rem;
-    position: relative;
-  }
-  
-  .box-header-field-v label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .box-header-field-v label::after {
-    background: url(../../assets/sprites.svg) no-repeat 3.6rem 0rem;
-    background-size: 17.5rem;
-  }
-  
-  .box-header .box-selector-label,
-  .box-header .box-num-field-input {
-    background-color: var(--dropdown-label-bg);
-    padding-right: 2.2rem;
-    border: 0;
-    height: 2.49rem;
-    font-size: 1.2rem;
-    text-align: center;
-  }
-  
-  .box-header .box-num-field-input {
-    padding-right: 2.6rem;
-  }
-  
+.box-header {
+  padding-top: 0.5rem;
+}
+
+.box-header-title {
+  position: relative;
+  border: 2px solid var(--border);
+  padding-block: 1rem;
+  font-size: 2rem;
+  color: white;
+}
+
+.box-header-subtitle {
+  text-transform: uppercase;
+  font-size: 1.2rem;
+  color: var(--label-title);
+}
+
+.box-header .port-color-drop-arrow {
+  content: '';
+  border: 0.8rem solid transparent;
+  border-bottom-color: var(--border);
+  border-right-color: var(--border);
+  border-bottom-right-radius: 0.6rem;
+  bottom: -0.2rem;
+  right: -0.2rem;
+  width: 0;
+}
+
+.box-header-field-v,
+.box-header-field-mc {
+  font-size: 1rem;
+  position: relative;
+}
+
+.box-header-field-v label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.box-header-field-v label::after {
+  background: url(../../assets/sprites.svg) no-repeat 3.6rem 0rem;
+  background-size: 17.5rem;
+}
+
+.box-header .box-selector-label,
+.box-header .box-num-field-input {
+  background-color: var(--dropdown-label-bg);
+  padding-right: 2.2rem;
+  border: 0;
+  height: 2.49rem;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.box-header .box-num-field-input {
+  padding-right: 2.6rem;
+}
+
+.box-header .box-selector-label.active::after {
+  background-position-y: -3rem;
+}
+
+.box-header-field-v .selector-options {
+  background-color: var(--grey);
+  text-indent: 0.5rem;
+  border: 0;
+}
+
+.volts-select-list {
+  top: 4.3rem !important;
+  text-indent: 0.8rem;
+  border: 1px solid var(--off-white);
+  border-radius: 6px;
+  background: var(--dark-grey);
+  z-index: 99;
+}
+
+.box-learn-button {
+  height: 100%;
+  background-color: var(--grey3);
+  border: 0;
+  color: white;
+  font-size: 1.8rem;
+}
+
+ul[class*='color-selector-options']:not(ul[class*='hidden']) {
+  position: absolute;
+  z-index: 999;
+}
+
+.box-port-color[data-color='#FF0000'] {
+  background-color: #ff0000;
+}
+
+.box-port-color[data-color='#FF8000'] {
+  background-color: #ff8000;
+}
+
+.box-port-color[data-color='#EEFF00'] {
+  background-color: #eeff00;
+}
+
+.box-port-color[data-color='#7FFF00'] {
+  background-color: #7fff00;
+}
+
+.box-port-color[data-color='#25A200'] {
+  background-color: #25a200;
+}
+
+.box-port-color[data-color='#00DCFF'] {
+  background-color: #00dcff;
+}
+
+.box-port-color[data-color='#005DFF'] {
+  background-color: #005dff;
+}
+
+.box-port-color[data-color='#0011A7'] {
+  background-color: #0011a7;
+}
+
+.box-port-color[data-color='#690088'] {
+  background-color: #690088;
+}
+
+.box-port-color[data-color='#FF0090'] {
+  background-color: #ff0090;
+}
+
+.box-port-color[data-color='#D700FF'] {
+  background-color: #d700ff;
+}
+
+.box-port-color[data-color='#FF8ACC'] {
+  background-color: #ff8acc;
+}
+
+@media screen and (max-width: 821px) {
   .box-header .box-selector-label.active::after {
-    background-position-y: -3rem;
+    background-position-y: -3.2rem;
   }
-  
-  .box-header-field-v .selector-options {
-    background-color: var(--grey);
-    text-indent: 0.5rem;
-    border: 0;
+}
+
+@media screen and (max-width: 668px) {
+  .box-header-title {
+    font-size: 2.3rem;
   }
-  
-  .volts-select-list {
-    top: 4.3rem !important;
-    text-indent: 0.8rem;
-    border: 1px solid var(--off-white);
-    border-radius: 6px;
-    background: var(--dark-grey);
-    z-index: 99;
-  }
-  
-  .box-learn-button {
-    height: 100%;
-    background-color: var(--grey);
-    border: 0;
-    color: white;
-  }
-  
-  ul[class*='color-selector-options']:not(ul[class*='hidden']) {
-    position: absolute;
-    z-index: 999;
-  }
-  
-  .box-port-color[data-color='#FF0000'] {
-    background-color: #ff0000;
-  }
-  
-  .box-port-color[data-color='#FF8000'] {
-    background-color: #ff8000;
-  }
-  
-  .box-port-color[data-color='#EEFF00'] {
-    background-color: #eeff00;
-  }
-  
-  .box-port-color[data-color='#7FFF00'] {
-    background-color: #7fff00;
-  }
-  
-  .box-port-color[data-color='#25A200'] {
-    background-color: #25a200;
-  }
-  
-  .box-port-color[data-color='#00DCFF'] {
-    background-color: #00dcff;
-  }
-  
-  .box-port-color[data-color='#005DFF'] {
-    background-color: #005dff;
-  }
-  
-  .box-port-color[data-color='#0011A7'] {
-    background-color: #0011a7;
-  }
-  
-  .box-port-color[data-color='#690088'] {
-    background-color: #690088;
-  }
-  
-  .box-port-color[data-color='#FF0090'] {
-    background-color: #ff0090;
-  }
-  
-  .box-port-color[data-color='#D700FF'] {
-    background-color: #d700ff;
-  }
-  
-  .box-port-color[data-color='#FF8ACC'] {
-    background-color: #ff8acc;
-  }
-  
-  @media screen and (max-width: 821px) {
-    .box-header .box-selector-label.active::after {
-      background-position-y: -3.2rem;
-    }
-  }
+}

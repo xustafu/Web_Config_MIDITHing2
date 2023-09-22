@@ -113,7 +113,7 @@
   color: white;
 }
 
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 1181px) {
   .banner {
     grid-template-columns: 12rem 7rem 26rem 45rem 4rem 22.9rem 10rem 1fr;
     padding-block: 1.5rem;
@@ -163,12 +163,41 @@
   }
 }
 
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 821px) {
   .banner {
-    grid-template-columns: 12rem 7rem 26rem 7rem 4rem 22.9rem 10rem 1fr;
+    grid-template-columns: 12rem 7rem 23rem 12rem 5rem 22rem 9.8rem 1fr;
     padding-block: 1.5rem;
   }
   .banner-logo-mob {
     width: 6rem;
+  }
+}
+
+@media only screen and (max-width: 668px) {
+  #title {
+    text-indent: -999rem;
+    display: block;
+  }
+
+  .banner {
+    grid-template-columns: 3.5rem 6.4rem repeat(2, 22rem) 4.5rem 29.4rem 7rem 1fr;
+    padding-block: 0.8rem;
+    min-height: 0;
+  }
+
+  .banner-logo-mob {
+    width: 6.1rem;
+  }
+
+  .live-button svg {
+    width: 4.4rem;
+  }
+
+  .banner-settings-select label {
+    border: none;
+  }
+
+  .banner-settings-select label::after {
+    display: none;
   }
 }

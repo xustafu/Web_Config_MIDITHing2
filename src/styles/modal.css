@@ -93,3 +93,21 @@
   .modal button {
     color: white;
 }
+
+@media only screen and (max-width: 668px) {
+  .modal {
+    width: 60vw;
+  }
+  
+  .modal-heading {
+    font-size: 1.7rem;
+  }
+  
+  .modal-par {
+    font-size: 1.5rem;
+  }
+
+  .modal-footer {
+    font-size: 1.5rem;
+  }
+}

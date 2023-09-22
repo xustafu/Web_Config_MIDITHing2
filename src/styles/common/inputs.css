@@ -49,14 +49,24 @@
 .toggle-wrap input {
   display: none;
 }
-@media only screen and (max-width: 1200px) {
-
+@media only screen and (max-width: 1181px) {
+  
   .box-body input[data-digits='3'],
   .conf-window-wrap input[data-digits='3'] {
     max-width: 5.1rem;
+    font-size: 1.3rem;
   }
-
+  
   .box-num-mult {
     max-width: 10.4rem;
+  }
+}
+@media only screen and (max-width: 668px) {
+  .box-num-input {
+    font-size: 1.5rem;
+  }
+
+  .box-body input[data-type='number'], .conf-window-wrap input[data-type='number'] {
+    padding: .3rem;
   }
 }

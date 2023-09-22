@@ -83,9 +83,9 @@ canvas.flotr-overlay {
   background-position-y: -8.7rem;
 }
 
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 1181px) {
   .box-body[id^='adsr-conf'] {
-    row-gap: 2rem;
+    row-gap: 1.3rem;
   }
 
   [id^='adsr-conf'].conf-window-wrap {
@@ -138,5 +138,29 @@ canvas.flotr-overlay {
 
   .box-body[id^='adsr-conf'] [id^='adsr-conf-note-input'] {
     padding-block: 0.6rem;
+  }
+}
+
+@media only screen and (max-width: 668px) {
+  [id^='adsr-conf'].conf-window-wrap {
+    grid-template-columns: 30rem;
+    grid-template-rows: 12.6rem;
+  }
+
+  [class^='adsr-conf-graph'] {
+    height: 11.6rem;
+  }
+
+  .box-body[id^='adsr-conf'] {
+    grid-template-rows: repeat(2, 7.8rem);
+  }
+
+  .box-body .adsr-conf-graph,
+  .box-body[id^='adsr-conf'] {
+    width: 30rem;
+  }
+
+  .box-body[id^='adsr-conf'] {
+    row-gap: .9rem;
   }
 }

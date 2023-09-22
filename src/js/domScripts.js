@@ -653,9 +653,15 @@ export function setLabelWidths() {
 
     const parent = getParent(list, true, 'input-wrap');
     const listFontSize = parseInt(window.getComputedStyle(list, null).fontSize);
+    const viewPortWidth = window.innerWidth;
+    let newWidth;
 
-    const newWidth = `${longestChild.innerText.length / (listFontSize / 10) + 1.75}rem`;
-
+    if (viewPortWidth > 373 && viewPortWidth < 668) {
+      newWidth = `${longestChild.innerText.length / (listFontSize / 10) + 1}rem`;
+    } else if (viewPortWidth >= 668 && viewPortWidth < 1181) {
+      newWidth = `${longestChild.innerText.length / (listFontSize / 10) + 1.75}rem`;
+    }
+    
     q(`#${parent.id} .box-selector-label`).style.width = newWidth;
   });
 }

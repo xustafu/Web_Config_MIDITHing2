@@ -1,6 +1,6 @@
 :root {
   /* TODO Tree shaking */
-  --box-border: #232323;
+  --box-border: #434242;
   --heading-white: white;
   --learn-inactive: #808080;
   --learn-active: #82dc80;
@@ -63,5 +63,5 @@
   --box-width: 26.5rem;
     --box-height: 26rem;
     --main-width: 126rem;
-    /* --main-width-sm: 100rem; */
+  /* --main-width-sm: 100rem; */
 }

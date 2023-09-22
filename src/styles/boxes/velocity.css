@@ -1,0 +1,9 @@
+@media only screen and (max-width: 821px) {
+  [id^='velocity-body'] .slider {
+    left: 2.1rem;
+  }
+
+  [id^='velocity-body'] .toggle-wrap input:checked + .slider-wrap .slider {
+    transform: translateX(2rem);
+  }
+}

@@ -1,0 +1,16 @@
+@media only screen and (max-width: 1181px) {
+  [id^='drum-body'] .slider {
+    top: 2.1rem;
+  }
+}
+
+@media only screen and (max-width: 821px) {
+  [id^='drum-body'] .toggle-wrap input:checked + .slider-wrap .slider {
+    transform: translateX(2rem);
+  }
+
+  [id^='drum-body'] .slider {
+    top: 2.3rem;
+    left: 2rem;
+  }
+}

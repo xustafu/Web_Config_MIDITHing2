@@ -187,16 +187,22 @@ label[class^='box-num'] {
   color: var(--grey) !important;
 }
 
-@media screen and (max-width: 821px) {
-   .box-body label, .box-body h3, .conf-window-wrap label, .conf-window-wrap h3 {
-     font-size: 1.4rem;
+@media only screen and (max-width: 1181px) {
+  .box-body {
+    row-gap: 1.25rem;
+  }
+}
+
+@media only screen and (max-width: 821px) {
+  .box-body label, .box-body h3, .conf-window-wrap label, .conf-window-wrap h3 {
+    font-size: 1.4rem;
    }
-  
+   
   .box {
     --box-width: 30rem;
     --box-height: 30rem;
   }
-
+  
   .box-header {
     grid-template-columns: repeat(4, 6.2rem);
   }
@@ -211,5 +217,13 @@ label[class^='box-num'] {
   }
   .box-body .input-wrap .box-selector-label.active::after {
     background-position-y: -3.6rem;
+  }
+}
+
+
+@media screen and (max-width: 668px) { 
+  .box {
+    --box-width: 34rem;
+    --box-height: 34rem;
   }
 }

@@ -6,17 +6,18 @@
   min-width: 6rem;
 }
 
-.toggle {
+.box-body label.toggle {
   width: 4.5rem;
+  height: 2.2rem;
   display: inline-block;
-  height: 2.1rem;
   cursor: pointer;
   background: var(--grey2);
+  font-size: 1rem;
 }
 
 .slider {
   position: absolute;
-  top: 1.93rem;
+  top: 2rem;
   left: 1rem;
   width: 1.8rem;
   height: 1.8rem;
@@ -25,21 +26,42 @@
   transition: all 0.4s linear;
 }
 .toggle-wrap input:checked + .slider-wrap .slider {
-  transform: translateX(2.2rem);
+  transform: translateX(2.1rem);
   background-color: var(--green);
 }
 
-@media only screen and (max-width: 821px) {
-  .slider {
-    top: 2.25rem;
-    left: 1.1rem;
+@media only screen and (max-width: 1181px) {
+  .box-body label.toggle {
+    height: 2.3rem;
   }
+}
 
+@media only screen and (max-width: 821px) {
   .toggle-wrap {
-    min-width: 6.4rem;
+    width: 8rem;
+  }
+  
+  .slider {
+    top: 2.4rem;
+    left: 1.8rem;
   }
 
   .toggle-wrap input:checked + .slider-wrap .slider {
     transform: translateX(2.3rem);
+  }
+}
+
+@media only screen and (max-width: 668px) {
+  .slider {
+    top: 2.35rem;
+    left: 1.1rem;
+  }
+  
+  .toggle {
+    width: 6.1rem;
+  }
+
+  .toggle-wrap input:checked + .slider-wrap .slider {
+    transform: translateX(2.1rem);
   }
 }
