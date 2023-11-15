@@ -1,5 +1,64 @@
 .box-header {
-  padding-top: 0.5rem;
+  /* padding: 1rem 0.5rem 0; */
+  grid-area: header;
+  display: inline-grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-areas: 'port volts midi learn';
+  gap: 0.75rem;
+  justify-items: center;
+  align-items: center;
+  border-radius: 13px;
+  /* background: var(--graph-bg); */
+}
+
+.box-header .box-header-title,
+.box-header .box-header-field-v,
+.box-header .box-header-field-mc,
+.box-header .box-learn-button {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  justify-self: stretch;
+}
+
+.box-header-title {
+  grid-area: 'port';
+  /* min-width: 6rem; */
+  justify-self: stretch;
+}
+
+.box-header-field-v {
+  grid-area: 'volts';
+  /* max-width: 6rem; */
+}
+
+.box-header-field-mc {
+  grid-area: 'midi';
+  /* max-width: 4rem; */
+}
+
+.box-learn-button {
+  grid-area: 'learn';
+}
+
+/* Hack needed to get firefox to do 
+the same as Chrome */
+.box-header-field-v,
+.box-header-field-mc,
+.box-learn-button,
+.box-header-field-v *,
+.box-header-field-mc *,
+.box-learn-button * {
+  width: 100%;
+}
+
+.box-header input {
+  padding-block: 0.7rem;
+  background-color: var(--grey);
+  color: var(--off-white);
+  border: 0;
+  text-indent: 0.5rem;
 }
 
 .box-header-title {
@@ -139,13 +198,94 @@ ul[class*='color-selector-options']:not(ul[class*='hidden']) {
 }
 
 @media screen and (max-width: 821px) {
-  .box-header .box-selector-label.active::after {
+  .box-header {
     background-position-y: -3.2rem;
   }
 }
 
 @media screen and (max-width: 668px) {
-  .box-header-title {
-    font-size: 2.3rem;
+  .box-header {
+    grid-template-columns: repeat(4, 11.4rem);
+    height: max-content;
+    padding-top: 0.8rem;
+    margin-bottom: 0.4rem;
   }
+
+  .box-header-title {
+    font-size: 3.9rem;
+    padding-block: 2.3rem;
+  }
+
+  .box-header-subtitle {
+    font-size: 1.9rem;
+  }
+
+  .box-header .box-selector-label,
+  .box-header .box-num-field-input {
+    height: 6.49rem;
+    font-size: 2.6rem;
+    padding-right: 4.8rem;
+  }
+
+  .box-learn-button {
+    height: 12rem;
+    font-size: 3rem;
+  }
+
+  .box-header span[class*='arrow'] {
+    width: 4.7rem;
+    height: 6.4rem;
+    background-size: 45.3rem;
+    background-position-x: 0;
+    background-position-y: 0;
+  }
+
+  ul[class*='color-selector-options']:not(.hidden) {
+    width: 100%;
+  }
+
+  .box-header .box-selector-label.active::after {
+    background-position-y: -7.6rem;
+  }
+
+  .box-header li.box-selector-item {
+    font-size: 2rem;
+  }
+}
+
+/* 
+*
+* MIDI THINGIE
+*
+*/
+
+.mt2 .box-header {
+  width: var(--box-int-width);
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.mt2 .box-header-title {
+  font-size: 1.8rem;
+  padding-inline: 0;
+  padding-block: 1rem;
+  width: 5.1rem;
+}
+
+.mt2 .box-header-subtitle {
+  font-size: 1rem;
+}
+
+.mt2 .box-header .box-selector-label,
+.mt2 .box-header .box-num-field-input {
+  padding-right: 2.2rem;
+  font-size: 1rem;
+  padding-left: 0.3rem;
+}
+
+.mt2 .box-header .box-selector-label.active::after {
+  background-position-y: -3.2rem;
+}
+
+.mt2 .box-header .box-learn-button {
+  font-size: 1.3rem;
 }

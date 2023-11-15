@@ -6,8 +6,39 @@
   [id^='adsr-body'] .slider {
     left: 2.1rem;
   }
-  
+
   [id^='adsr-body'] .toggle-wrap input:checked + .slider-wrap .slider {
     transform: translateX(2.1rem);
   }
+}
+
+@media screen and (max-width: 668px) {
+  [id^='adsr-body'] .toggle-wrap {
+    width: 12rem;
+  }
+
+  [id^='adsr-body'] .slider {
+    left: 2.9rem;
+  }
+
+  [id^='adsr-body'] .toggle-wrap input:checked + .slider-wrap .slider {
+    transform: translateX(3.4rem);
+  }
+
+  .box-body[id^='adsr'] span[class='arrow-for'] {
+    top: 0.3rem;
+    background-position-x: -21.1rem !important;
+    background-position-y: 0.7rem !important;
+    background-size: 27.1rem;
+  }
+}
+ 
+/* 
+*
+* MIDI THINGIE
+*
+*/
+.mt2 [id^='adsr-body'] .slider {
+  left: 1.5rem;
+  top: 1.75rem;
 }

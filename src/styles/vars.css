@@ -1,23 +1,24 @@
 :root {
   /* TODO Tree shaking */
-  --box-border: #434242;
+  --box-border: #181818;
   --heading-white: white;
   --learn-inactive: #808080;
   --learn-active: #82dc80;
   --dropdown-label-bg: #4d4d4d;
   --label-title: #ccc;
   --label-title: #d2d2d2;
-  --off-white: #b2b2b2;
+  --off-white: #d9d6d6;
+  --list-white: #ececec;
   --arrow-bg: var(
   --grey3);
-  --list-bg: var(
-  --bg);
+  --list-bg: #444444;
   --list-font: var(
   --grey3);
-  --border: var(
-  --off-white);
-  --bg: #242424;
-  --box-bg: #262626;
+  --border: #999999;
+  --light-border: #d0cfcf;
+  /* --bg: #242424; */
+  --bg: #231300;
+  --box-bg: #1b1207;
   --graph-line: var(
   --grey);
   --graph-bg: #191919;
@@ -26,7 +27,7 @@
   --toggle-active: #06b900;
   --transparent: transparent;
   --grey: #676767;
-  --grey2: #666;
+  --grey2: #6f6f6f;
   --grey3: #999;
   --body-grey: #333;
   --dark-grey: #252525;
@@ -61,7 +62,7 @@
   --label-arrow-width: 1.8rem;
   --label-arrow-height: 2.6rem;
   --box-width: 26.5rem;
-    --box-height: 26rem;
-    --main-width: 126rem;
+  --box-height: 26rem;
+  --main-width: 126rem;
   /* --main-width-sm: 100rem; */
 }

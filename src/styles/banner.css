@@ -115,7 +115,7 @@
 
 @media only screen and (max-width: 1181px) {
   .banner {
-    grid-template-columns: 12rem 7rem 26rem 45rem 4rem 22.9rem 10rem 1fr;
+    grid-template-columns: 12rem 7rem 26rem 3fr 4rem 22.9rem 10rem 1fr;
     padding-block: 1.5rem;
   }
 
@@ -124,13 +124,13 @@
     width: 7rem;
   }
 
-  .banner-logo-gen {
+  .banner-logo-gen:not(.modal-logo) {
     display: none;
   }
 
   .banner-title {
     align-self: end;
-    margin-bottom: -8px;
+    margin-bottom: -6px;
   }
 
   .banner-subtitle {
@@ -144,8 +144,13 @@
     padding-top: 0.9rem;
   }
 
+  .banner-device-select .selector-label::after,
+  .banner-settings-select .selector-label::after {
+    right: 1rem;
+  }
+
   #banner-device-selector-wrap {
-    width: 67%;
+    width: 61%;
   }
 
   #banner-settings-select-wrap {
@@ -171,6 +176,25 @@
   .banner-logo-mob {
     width: 6rem;
   }
+
+  .banner-device-select .selector-label,
+  .banner-settings-select .selector-label {
+    font-size: 1.6rem;
+    padding-block: 0.5rem;
+  }
+
+  .banner-device-select .selector-label::after,
+  .banner-settings-select .selector-label::after {
+    border-right-width: 6px;
+    border-left-width: 6px;
+    top: 1.4rem;
+  }
+
+  .banner-settings-select label {
+    background-position-y: -25rem;
+    background-position-x: 0rem;
+    background-size: 48rem;
+  }
 }
 
 @media only screen and (max-width: 668px) {
@@ -180,24 +204,59 @@
   }
 
   .banner {
-    grid-template-columns: 3.5rem 6.4rem repeat(2, 22rem) 4.5rem 29.4rem 7rem 1fr;
-    padding-block: 0.8rem;
+    grid-template-columns: 1fr max-content 0 1fr repeat(3, max-content) 1fr;
+    padding-block: 1.1rem;
     min-height: 0;
   }
 
   .banner-logo-mob {
-    width: 6.1rem;
+    width: 8.6rem;
   }
 
   .live-button svg {
-    width: 4.4rem;
+    width: 6rem;
   }
 
-  .banner-settings-select label {
+  #banner-device-selector-wrap {
+    width: 16rem;
+    margin-right: 16rem;
+  }
+  #banner-settings-select-wrap {
+    width: 10rem;
+  }
+
+  .banner-device-select .selector-label,
+  .banner-settings-select .selector-label {
+    font-size: 1.8rem;
+    padding-block: 0.8rem;
+  }
+
+  .banner-device-select .selector-label::after {
+    border-right-width: 4px;
+    border-left-width: 4px;
+  }
+
+  #banner-settings-select-wrap {
+    width: 6rem;
+  }
+
+  .banner-settings-select .selector-label {
+    border: none;
+    background-size: 59rem;
+    background-position-x: -1rem;
+    background-position-y: -30.8rem;
+    padding: 0;
+    width: 8rem;
+    height: 5rem;
+  }
+
+  .banner-settings-select .selector-label::after {
     border: none;
   }
 
-  .banner-settings-select label::after {
-    display: none;
+  .banner .input-wrap a, 
+  .banner .input-wrap [data-func],
+  .banner .input-wrap .settings {
+    font-size: 2.3rem;
   }
 }

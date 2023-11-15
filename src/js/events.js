@@ -21,7 +21,7 @@ import { drawAllADSR } from './backend/adsr.js';
 /**
  * Paint the list of available colours under the port name
  */
-window.addEventListener('DOMContentLoaded', domInit());
+document.addEventListener('DOMContentLoaded', domInit());
 window.addEventListener('resize', () => {
   setLabelWidths();
   const activeADSRWrappers = qA('section[id^=adsr-conf][class^=conf-window]:not(.hidden)');

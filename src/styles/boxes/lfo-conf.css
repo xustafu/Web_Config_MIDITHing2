@@ -48,7 +48,7 @@ div[id^='lfo-quad'] {
 .shapes-globals {
   margin-top: 1.7rem;
   display: flex;
-  gap: 2.4rem;
+  gap: 0.8rem;
   margin-bottom: 1rem;
 }
 
@@ -107,20 +107,76 @@ div[id^='lfo-quad'] {
 
 @media only screen and (max-width: 668px) {
   .wave-shapes-wrap {
-    --q-height: 12rem;
-    grid-template-columns: repeat(4, 7.6rem);
+    --q-height: 15rem;
+    grid-template-columns: repeat(4, 1fr);
   }
 
   .wave-shapes-wrap img {
-    width: 7.5rem;
+    width: 100%;
   }
 
   div[id^='lfo-quad'] {
-    width: 6.2rem;
+    width: 11.6rem;
   }
 
   .shapes-globals {
     margin-top: 3rem;
     justify-content: space-around;
   }
+
+  .conf-window-wrap .box-selector-label[for^='lfo-quad'] {
+    height: 6.3rem;
+    padding: 0.8rem;
+  }
+
+  .input-wrap[id*='global'] {
+  }
+}
+
+/* 
+*
+* MIDI THINGIE
+*
+*/
+
+.mt2 .wave-shapes-wrap {
+  --q-height: 5.5rem;
+  grid-template-columns: repeat(4, 4.9rem);
+  grid-template-rows: 8.6rem;
+}
+
+.mt2 img {
+  width: 100%;
+  height: auto;
+}
+
+.mt2 .shapes-selectors-wrap {
+  margin-top: 3.5rem;
+  grid-template-columns: repeat(4, max-content);
+  column-gap: 0.4rem;
+}
+
+.mt2 div[id^='lfo-quad'] {
+  width: 4.6rem;
+}
+
+.mt2 .conf-window-wrap .box-selector-label[for^='lfo-quad'] {
+  padding: 0.2rem;
+  padding-right: 2rem;
+}
+
+.mt2 .conf-window-wrap .shapes-globals .box-selector-label[for*='global'] {
+  width: 5.6rem;
+  height: 2.5rem;
+  padding: 0.4rem;
+  padding-right: 2.2rem;
+}
+
+.mt2 .conf-window-wrap .shapes-globals .box-num-single-label,
+.mt2 .conf-window-wrap .shapes-globals .box-num-input {
+  font-size: 0.9rem;
+}
+
+.mt2 .conf-window-wrap .back-button {
+  font-size: 1.2rem;
 }

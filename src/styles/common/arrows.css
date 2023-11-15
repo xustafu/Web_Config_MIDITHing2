@@ -87,3 +87,78 @@ span[class^='arrow']:focus {
     background-position-y: -1px !important;
   }
 }
+
+@media only screen and (max-width: 668px) {
+  .box-header .box-port-color-selector-options + span.port-color-drop-arrow {
+    width: 2rem;
+    height: 2rem;
+    background: none;
+    border-bottom-width: 7px;
+    border-left-width: 6px;
+    left: 8.6rem;
+    bottom: -0.4rem;
+  }
+
+  .box-body span[class^='arrow'],
+  .conf-window-wrap span[class^='arrow'] {
+    width: 1.7rem;
+    background-position-x: -3.4rem;
+    height: 1.6rem;
+    background-size: 21.8rem;
+  }
+
+  .box-body span.arrow-down,
+  .conf-window-wrap span.arrow-down {
+    background-position-y: -4.4rem;
+    top: 1.2rem;
+  }
+
+  .arrow-for,
+  .arrow-back {
+    background-position: -14rem 0.9rem !important;
+    width: 2.6rem !important;
+    height: 3.9rem !important;
+    top: 0;
+  }
+
+  .arrow-back {
+    background-position-x: -16.7rem !important;
+  }
+
+  .box-body span[class^='arrow']:hover,
+  .box-body span[class^='arrow']:active,
+  .box-body span[class^='arrow']:focus,
+  .conf-window-wrap span[class^='arrow']:hover,
+  .conf-window-wrap span[class^='arrow']:active,
+  .conf-window-wrap span[class^='arrow']:focus {
+    background-position-x: -5.52rem;
+  }
+}
+
+/* 
+*
+* MIDI THINGIE
+*
+*/
+
+.mt2 span.arrow-down {
+  background-position-y: -3rem;
+  top: 2.375rem;
+  height: 1.5rem;
+}
+
+.mt2 .box-body span.arrow-down,
+.mt2 .conf-window-wrap span.arrow-down {
+  background-position-y: -4rem;
+  top: 0.8rem;
+  background-position-x: -3.2rem;
+}
+
+.mt2 .box-body span[class^='arrow']:hover,
+.mt2 .box-body span[class^='arrow']:active,
+.mt2 .box-body span[class^='arrow']:focus,
+.mt2 .conf-window-wrap span[class^='arrow']:hover,
+.mt2 .conf-window-wrap span[class^='arrow']:active,
+.mt2 .conf-window-wrap span[class^='arrow']:focus {
+  background-position-x: -5.12rem;
+}

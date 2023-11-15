@@ -12,7 +12,7 @@
 
 .box-body input[data-type='number'],
 .conf-window-wrap input[data-type='number'] {
-  padding: 0.4rem;
+  padding: 0.6rem 0.4rem;
   color: var(--label-title);
   background-color: transparent;
   border: 1px solid var(--border);
@@ -50,13 +50,18 @@
   display: none;
 }
 @media only screen and (max-width: 1181px) {
-  
+  .box-body input[data-type='number'],
+  .conf-window-wrap input[data-type='number'] {
+    padding: 0.4rem;
+    font-size: 1.3rem;
+    padding-right: 1.5rem;
+  }
+
   .box-body input[data-digits='3'],
   .conf-window-wrap input[data-digits='3'] {
     max-width: 5.1rem;
-    font-size: 1.3rem;
   }
-  
+
   .box-num-mult {
     max-width: 10.4rem;
   }
@@ -66,7 +71,121 @@
     font-size: 1.5rem;
   }
 
-  .box-body input[data-type='number'], .conf-window-wrap input[data-type='number'] {
-    padding: .3rem;
+  .box-body input[data-type='number'],
+  .conf-window-wrap input[data-type='number'] {
+    padding: 0.4rem;
+    font-size: 1.5rem;
+    padding-right: 1.5rem;
   }
+
+  .box-body input[data-digits='3'],
+  .conf-window-wrap input[data-digits='3'] {
+    max-width: 5.4rem;
+  }
+}
+.input-number-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.box-num-mult {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 9.5rem;
+}
+
+.box-body input[data-type='number'],
+.conf-window-wrap input[data-type='number'] {
+  padding: 0.6rem 0.4rem;
+  color: var(--label-title);
+  background-color: transparent;
+  border: 1px solid var(--border);
+  text-align: right;
+  padding-right: 1.75rem;
+}
+
+.box-body input[data-digits='2'],
+.conf-window-wrap input[data-digits='2'] {
+  max-width: 4rem;
+}
+
+.box-body input[data-digits='3'],
+.conf-window-wrap input[data-digits='3'] {
+  max-width: 4.5rem;
+}
+
+.box-body input[data-digits='4'],
+.conf-window-wrap input[data-digits='4'] {
+  max-width: 6rem;
+}
+
+.box-body input[data-digits='5'],
+.conf-window-wrap input[data-digits='5'] {
+  max-width: 7rem;
+}
+
+.box-body .input-wrap[data-type='number']::before,
+.conf-window-wrap input[data-type='number']::before {
+  top: -0.2rem;
+  right: 0.4rem;
+}
+
+.toggle-wrap input {
+  display: none;
+}
+@media only screen and (max-width: 1181px) {
+  .box-body input[data-type='number'],
+  .conf-window-wrap input[data-type='number'] {
+    padding: 0.4rem;
+    font-size: 1.3rem;
+    padding-right: 1.5rem;
+  }
+
+  .box-body input[data-digits='3'],
+  .conf-window-wrap input[data-digits='3'] {
+    max-width: 5.1rem;
+  }
+
+  .box-num-mult {
+    max-width: 10.4rem;
+  }
+}
+@media only screen and (max-width: 668px) {
+  .box-num-input {
+    font-size: 1.5rem;
+  }
+
+  .box-body input[data-type='number'],
+  .conf-window-wrap input[data-type='number'] {
+    padding: 0.4rem;
+    font-size: 1.8rem;
+    padding-right: 1.8rem;
+  }
+
+  .box-body input[data-digits='3'],
+  .conf-window-wrap input[data-digits='3'] {
+    max-width: 6.3rem;
+  }
+
+  .box-num-mult {
+    max-width: 13.6rem;
+  }
+}
+
+/* 
+*
+* MIDI THINGIE
+*
+*/
+.mt2 .box-body input[data-digits='4'],
+.mt2 .conf-window-wrap input[data-digits='4'] {
+  max-width: 5rem;
+}
+
+.mt2 .box-body input[data-type='number'],
+.mt2 .conf-window-wrap input[data-type='number'] {
+  padding: .2rem;
+  padding-right: 1.75rem;
+  font-size: 1.2rem;
 }

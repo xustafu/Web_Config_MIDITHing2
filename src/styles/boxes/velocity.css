@@ -7,3 +7,22 @@
     transform: translateX(2rem);
   }
 }
+
+@media only screen and (max-width: 668px) {
+  [id^='velocity-body'] .slider {
+    left: 2.5rem;
+  }
+  
+  [id^='velocity-body'] .toggle-wrap input:checked + .slider-wrap .slider {
+    transform: translateX(3.6rem);
+  }
+}
+
+/* 
+*
+* MIDI THINGIE
+*
+*/
+.mt2 [id^='velocity-body'] .slider {
+  top: 1.8rem;
+}

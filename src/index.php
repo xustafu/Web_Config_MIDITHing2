@@ -12,7 +12,7 @@
   <noscript>You need to enable JavaScript to run this app.</noscript>
 
   <?php include './includes/banner.php'?>
-  <?php include './includes/main.php'?>
+  <?php include './includes/main.php' ?>
   <?php include './includes/modal.php'?>
 
   <!-- LIBRARIES AND SCRIPTS -->

@@ -1,9 +1,35 @@
-main[id^=note-body] {
+main[id^='note-body'] {
   gap: 2rem;
 }
 
 @media only screen and (max-width: 1181px) {
-  main[id^=note-body] {
+  main[id^='note-body'] {
     gap: 1rem;
   }
+}
+
+@media only screen and (max-width: 668px) {
+  main[id^='note-body'] {
+    gap: 6rem;
+  }
+
+  main[id^='note-options-body'] {
+    gap: 4rem;
+  }
+
+  main[id^='note-voice'] {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+}
+
+/* 
+*
+* MIDI THINGIE
+*
+*/
+
+.mt2 main[id^='note-body'] {
+  column-gap: 1.1rem;
 }

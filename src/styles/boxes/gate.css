@@ -7,8 +7,15 @@
     left: 2.5rem;
     top: 2.3rem;
   }
-
+  
   [id^='gate-body'] .toggle-wrap input:checked + .slider-wrap .slider {
     transform: translateX(2.1rem);
   }
+}
+
+@media screen and (max-width:668px) {
+  [id^='gate-body'] .slider {
+    left: 1.4rem;
+    top: 3.7rem;
+  }  
 }

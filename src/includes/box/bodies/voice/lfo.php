@@ -71,7 +71,8 @@
 
   <!-- LFO CLOCK MULT -->
   <div class="box-num-single" id="lfo-clock-multiplier-<?= $port_id ?>" data-disabled="true">
-    <label for="lfo-clock-multiplier-input-<?= $port_id ?>" class="box-num-single-label">Mult &nbsp; x</label> <!-- inline -->
+    <label for="lfo-clock-multiplier-input-<?= $port_id ?>"
+      class="box-num-single-label">Mult&nbsp;x</label> <!-- inline -->
     <div class="input-number-wrap round-sm">
       <input 
         type="text" 

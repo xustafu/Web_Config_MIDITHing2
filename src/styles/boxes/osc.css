@@ -12,3 +12,18 @@
     left: 2rem;
   }
 }
+
+@media only screen and (max-width: 668px) {
+  [id^=osc-body] .toggle-wrap {
+    width: 13rem;
+  }
+
+  [id^='osc-body'] .toggle-wrap input:checked + .slider-wrap .slider {
+    transform: translateX(3.6rem);
+  }
+
+  [id^='osc-body'] .slider {
+    top: 3.6rem;
+    left: 3.3rem;
+  }
+}

@@ -14,3 +14,26 @@
     left: 2rem;
   }
 }
+
+@media only screen and (max-width: 668px) {
+  [id^='drum-body'] {
+    column-gap: 3rem;
+  }
+
+  [id^='drum-body'] .toggle-wrap input:checked + .slider-wrap .slider {
+    transform: translateX(3.7rem);
+  }
+
+  [id^='drum-body'] .slider {
+    top: 3.67rem;
+    left: 2.5rem;
+  }
+}
+/* 
+*
+* MIDI THINGIE
+*
+*/
+.mt2 [id^='drum-body'] .slider {
+  left: 1.5rem;
+}

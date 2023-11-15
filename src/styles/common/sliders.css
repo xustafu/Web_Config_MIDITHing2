@@ -10,7 +10,6 @@
   width: 4.5rem;
   height: 2.2rem;
   display: inline-block;
-  cursor: pointer;
   background: var(--grey2);
   font-size: 1rem;
 }
@@ -24,6 +23,7 @@
   border-radius: 10px;
   background: black;
   transition: all 0.4s linear;
+  cursor: pointer;
 }
 .toggle-wrap input:checked + .slider-wrap .slider {
   transform: translateX(2.1rem);
@@ -40,7 +40,7 @@
   .toggle-wrap {
     width: 8rem;
   }
-  
+
   .slider {
     top: 2.4rem;
     left: 1.8rem;
@@ -52,16 +52,48 @@
 }
 
 @media only screen and (max-width: 668px) {
-  .slider {
-    top: 2.35rem;
-    left: 1.1rem;
+  .box-body label.toggle {
+    height: 2.9rem;
+    width: 7rem;
   }
-  
-  .toggle {
-    width: 6.1rem;
+
+  /* .toggle {
+  } */
+
+  .toggle-wrap {
+    width: 8rem;
+  }
+
+  .slider {
+    width: 2.5rem;
+    height: 2.5rem;
+    top: 3.7rem;
+    left: 2.5rem;
   }
 
   .toggle-wrap input:checked + .slider-wrap .slider {
-    transform: translateX(2.1rem);
+    transform: translateX(3.5rem);
   }
+}
+
+/* 
+*
+* MIDI THINGIE
+*
+*/
+
+.mt2 .box-body label.toggle {
+  width: 3.5rem;
+  height: 1.6rem;
+}
+
+.mt2 .slider {
+  top: 1.7rem;
+  left: 1.4rem;
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.mt2 .toggle-wrap input:checked + .slider-wrap .slider {
+  transform: translateX(1.6rem);
 }

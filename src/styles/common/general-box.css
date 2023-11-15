@@ -1,7 +1,8 @@
 .box {
   --box-width: 26.5rem;
   --box-height: 26rem;
-
+  --box-alt-width: 21.5rem;
+  --box-alt-height: 21rem;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: 1fr 4rem repeat(2, 1fr);
@@ -12,67 +13,13 @@
   row-gap: 0.8rem;
   justify-items: stretch;
   position: relative;
-
-  background-color: var(--box-bg);
   color: var(--off-white);
   border: 5px solid var(--box-border);
   border-radius: 20px;
-  padding: 1rem;
-  padding-block: 0.5rem;
   width: var(--box-width);
   height: var(--box-height);
-}
-
-.box-header {
-  grid-area: header;
-  display: inline-grid;
-  grid-template-columns: repeat(4, 5.3rem);
-  grid-template-areas: 'port volts midi learn';
-  gap: 0.75rem;
-  justify-items: center;
-  align-items: center;
-}
-
-.box-header .box-header-title,
-.box-header .box-header-field-v,
-.box-header .box-header-field-mc,
-.box-header .box-learn-button {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  justify-self: stretch;
-}
-
-.box-header-title {
-  grid-area: 'port';
-  /* min-width: 6rem; */
-  justify-self: stretch;
-}
-
-.box-header-field-v {
-  grid-area: 'volts';
-  /* max-width: 6rem; */
-}
-
-.box-header-field-mc {
-  grid-area: 'midi';
-  /* max-width: 4rem; */
-}
-
-.box-learn-button {
-  grid-area: 'learn';
-}
-
-/* Hack needed to get firefox to do 
-the same as Chrome */
-.box-header-field-v,
-.box-header-field-mc,
-.box-learn-button,
-.box-header-field-v *,
-.box-header-field-mc *,
-.box-learn-button * {
-  width: 100%;
+  padding: 1rem 0.8rem;
+  background: linear-gradient(to top, #222222 63%, black);
 }
 
 .box-func-select {
@@ -89,16 +36,9 @@ the same as Chrome */
   align-items: center;
 }
 
-.box-header input {
-  padding-block: 0.7rem;
-  background-color: var(--grey);
-  color: var(--off-white);
-  border: 0;
-  text-indent: 0.5rem;
-}
-
 .body-types-wrap {
   width: 23.5rem;
+  /* padding: 0 0.5rem; */
 }
 
 .box-body label,
@@ -174,8 +114,7 @@ label[class^='box-num'] {
   left: -0.5rem;
   width: var(--box-width);
   height: var(--box-height);
-
-  background-color: var(--bg);
+  background: linear-gradient(to top, #222222 63%, black);
   border: 5px solid var(--box-border);
   border-radius: 20px;
   padding: 1rem;
@@ -194,17 +133,16 @@ label[class^='box-num'] {
 }
 
 @media only screen and (max-width: 821px) {
-  .box-body label, .box-body h3, .conf-window-wrap label, .conf-window-wrap h3 {
-    font-size: 1.4rem;
-   }
-   
   .box {
     --box-width: 30rem;
     --box-height: 30rem;
   }
-  
-  .box-header {
-    grid-template-columns: repeat(4, 6.2rem);
+
+  .box-body label,
+  .box-body h3,
+  .conf-window-wrap label,
+  .conf-window-wrap h3 {
+    font-size: 1.4rem;
   }
 
   .body-types-wrap {
@@ -218,12 +156,96 @@ label[class^='box-num'] {
   .box-body .input-wrap .box-selector-label.active::after {
     background-position-y: -3.6rem;
   }
+
+  .box-selector-label.active::after {
+    background-position-y: -3.2rem;
+  }
 }
 
-
-@media screen and (max-width: 668px) { 
+@media screen and (max-width: 668px) {
   .box {
-    --box-width: 34rem;
-    --box-height: 34rem;
+    --box-width: 53rem;
+    --box-height: 53rem;
+
+    grid-template-rows: 1fr max-content repeat(2, 1fr);
   }
+
+  .body-types-wrap {
+    width: 47.5rem;
+    height: max-content;
+    padding-top: 1rem;
+  }
+
+  .box-body {
+    padding-inline: 1rem;
+    row-gap: 4rem;
+  }
+
+  .input-wrap .box-selector-label::after {
+    width: 4.8rem;
+    height: 6.4rem;
+    background-size: 44.8rem;
+    right: -0.3rem;
+  }
+
+  .box-body label,
+  .box-body h3,
+  .conf-window-wrap label,
+  .conf-window-wrap h3 {
+    font-size: 2.3rem;
+  }
+
+  .box-body .input-wrap .box-selector-label::after {
+    background-size: 29.7rem;
+    height: 4rem;
+    top: 0;
+    width: 2.8rem;
+  }
+
+  .box-body .input-wrap .box-selector-label.active::after {
+    background-position-y: -5rem;
+  }
+
+  .box-body .selector-options .box-selector-item,
+  .conf-window-wrap .selector-options .box-selector-item {
+    font-size: 2rem;
+  }
+
+  .clip-title.inline {
+    margin-right: 1rem;
+  }
+}
+
+/* 
+*
+* MIDI THINGIE
+*
+*/
+
+.mt2 .box {
+  --box-width: 22rem;
+  --box-height: 22rem;
+  --box-alt-width: 21.5rem;
+  --box-alt-height: 21rem;
+  --box-int-width: calc(var(--box-width) - 2rem);
+  width: var(--box-width);
+  height: var(--box-height);
+  row-gap: 0.5rem;
+  grid-template-rows: 1fr 3.1rem repeat(2, 1fr);
+}
+
+.mt2 .body-types-wrap {
+  width: var(--box-int-width);
+}
+
+.mt2 .box-body {
+  width: var(--box-int-width);
+  row-gap: .9rem;
+}
+
+.mt2 .box-body label,
+.mt2 .box-body h3,
+.mt2 .conf-window-wrap label,
+.mt2 .conf-window-wrap h3 {
+  font-size: 1.1rem;
 }

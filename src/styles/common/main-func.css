@@ -1,15 +1,17 @@
 .box-func-select {
   position: relative;
+  /* padding-inline: .5rem; */
 }
 
 .box-func-select .box-selector-label {
   display: block;
   width: 100%;
   background: transparent;
-  border: 1px solid var(--border);
+  border: 1px solid var(--light-border);
   font-size: 2rem;
   text-align: center;
   padding-block: .3rem;
+  color: var(--grey3);
 }
 
 .box-func-select .box-selector-label::after {
@@ -27,4 +29,32 @@
 
 .box-func-select .box-selector-label.active::after {
   background-position-y: -.7rem;
+}
+
+@media screen and (max-width: 668px) {
+  .box-func-select .box-selector-label {
+    padding-block: 1.3rem;
+    font-size: 3rem;
+  }
+
+  .box-func-select .box-selector-label::after {
+    background-size: 44rem;
+    background-position: -11rem -9rem;
+    top: 2rem;
+    right: 2rem;
+  }
+}
+
+/* 
+*
+* MIDI THINGIE
+*
+*/
+
+.mt2 .box-func-select {
+  width: var(--box-int-width);
+}
+
+.mt2 .box-func-select .box-selector-label {
+  font-size: 1.6rem;
 }

@@ -3,27 +3,6 @@ html {
   font-family: var(--main-font);
 }
 
-body {
-  background-color: var(--body-grey);
-  font-size: 1.5rem;
-  line-height: 1.5;
-  padding-bottom: 7rem;
-}
-
-main.main {
-  margin-top: 5rem;
-  padding-inline: 20rem;
-  width: var(--main-width);
-  margin-inline: auto;
-}
-
-.main.mt {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-around;
-  gap: 3rem;
-}
-
 .hidden {
   display: none !important;
 }
@@ -54,6 +33,16 @@ main.main {
 
 li.dark-font {
   color: #000 !important;
+}
+
+/**
+Main tags
+*/
+body {
+  background-color: var(--body-grey);
+  font-size: 1.5rem;
+  line-height: 1.5;
+  padding-bottom: 7rem;
 }
 
 /**
@@ -90,18 +79,19 @@ Selectors
   text-indent: 1.2rem;
   border: 1px solid white;
   z-index: 999;
-  background-color: var(--list-bg);
+  background-color: var(--dark-grey);
   width: 100%;
 }
 
 li[class*='selector-item'] {
-  color: white;
+  color: var(--list-white);
   padding-block: 0.2rem;
 }
 
 li[class*='selector-item']:hover,
+li[class*='selector-item']:focus,
 li[class*='selector-item']:active {
-  background-color: black;
+  color: var(--list-white);
 }
 
 label {
@@ -111,7 +101,7 @@ label {
 /* Buttons */
 button[type='button'],
 button[type='submit'] {
-  background: var(--bg);
+  background: transparent;
   color: var(--off-white);
   padding-inline: 1rem;
   padding-block: 0.5rem;
@@ -143,30 +133,26 @@ button[type='submit'] {
   }
 }
 
-@media only screen and (max-width: 821px){
-  main.main {
-    width: var(--main-width-sm);
-    margin: 4rem 0;
-  }
-
-  .main.mt {
-    gap: 1.5rem;
-    width: 100%;
-    justify-content: center;
-    padding-inline: 5.6rem;
-  }
-}
-
 @media only screen and (max-width: 668px) {
   html {
-    font-size: 6.5px;
+    font-size: 4px;
   }
 
   body {
     font-size: 1.6rem;
   }
 
-   .box .for-button, .box .back-button {
-    font-size: 1.4rem;
+  .box .for-button,
+  .box .back-button {
+    font-size: 2.5rem;
+    padding-block: 0.7rem;
+  }
+
+  .box .back-button {
+    padding-left: 3.3rem;
+  }
+
+  .box .for-button {
+    padding-right: 3.3rem;
   }
 }

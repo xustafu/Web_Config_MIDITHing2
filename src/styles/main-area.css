@@ -1,0 +1,67 @@
+main.main {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+  gap: 3rem;
+  margin-top: 5rem;
+  padding-inline: 20rem;
+  width: var(--main-width);
+  margin-inline: auto;
+}
+
+@media only screen and (max-width: 821px) {
+  .main.mt {
+    width: var(--main-width-sm);
+    margin: 4rem 0;
+    gap: 1.5rem;
+    width: 100%;
+    justify-content: center;
+    padding-inline: 5.6rem;
+  }
+}
+
+@media only screen and (max-width: 668px) {
+  .main.mt {
+    padding-inline: 21rem;
+    gap: 3rem;
+    margin-top: 6rem;
+  }
+}
+
+/* 
+*
+* MIDI THINGIE styles
+*
+*/
+
+.main.mt2 {
+  width: 100%;
+  gap: 1rem;
+  padding-inline: 7rem;
+}
+
+#exp-selector:not(.hidden) {
+  width: 100%;
+  margin: 0 auto 4rem;
+}
+
+#exp-selector ul {
+  display: flex;
+  margin-inline: auto;
+  width: fit-content;
+}
+
+#exp-selector ul li {
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--border);
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  color: var(--label-title);
+  font-size: 1.2rem;
+}
+
+#exp-selector ul li[data-selected] {
+  border-bottom: 2px solid red;
+  color: white;
+  font-weight: bold;
+}

@@ -1,4 +1,4 @@
-[id^=lfo-body] {
+[id^='lfo-body'] {
   display: grid;
   /* grid-template-columns: repeat(12, 1fr);
   grid-template-rows: repeat(3, 1fr); */
@@ -7,21 +7,21 @@
   grid-template-columns: 2rem 11rem 10.5rem;
 }
 
-[id^=lfo-voice] {
+[id^='lfo-voice'] {
   grid-column-start: 1;
   grid-column-end: 4;
   grid-row-start: 1;
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
-[id^=lfo-clock-mult] {
+[id^='lfo-clock-mult'] {
   grid-column-start: 3;
   grid-row-start: 3;
   grid-row-end: 3;
 }
 
-[id^=lfo-clock-div] {
+[id^='lfo-clock-div'] {
   /* Res en machine*/
   grid-column-start: 2;
   grid-column-end: 3;
@@ -29,60 +29,116 @@
   grid-row-end: 3;
 }
 
-[id^=lfo-clock-div] h3 {
+[id^='lfo-clock-div'] h3 {
   margin-right: 1.4rem;
 }
 
-[id^=lfo-freq] {
+[id^='lfo-freq'] {
   grid-column-start: 2;
   grid-column-end: 3;
   grid-row-start: 2;
-    grid-row-end: 2;
+  grid-row-end: 2;
 }
 
-[id^=lfo-com] {
+[id^='lfo-com'] {
   grid-column-start: 1;
   grid-column-end: 1;
   grid-row-start: 2;
   grid-row-end: 3;
 }
 
-[id^=lfo-com] form {
+[id^='lfo-com'] form {
   position: relative;
   width: 2rem;
 }
 
-[id^=lfo-com-clock] {
+[id^='lfo-com-clock'] {
   position: absolute;
   left: 0;
   top: 3.1rem;
 }
 
-[id^=lfo-com-freq] {
+[id^='lfo-com-freq'] {
   position: absolute;
   left: 0;
   top: -0.7rem;
 }
 
-[id^=lfo-body] button[data-css=shape] {
+[id^='lfo-body'] button[data-css='shape'] {
   grid-column-start: 3;
   grid-row-start: 1;
   grid-row-end: 1;
 }
 
-[id^=lfo-body] button[data-css=options] {
+[id^='lfo-body'] button[data-css='options'] {
   grid-column-start: 3;
   grid-row-start: 2;
   grid-row-end: 2;
 }
 
+@media only screen and (max-width: 821px) {
+  [id^='lfo-body'] {
+    grid-template-columns: inherit;
+  }
+}
+
 @media only screen and (max-width: 668px) {
-  [id^=lfo-body] {
-    grid-template-columns: 3rem 18rem  10rem;
+  [id^='lfo-body'] {
+    grid-template-columns: repeat(3, max-content);
     row-gap: 2rem;
   }
 
-  [id^=lfo-com-clock] {
+  [id^='lfo-com-clock'] {
     top: 4.1rem;
   }
+
+  [id^='lfo-body'] button[data-css='shape'] {
+    padding-right: 3rem;
+  }
+
+  .box-body[id^='lfo-body'] span[class='arrow-for'] {
+    top: 0.3rem;
+    background-position-x: -18rem !important;
+    background-position-y: 0.7rem !important;
+    background-size: 27.1rem;
+  }
+}
+
+/* 
+*
+* MIDI THINGIE
+*
+*/
+.mt2 [id^='lfo-body'] button[data-css] {
+  width: 6.9rem;
+  font-size: 1.1rem;
+  padding-left: 0.6rem;
+}
+
+.mt2 .box-body .box-num-input[id^=lfo-freq] {
+  padding-right: 1.4rem;
+}
+
+.mt2 [id^='lfo-body'] {
+  row-gap: 0.3rem;
+}
+
+.mt2 [id^='lfo-body'] .arrow-for {
+  background-position-x: -12.7rem !important;
+  background-position-y: -0.3rem !important;
+  right: 0.2rem;
+  width: 1.4rem !important;
+  background-size: 18.8rem;
+}
+
+.mt2 [id^='lfo-com-clock'] {
+  top: 2.2rem;
+}
+
+.mt2 [id^='lfo-clock-div'] h3 {
+  margin-right: 1.3rem;
+}
+
+.mt2 [for^='lfo-clock-multiplier'] {
+  margin-left: -1.1rem;
 }
