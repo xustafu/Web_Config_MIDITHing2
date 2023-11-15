@@ -19,7 +19,7 @@
     </svg>
   </figure>
 
-  <h1 class="banner-title"><span id="title">MIDI Thing V2</span><span class="banner-subtitle"> | Editor</span></h1>
+  <h1 class="banner-title"><span id="title">MIDI Thing/ie</span><span class="banner-subtitle"> | Editor</span></h1>
 
   <figure class="live-button">
     <svg
@@ -39,7 +39,7 @@
     name="MIDIInputSelect"
     id="MIDIInputSelect"
     value="0" />
-    <label for="MIDIInputSelect" class="selector-label round">No Device!</label>
+    <label id="MIDIInputSelectLabel" for="MIDIInputSelect" class="selector-label round">No Device!</label>
     <ul class="selector-options round hidden" id="device-selector">
     </ul>
   </div>

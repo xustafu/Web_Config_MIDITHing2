@@ -54,20 +54,11 @@ export function selectSettings(li) {
  * @param {HTMLElement} <li> the device selector clicked
  */
 export function selectDevice(li) {
-  if (li.innerHTML == 'MIDIThing2' || li.innerHTML == 'MIDIThingie') {
+  if (li.innerHTML.includes('MIDIThing')) {
     selectMIDIinput(WebMidi.inputs[li.dataset.value]);
     requestConfig();
-
     // Show the correct Main Area
-    if (li.innerHTML === 'MIDIThingie') {
-      q('#main').classList = 'main mt2';
-      q('#exp-selector').classList.remove('hidden');
-      q('#exp-selector ul').classList.remove('hidden');
-    } else {
-      q("#main").classList = "main mt";
-      q("#exp-selector").classList.add("hidden");
-      q('#exp-selector ul').classList.add('hidden');
-    }
+    activateMidiThingie(li.innerHTML);
   } else {
     // not Midi Thing. Show an error
     showModal('error', 'The device selected is not a Midi Thing/Thingie device');
@@ -75,6 +66,23 @@ export function selectDevice(li) {
 
   // Hide <ul> after click
   li.parentElement.classList.toggle('hidden', true);
+}
+
+/**
+ * Activate Midi Thingie if exist
+ * @param {string} name - the name of the device
+ */
+export function activateMidiThingie(name) {
+  if (name.includes("MIDIThingie")) {
+    q("#main").classList = "main mt2";
+    //q("#exp-selector").classList.remove("hidden");
+    //q("#exp-selector ul").classList.remove("hidden");
+  } else {
+    q("#main").classList = "main mt";
+    //q("#exp-selector").classList.add("hidden");
+    //q("#exp-selector ul").classList.add("hidden");
+  }
+  q("#MIDIInputSelectLabel").innerHTML = name;
 }
 
 /**

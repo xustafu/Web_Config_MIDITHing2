@@ -2,7 +2,7 @@ import { q } from "../globals.js";
 import { onSysexReceive } from "./sysexMgt.js";
 import { requestConfig } from "../settingsFuncs.js";
 import { refreshWeb } from "./refreshWeb.js";
-import { selectDevice, showModal } from "../domScripts.js";
+import { selectDevice, showModal, activateMidiThingie } from "../domScripts.js";
 
 // the MIDI input/output
 export let MIDIinput = null,
@@ -74,16 +74,16 @@ function _initDeviceSelect() {
     li.setAttribute("data-value", index);
     li.innerText = element.name;
     dFrag.appendChild(li);
-    let name = element.name == "MIDIThing2"
-      ? "MIDI Thing V2"
-      : element.name;
+    let name = element.name;
     //HUGO TO DO: connect VCMC and MIDI THING and check that dropdown works
-    if (!found && (name.includes("MIDI Thing") || name.includes("MIDIThing"))) {
+    if (!found && (name.includes("MIDIThing"))) {
       selectMIDIinput(element);
       found = true;
+      activateMidiThingie(name);
       sel_index = index;
       q("label[for='MIDIInputSelect']").innerHTML = name;
       q("#MIDIInputSelect").setAttribute("value", sel_index);
+
     }
     index++;
   });

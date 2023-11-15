@@ -1,7 +1,7 @@
 <!-- MAIN AREA -->
 <main class="main mt" id="main">
 
-  <!-- EXP SELECTOR (only for MIDI Thingie) -->
+  <!-- EXP SELECTOR (only for MIDI Thingie)
   <section id="exp-selector" class="hidden">
     <nav>
       <ul>
