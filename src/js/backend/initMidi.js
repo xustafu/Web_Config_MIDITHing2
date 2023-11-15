@@ -74,11 +74,11 @@ function _initDeviceSelect() {
     li.setAttribute("data-value", index);
     li.innerText = element.name;
     dFrag.appendChild(li);
-    let name = element.name.includes("MIDIThing")
+    let name = element.name == "MIDIThing2"
       ? "MIDI Thing V2"
       : element.name;
     //HUGO TO DO: connect VCMC and MIDI THING and check that dropdown works
-    if (!found && name.includes("MIDI Thing")) {
+    if (!found && (name.includes("MIDI Thing") || name.includes("MIDIThing"))) {
       selectMIDIinput(element);
       found = true;
       sel_index = index;
@@ -100,8 +100,8 @@ function _initDeviceSelect() {
   } else {
     q(".live-button svg").style.fill = "#ff0000";
     showModal(
-      "warning",
-      "This website is designed to work with the Midi Thing 2 device connected. If no Midi Thing 2 is found, the data shown on the website may be erroneous."
+      'warning',
+      'This website is designed to work with either the MIDI Thing 2 or the MIDI Thingie device connected. If no such device is found, the data shown on the website may be erroneous.'
     );
   }
 }

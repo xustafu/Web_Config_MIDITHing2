@@ -54,18 +54,25 @@ export function selectSettings(li) {
  * @param {HTMLElement} <li> the device selector clicked
  */
 export function selectDevice(li) {
-  if (li.innerHTML == 'MIDIThing2') {
+  if (li.innerHTML == 'MIDIThing2' || li.innerHTML == 'MIDIThingie') {
     selectMIDIinput(WebMidi.inputs[li.dataset.value]);
     requestConfig();
+
+    // Show the correct Main Area
+    if (li.innerHTML === 'MIDIThingie') {
+      q('#main').classList = 'main mt2';
+      q('#exp-selector').classList.remove('hidden');
+      q('#exp-selector ul').classList.remove('hidden');
+    } else {
+      q("#main").classList = "main mt";
+      q("#exp-selector").classList.add("hidden");
+      q('#exp-selector ul').classList.add('hidden');
+    }
   } else {
     // not Midi Thing. Show an error
-    showModal('error', 'The device selected is not a Midi Thing device');
+    showModal('error', 'The device selected is not a Midi Thing/Thingie device');
   }
 
-  // Change the body classes to show diff. layouts
-  /*const main = q('.main');
-  const main_class = li.innerHTML === 'MIDI Thingy' ? 'main mt' : 'main mt2';
-  main.classList.value = main_class;*/
   // Hide <ul> after click
   li.parentElement.classList.toggle('hidden', true);
 }
@@ -123,7 +130,11 @@ export function expandMenu(el) {
     if (menuHeight + elTop > viewportHeight) {
       menu.style.top = `-${menuHeight + 2}px`;
     } else if (q(`#${el.parentElement.id} > h3.block`)) {
-      menu.style.top = `${2 * elHeight - 6}px`;
+      if (viewportWidth < 668) {
+        menu.style.top = `${2 * elHeight - 3}px`;
+      } else {
+        menu.style.top = `${2 * elHeight - 6}px`;
+      }
     } else {
       menu.style.top = `${elHeight + 2}px`;
     }
@@ -157,7 +168,7 @@ export function expandMenu(el) {
     const suboptions = el.children[0];
     // Reveal the appropriate suboptions menu
     suboptions.classList.toggle('hidden');
-    suboptions.style.top = '-1px';
+    suboptions.style.top = el.classList.contains('settings') ? '0' : '-1px';
     if (suboptions.getBoundingClientRect().left > viewportWidth) {
       suboptions.style.left = `-${suboptions.getBoundingClientRect().width}px`;
     }
@@ -652,17 +663,9 @@ export function setLabelWidths() {
     });
 
     const parent = getParent(list, true, 'input-wrap');
-    const listFontSize = parseInt(window.getComputedStyle(list, null).fontSize);
-    const viewPortWidth = window.innerWidth;
-    let newWidth;
-
-    if (viewPortWidth > 373 && viewPortWidth < 668) {
-      newWidth = `${longestChild.innerText.length / (listFontSize / 10) + 1}rem`;
-    } else if (viewPortWidth >= 668 && viewPortWidth < 1181) {
-      newWidth = `${longestChild.innerText.length / (listFontSize / 10) + 1.75}rem`;
-    }
-    
-    q(`#${parent.id} .box-selector-label`).style.width = newWidth;
+    q(`#${parent.id} .box-selector-label`).style.width = `${
+      longestChild.innerText.length * 0.85
+    }em`;
   });
 }
 
