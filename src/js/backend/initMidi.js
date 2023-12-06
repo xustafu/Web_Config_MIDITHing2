@@ -65,6 +65,9 @@ function _initDeviceSelect() {
       found = true;
     }
   });
+  if (!found) {
+    MIDIoutput = WebMidi.outputs[0];
+  }
 
   found = false;
   WebMidi.inputs.forEach((element) => {
@@ -74,19 +77,26 @@ function _initDeviceSelect() {
     li.setAttribute("data-value", index);
     li.innerText = element.name;
     dFrag.appendChild(li);
-    let name = element.name;
     //HUGO TO DO: connect VCMC and MIDI THING and check that dropdown works
-    if (!found && (name.includes("MIDIThing"))) {
+    if (!found && (element.name.includes("MIDIThing"))) {
       selectMIDIinput(element);
       found = true;
-      activateMidiThingie(name);
+      activateMidiThingie(element.name);
       sel_index = index;
-      q("label[for='MIDIInputSelect']").innerHTML = name;
+      q("label[for='MIDIInputSelect']").innerHTML = element.name;
       q("#MIDIInputSelect").setAttribute("value", sel_index);
-
     }
     index++;
   });
+  if (!found) {
+    let element = WebMidi.inputs[0];
+    selectMIDIinput(element);
+    q("label[for='MIDIInputSelect']").innerHTML = element.name;
+    q("#MIDIInputSelect").setAttribute("value", 0);
+  }
+  
+
+
   // Reattach click event listener to all <li>s
   for (let li of dFrag.children) {
     li.addEventListener("click", (e) => selectDevice(e.target));
@@ -101,7 +111,8 @@ function _initDeviceSelect() {
     q(".live-button svg").style.fill = "#ff0000";
     showModal(
       'warning',
-      'This website is designed to work with either the MIDI Thing 2 or the MIDI Thingie device connected. If no such device is found, the data shown on the website may be erroneous.'
+      'This website is designed to work with either the MIDI Thing 2 or the MIDI Thingie \
+       device connected. If no such device is found, the data shown on the website may be erroneous.'
     );
   }
 }

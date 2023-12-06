@@ -54,15 +54,18 @@ export function selectSettings(li) {
  * @param {HTMLElement} <li> the device selector clicked
  */
 export function selectDevice(li) {
-  if (li.innerHTML.includes('MIDIThing')) {
-    selectMIDIinput(WebMidi.inputs[li.dataset.value]);
-    requestConfig();
-    // Show the correct Main Area
-    activateMidiThingie(li.innerHTML);
-  } else {
-    // not Midi Thing. Show an error
-    showModal('error', 'The device selected is not a Midi Thing/Thingie device');
-  }
+  if (!li.innerHTML.includes('MIDIThing')) {
+    // not Midi Thing. Show a warning
+    showModal(
+      "warning",
+      "This website is designed to work with either the MIDI Thing 2 or the MIDI Thingie \
+       device connected. If no such device is found, the data shown on the website may be erroneous."
+    );
+  } 
+  selectMIDIinput(WebMidi.inputs[li.dataset.value]);
+  requestConfig();
+  // Show the correct Main Area
+  activateMidiThingie(li.innerHTML);
 
   // Hide <ul> after click
   li.parentElement.classList.toggle('hidden', true);
@@ -72,17 +75,38 @@ export function selectDevice(li) {
  * Activate Midi Thingie if exist
  * @param {string} name - the name of the device
  */
-export function activateMidiThingie(name) {
-  if (name.includes("MIDIThingie")) {
-    q("#main").classList = "main mt2";
-    //q("#exp-selector").classList.remove("hidden");
-    //q("#exp-selector ul").classList.remove("hidden");
-  } else {
-    q("#main").classList = "main mt";
-    //q("#exp-selector").classList.add("hidden");
-    //q("#exp-selector ul").classList.add("hidden");
+export function activateMidiThingie(name = 'MIDIThingie') {
+  const main = q('#main');
+  const viewPortWidth = window.innerWidth;
+
+  if (name.includes('MIDIThingie')) {
+    const mt2Wrap = q('.mt2-main-wrap');
+
+    // wrap the main content in div to allow for horizontal scrolling on defined sizes
+    if (viewPortWidth > 821 && viewPortWidth < 1532) {
+      main.classList = 'main mt2';
+      //q("#exp-selector").classList.remove("hidden");
+      //q("#exp-selector ul").classList.remove("hidden");
+
+      // change the name of the MIDI Input field and return if wrapper already exists
+      if (mt2Wrap) return (q('#MIDIInputSelectLabel').innerHTML = name);
+
+      q('body').removeChild(main);
+      const mainWrap = document.createElement('div');
+      mainWrap.classList = 'mt2-main-wrap';
+      mainWrap.appendChild(main);
+      q('header.banner').insertAdjacentElement('afterend', mainWrap);
+
+      // remove the mt2 wrapper when moving away from those sizes
+    } else if (mt2Wrap) {
+      main.classList = viewPortWidth <= 821 ? 'main mt' : 'main mt2';
+      const parent = mt2Wrap.parentElement;
+      parent.removeChild(mt2Wrap);
+      q('header.banner').insertAdjacentElement('afterend', main);
+    }
   }
-  q("#MIDIInputSelectLabel").innerHTML = name;
+
+  q('#MIDIInputSelectLabel').innerHTML = name;
 }
 
 /**
