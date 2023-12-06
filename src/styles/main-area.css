@@ -9,6 +9,12 @@ main.main {
   margin-inline: auto;
 }
 
+/* mt2 wrapper */
+.mt2-main-wrap {
+  overflow-x: scroll;
+  padding-bottom: 5rem;
+}
+
 @media only screen and (max-width: 821px) {
   .main.mt {
     width: var(--main-width-sm);
@@ -35,7 +41,6 @@ main.main {
 */
 
 .main.mt2 {
-  width: 100%;
   gap: 1rem;
   padding-inline: 7rem;
 }
@@ -64,4 +69,36 @@ main.main {
   border-bottom: 2px solid red;
   color: white;
   font-weight: bold;
+}
+
+/* Mobile first approach for mt2 */
+
+@media screen and (min-width:668px) {
+  .main.main.mt2 {
+      width: 154rem;
+  }
+}
+
+@media screen and (min-width:1740px) {
+  .main.main.mt2 {
+    width: 90vw;
+  }
+}
+
+@media screen and (min-width:1934px) {
+  .main.main.mt2 {
+    width: 80vw;
+  }
+}
+
+@media screen and (min-width:2174px) {
+  .main.main.mt2 {
+    width: 70vw;
+  }
+}
+
+@media screen and (min-width:2481px) {
+  .main.main.mt2 {
+    width: 65vw;
+  }
 }

@@ -12,7 +12,8 @@ import {
   setLabelWidths,
   selectParameter,
   setLFOGraph,
-  dynModal
+  dynModal,
+  activateMidiThingie
 } from './domScripts.js';
 import { sendParameterSysex } from './backend/sysexMgt.js';
 import { requestConfig, handleFiles } from './settingsFuncs.js';
@@ -28,6 +29,7 @@ window.addEventListener('resize', () => {
   activeADSRWrappers.forEach(wrapper =>
     drawAllADSR(document.querySelector(`${wrapper.id} .adsr-container`))
   );
+  activateMidiThingie(q('#MIDIInputSelectLabel').innerHTML);
 });
 
 /**
@@ -35,15 +37,7 @@ window.addEventListener('resize', () => {
  */
 q(`body`).addEventListener('click', e => {
   const nodeType = e.target.nodeName;
-  if (
-    nodeType !== 'UL' &&
-    nodeType !== 'LABEL' &&
-    nodeType !== 'LI' &&
-    nodeType !== 'H3' &&
-    nodeType !== 'IMG' &&
-    nodeType !== 'H1' &&
-    nodeType !== 'SPAN'
-  ) {
+  if (!['UL', 'LABEL', 'LI', 'H3', 'IMG', 'H1', 'SPAN'].includes(nodeType)) {
     // Go through all <ul>s and hide them
     qA(`ul`).forEach(ul => ul.classList.toggle('hidden', true));
     qA(`label.box-selector-label`).forEach(label => label.classList.remove('active'));
