@@ -38,7 +38,7 @@
             name="adsr-predelay-input-<?= $port_id ?>"
             id="adsr-predelay-input-<?= $port_id ?>"
             data-type="number"
-            data-min="0"
+            data-min="1"
             data-max="9999"
             data-digits="4"
           />
@@ -62,7 +62,7 @@
             name="adsr-attack-input-<?= $port_id ?>"
             id="adsr-attack-input-<?= $port_id ?>"
             data-type="number"
-            data-min="0"
+            data-min="1"
             data-max="9900"
             data-digits="4"
           />
@@ -85,7 +85,7 @@
             name="adsr-decay-input-<?= $port_id ?>"
             id="adsr-decay-input-<?= $port_id ?>"
             data-type="number"
-            data-min="0"
+            data-min="1"
             data-max="9900"
             data-digits="4"
           />
@@ -131,7 +131,7 @@
             name="adsr-release-input-<?= $port_id ?>"
             id="adsr-release-input-<?= $port_id ?>"
             data-type="number"
-            data-min="0"
+            data-min="1"
             data-max="9900"
             data-digits="4"
           />
