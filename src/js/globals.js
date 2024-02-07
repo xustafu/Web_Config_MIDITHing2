@@ -123,22 +123,3 @@ export const colors = [
     voice: -1,
   },
 ];
-
-// credits
-export const contributors = [
-  {
-    name: 'Lorem ipsum dolor',
-    content:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic molestias quod ratione eius. Maiores porro aliquam, unde voluptates dolorem architecto odio.'
-  },
-  {
-    name: 'Pepito palotes',
-    content:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic molestias quod ratione eius. Maiores porro aliquam, unde voluptates dolorem architecto odio.'
-  },
-  {
-    name: 'Lorena Loren',
-    content:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic molestias quod ratione eius. Maiores porro aliquam, unde voluptates dolorem architecto odio.'
-  }
-];

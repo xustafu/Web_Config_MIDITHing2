@@ -1,4 +1,4 @@
-import { q, qA, contributors } from './globals.js';
+import { q, qA } from './globals.js';
 import { getParent } from './helpers.js';
 import { setAvailableColors, changePortsColors } from './colorHandling.js';
 import { newNonVoiceFunction, newVoiceFunction, addFunctionToVoice } from './voiceHandling.js';
@@ -541,12 +541,13 @@ export function showModal(type, msg) {
 
   switch (type) {
     case 'credits':
-      for (let a = 0; a < contributors.length; a++) {
-        h1.innerHTML = contributors[a].name;
-        p.innerHTML = contributors[a].content;
-        frag.appendChild(h1);
-        frag.appendChild(p);
-      }
+      h1.innerHTML = "Credits";
+      p.innerHTML = "This web editor is designed to work with Befaco MIDI Thing v2 or MIDI Thingie.";
+      p.innerHTML += "Please visit our website for further information, ";
+      p.innerHTML += "and check Web configuration tool section of our User Manual: [Insert link here]<br/>";
+      p.innerHTML += "<br/>Website developed by <a href='mailto:hugobraulio@gmail.com'>Hugo Vazquez</a> & Yago Nuchera";
+      frag.appendChild(h1);
+      frag.appendChild(p);
       break;
 
     case 'error':
