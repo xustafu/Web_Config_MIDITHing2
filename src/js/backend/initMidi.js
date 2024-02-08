@@ -91,7 +91,7 @@ function _initDeviceSelect() {
   if (!found) {
     let element = WebMidi.inputs[0];
     selectMIDIinput(element);
-    q("label[for='MIDIInputSelect']").innerHTML = element.name;
+    q("label[for='MIDIInputSelect']").innerHTML = element != null ? element.name : "No Device!";
     q("#MIDIInputSelect").setAttribute("value", 0);
   }
   
