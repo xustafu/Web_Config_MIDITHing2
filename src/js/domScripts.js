@@ -538,6 +538,8 @@ export function showModal(type, msg) {
   let p = document.createElement('p');
   h1.classList = 'modal-heading';
   p.classList = 'modal-par';
+  const voice_select_div = q("#add2voice_voice_selector");
+  voice_select_div.classList.toggle("hidden", true);
 
   switch (type) {
     case 'credits':
@@ -563,7 +565,6 @@ export function showModal(type, msg) {
       h2.classList = 'modal-h2';
       h2.innerHTML = type_to_title[type];
       frag.appendChild(h2);
-      const voice_select_div = q('#add2voice_voice_selector');
       const voice_select = q('#add2voice_voice_selector > select');
       if (voice_select != null) voice_select_div.removeChild(voice_select);
 
