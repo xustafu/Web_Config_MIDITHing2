@@ -65,11 +65,11 @@
       <li class="settings has-submenu">
         Load default setup
         <ul class="box-selector-suboptions round-sm hidden">
-          <li class="box-suboptions-item selector-item settings" data-body="1" data-value="0" data-func="predef">1</li>  
-          <li class="box-suboptions-item selector-item settings" data-body="1" data-value="1" data-func="predef">2</li>
-          <li class="box-suboptions-item selector-item settings" data-body="2" data-value="2" data-func="predef">3</li>
-          <li class="box-suboptions-item selector-item settings" data-body="3" data-value="3" data-func="predef">4</li>
-          <li class="box-suboptions-item selector-item settings" data-body="4" data-value="4" data-func="predef">5</li>
+          <li class="box-suboptions-item selector-item settings" data-body="1" data-value="0" data-func="predef">4 Voices 1 Channel</li>  
+          <li class="box-suboptions-item selector-item settings" data-body="1" data-value="1" data-func="predef">4 Voices 4 Channel</li>
+          <li class="box-suboptions-item selector-item settings" data-body="2" data-value="2" data-func="predef">Various</li>
+          <li class="box-suboptions-item selector-item settings" data-body="3" data-value="3" data-func="predef">Pitch Bends</li>
+          <li class="box-suboptions-item selector-item settings" data-body="4" data-value="4" data-func="predef">12 Voices 1 Channel</li>
         </ul>
       </li>
       <li class="selector-item settings" data-func="credits">Credits</li>
