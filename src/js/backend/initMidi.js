@@ -51,9 +51,6 @@ function _checkLastSysexRcvd() {
 }
 
 function _initDeviceSelect() {
-  var count = 0;
-
-  var input = q("#MIDIInputSelect");
   var ul = q("#device-selector");
   var dFrag = document.createDocumentFragment();
   var found = false;
