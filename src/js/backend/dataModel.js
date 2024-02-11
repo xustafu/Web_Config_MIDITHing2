@@ -23,7 +23,8 @@ class PortConfig {
     this.use_midi_clock = true;
     this.gate_pulse = false;
     this.isVoiceFunction = this.funct >= 1 && this.funct <= 7;
-    this.voice = (this.isVoiceFunction) ? this.param : -1;
+    this.voice = (this.isVoiceFunction) ? this.param : 100;
+    this.voice_rep = "VX"; //representation of voice, from 1 to 12 as available
     this.isNewVoice = false;
     this.isAddToVoice = false;
   }
@@ -86,6 +87,7 @@ var DeviceConfig = {
   voices_port: [],
   voices_port_used: [],
   voices_port_free: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+  voices_assigned: ['V12','V11','V10','V9','V8','V7','V6','V5','V4','V3','V2','V1']
 };
 
 const FirmwareFunctions2Web = {

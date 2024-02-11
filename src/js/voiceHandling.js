@@ -1,6 +1,7 @@
 import { q, qA, colors } from "./globals.js";
 import { changePortsColors } from "./colorHandling.js";
 import { showModal } from "./domScripts.js";
+import { calculateVoiceId } from "./helpers.js";
 
 // RANGE SLIDER https://www.youtube.com/watch?v=gcYLEkxRw6c
 
@@ -10,9 +11,10 @@ import { showModal } from "./domScripts.js";
  * @param {String} box_id > the id of the box (A1, C2..)
  * @param {HTMLElement} "li" > The element that receives the click
  */
-export function newVoiceFunction(port_num, box_id, li) {
+export function newVoiceFunction(port_num, box_id) {
   const port = DeviceConfig.ports[port_num];
   port.voice = Number(port_num);
+  port.voice_rep = calculateVoiceId(port.voice);
   port.param = Number(port_num);
   port.isNewVoice = true;
   port.isAddToVoice = false;
@@ -89,6 +91,7 @@ export function addFunctionToVoice(port_num, li, is_automatic) {
   q(`#${box_id} .port-color-drop-arrow`).classList.toggle("hidden", true);
 
   port.voice = voice;
+  port.voice_rep = calculateVoiceId(voice);
   port.param = voice;
   DeviceConfig.ports[port_num] = port;
 

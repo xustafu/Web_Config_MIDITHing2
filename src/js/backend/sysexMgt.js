@@ -1,6 +1,7 @@
 import { refreshWeb, setDefaultConfig} from "./refreshWeb.js";
 import { MIDIoutput } from "./initMidi.js";
 import { showModal } from "../domScripts.js";
+import { calculateVoiceId } from "../helpers.js";
 
 /************************************************/
 /*              RECEIVE SYSEX                   */
@@ -114,7 +115,8 @@ function _processPortFunctionSysex(port_num, data) {
   port.isVoiceFunction = isVoiceFunction;
   port.isNewVoice = (isVoiceFunction && port.port_num-1 == port.param);
   port.isAddToVoice = isVoiceFunction && port.port_num-1 != port.param;
-  port.voice = (isVoiceFunction ? port.param : -1);
+  port.voice = (isVoiceFunction ? port.param : 100);
+  port.voice_rep = calculateVoiceId(port.voice);
   //set default values
   var def_funct = DEF_FUNCT_VALUES[funct];
   port.volts = def_funct.volts;

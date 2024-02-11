@@ -574,7 +574,7 @@ export function showModal(type, msg) {
       DeviceConfig.voices_port_used.forEach(voice => {
         const option = document.createElement('option');
         option.setAttribute('value', voice);
-        option.innerHTML = BoxNames[voice];
+        option.innerHTML = DeviceConfig.ports[voice].voice_rep;
         select.appendChild(option);
       });
 
