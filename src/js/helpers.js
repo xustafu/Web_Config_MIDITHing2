@@ -57,6 +57,6 @@ export function rgbToHex(rgb) {
 
 export function calculateVoiceId(voice) {
   let voices = Array.from(new Set(DeviceConfig.ports.map((x) => x.voice)));
-  voices.splice(voices.indexOf(100),1);
+  //voices.splice(voices.indexOf(100),1);
   return "V"+(voices.indexOf(voice)+1);
 }
