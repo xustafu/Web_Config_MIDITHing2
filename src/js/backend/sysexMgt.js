@@ -220,8 +220,8 @@ export function sendParameterSysex(element) {
   var number = _extractNum(type, port_num);
   if (element.type == "checkbox") {
     element.checked ? (value = 1) : (value = 0);
-    //"NoteOffOsc is sent reversed. Checked sends false, not checked sends true"
-    if (parameter == "NoteOffOsc") element.checked ? (value = 0) : (value = 1);
+    //"NoteOffOsc or VelAffectADSR is sent reversed. Checked sends false, not checked sends true"
+    if (parameter == "NoteOffOsc" || parameter == "VelAffectADSR") element.checked ? (value = 0) : (value = 1);
   }
   const is_adsr_funct = DeviceConfig.ports[port_num].funct == MIDIVOICEADSR;
   const is_global_adsr = is_adsr_funct && !DeviceConfig.voices[number].use_local_config_adsr;

@@ -238,7 +238,7 @@ function _setVelocityParams(port, voice) {
   //set voice tag
   q("#label-velocity-voice-" + port.id).innerHTML = port.voice_rep;
   //set ADSR toggle
-  q("#velocity-vel-input-"+port.id).checked = voice.vel_affect_adsr;
+  q("#velocity-vel-input-"+port.id).checked = !voice.vel_affect_adsr;
 }
 
 function _setDrumParams(port, voice) {
@@ -283,7 +283,7 @@ function _setADSRParams(port, voice) {
   //set voice tag
   q("#label-adsr-voice-" + port.id).innerHTML = port.voice_rep;
   //set vel-adsr toggle
-  q("#adsr-vel-input-" + port.id).checked = voice.vel_affect_adsr;
+  q("#adsr-vel-input-" + port.id).checked = !voice.vel_affect_adsr;
   //set adsr-osc toggle
   q("#adsr-osc-input-" + port.id).checked = voice.adsr_affect_osc;
   //set adsr-retrigg selector
