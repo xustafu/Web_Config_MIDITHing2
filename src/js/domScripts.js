@@ -58,7 +58,7 @@ export function selectDevice(li) {
     // not Midi Thing. Show a warning
     showModal(
       "warning",
-      "This website is designed to work with either the MIDI Thing 2 or the MIDI Thingie \
+      "This website is designed to work with the MIDI Thing 2 \
        device connected. If no such device is found, the data shown on the website may be erroneous."
     );
   } 
@@ -544,7 +544,7 @@ export function showModal(type, msg) {
   switch (type) {
     case 'credits':
       h1.innerHTML = "Credits";
-      p.innerHTML = "This web editor is designed to work with Befaco MIDI Thing v2 or MIDI Thingie.";
+      p.innerHTML = "This web editor is designed to work with Befaco MIDI Thing 2.&nbsp;";
       p.innerHTML += "Please visit our website for further information, ";
       p.innerHTML += "and check Web configuration tool section of our User Manual: [Insert link here]<br/>";
       p.innerHTML += "<br/>Website developed by <a href='mailto:hugobraulio@gmail.com'>Hugo Vazquez</a> & Yago Nuchera";

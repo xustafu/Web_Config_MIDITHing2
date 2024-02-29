@@ -51,6 +51,9 @@ function _checkLastSysexRcvd() {
 }
 
 function _initDeviceSelect() {
+  var count = 0;
+
+  var input = q("#MIDIInputSelect");
   var ul = q("#device-selector");
   var dFrag = document.createDocumentFragment();
   var found = false;
@@ -108,7 +111,7 @@ function _initDeviceSelect() {
     q(".live-button svg").style.fill = "#ff0000";
     showModal(
       'warning',
-      'This website is designed to work with either the MIDI Thing 2 or the MIDI Thingie \
+      'This website is designed to work with the MIDI Thing 2 \
        device connected. If no such device is found, the data shown on the website may be erroneous.'
     );
   }
