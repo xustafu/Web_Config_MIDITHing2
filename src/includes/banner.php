@@ -19,7 +19,7 @@
     </svg>
   </figure>
 
-  <h1 class="banner-title"><span id="title">MIDI Thingy</span><span class="banner-subtitle"> | Editor</span></h1>
+  <h1 class="banner-title"><span id="title">MIDI Thing 2</span><span class="banner-subtitle"> | Editor</span></h1>
 
   <figure class="live-button">
     <svg
