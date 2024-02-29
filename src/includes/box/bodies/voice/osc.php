@@ -1,13 +1,6 @@
 <!-- BOX BODY NEW VOICE OSCILLATOR -->
 <main class="box-body hidden" id="osc-body-<?=$port_id?>">
   
-  <!-- OSCILLATOR VOICE -->
-  <div class="body-selector-parent input-wrap" id="osc-voice-<?=$port_id?>">
-    <h3 class="box-body-select-title inline">Voice</h3>
-    <label id="label-osc-voice-<?=$port_id?>" class="round-sm inline voice-tag"><?=$port_id?></label>
-  </div>
-  <!-- OSCILLATOR VOICE END -->
-
   <!-- OSCILLATOR OSC STOP -->
   <div class="toggle-wrap" id="osc-stop-<?=$port_id?>">
     <h3 class="box-body-select-title block">Stop</h3>
@@ -55,6 +48,36 @@
     <div class="slider-wrap"><span class="slider round-l"></span></div>
   </div>
   <!-- OSCILLATOR ADSR-OSC END -->
+
+  <!-- OSCILLATOR VOICE -->
+  <div class="body-selector-parent input-wrap" id="osc-voice-<?=$port_id?>">
+    <h3 class="box-body-select-title inline">Voice</h3>
+    <label id="label-osc-voice-<?=$port_id?>" class="round-sm inline voice-tag"><?=$port_id?></label>
+  </div>
+  <!-- OSCILLATOR VOICE END -->
+
+    <!-- SEMITONES -->
+  <div class="box-num-single" id="osc-semit-<?=$port_id?>">
+    <label class="box-num-single-label" for="osc-semit-input-<?=$port_id?>">Semitones +/-</label>
+    <div class="input-number-wrap round-sm">
+      <input
+        class="box-num-input round-sm"
+        type="text"
+        value="0"
+        data-mt-type="MIDICH"
+        data-mt-port="<?=$i?>"
+        data-mt-parameter="MIDICHBENDSPAN"
+        name="osc-semit-input-<?=$port_id?>"
+        id="osc-semit-input-<?=$port_id?>"
+        data-type="number"
+        data-min="1"
+        data-max="60"
+        data-digits="2" />
+      <span class="arrow-up"></span>
+      <span class="arrow-down"></span>
+    </div>
+  </div>
+  <!-- SEMITONES END -->
 
 </main>
 <!-- BOX BODY NEW VOICE OSCILLATOR END-->

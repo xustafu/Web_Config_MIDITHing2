@@ -1,6 +1,7 @@
 [id^=osc-voice] {
-  width: 100%;
-}
+    display: flex;
+    gap: 1rem;
+    align-items: center;}
 
 @media only screen and (max-width: 821px) {
   [id^='osc-body'] .toggle-wrap input:checked + .slider-wrap .slider {

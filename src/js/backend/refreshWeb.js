@@ -152,7 +152,7 @@ function _setBodyParams(port) {
       _setADSRParams(port, voice);
       break;
     case "osc":
-      _setOscParams(port, voice);
+      _setOscParams(port, voice, midi_ch);
       break;
     case "lfo":
       _setLFOParams(port, voice);
@@ -265,9 +265,11 @@ function _setGateParams(port, voice) {
   q("#gate-pulse-input-" + port.id).checked = port.gate_pulse;
 }
 
-function _setOscParams(port, voice) {
+function _setOscParams(port, voice, midi_ch) {
   //set voice tag
   q("#label-osc-voice-" + port.id).innerHTML = port.voice_rep;
+  //set semitones
+  _setParamValue("osc-semit-input-" + port.id, midi_ch.bend_span);
   //set stop toggle
   q("#osc-stop-input-" + port.id).checked = !voice.note_off_osc;
   //set lfo-osc toggle
