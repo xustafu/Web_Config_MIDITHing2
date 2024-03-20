@@ -60,7 +60,7 @@
           <input type="file" id="file_load" accept="application/json/*" class="no-trigger" style="display:none">
         </form>  
       </li>
-      <li class="selector-item settings" data-func="send">Send to module</li>
+      <!--li class="selector-item settings" data-func="send">Send to module</li-->
       <li class="selector-item settings" data-func="request">Request from module</li>
       <li class="settings has-submenu">
         Load default setup
