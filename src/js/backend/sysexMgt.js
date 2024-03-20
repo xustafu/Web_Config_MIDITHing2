@@ -307,14 +307,25 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
 
   if (type == PORT && [PORTFUNCTION, PORTMIDICHAN, PORTFUNCPARAMETER].includes(param)) {
     // function special case
+    var port = DeviceConfig.ports[number];
+    var param = port.param;
     dec_data = new Uint8Array(6);
-    dec_data[0] = DeviceConfig.ports[number].funct;
+    dec_data[0] = port.funct;
     send_drum_funct = (type == PORT) && (param == PORTFUNCTION) && (value == MIDIDRUMTRIG);
     if (send_drum_funct) dec_data[0] = MIDIVOICEGATE; // if DRUM, we send GATE instead, and vo min & max at end of code here
-    dec_data[1] = DeviceConfig.ports[number].midi_ch;
+    dec_data[1] = port.midi_ch;
     var funct_arr = new ArrayBuffer(4);
     var funct_view = new DataView(funct_arr);
-    funct_view.setUint32(0, DeviceConfig.ports[number].param, true);
+    if (port.isAddToVoice) {
+      for (var i=0; i < DeviceConfig.ports.length; i++) {
+        let p = DeviceConfig.ports[i];
+        if (p.voice == param && (i != (port.port_num - 1))) {
+          param = p.port_num - 1;
+          break;
+        }
+      }
+    } 
+    funct_view.setUint32(0, param, true);
     funct_arr = new Uint8Array(funct_arr);
     dec_data.set(funct_arr, 2);
     index = PORTFUNCTION;
