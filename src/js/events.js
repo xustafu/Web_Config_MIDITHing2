@@ -284,7 +284,7 @@ q('#file_load').addEventListener('change', e => {
 /****************************************************/
 
 //if anything changes in the web, send sysex to module with new info, except toggle-wraps which do it separatedly
-qA('input.not([type="checkbox"]).not(.no-trigger)').forEach(input => {
+qA('input:not([type=checkbox]):not(.no-trigger)').forEach(input => {
   input.addEventListener('change', e => {
     if (TriggerInputChange) {
       sendParameterSysex(e.target);

@@ -274,12 +274,12 @@ export function hideList(element) {
  * @returns
  */
 export function arrowsFunc(arrow, is_from_arrows = true) {
-  const is_arr_up = arrow.classList.contains('arrow-up'); // if it isn't, it's arrow-down
+  const is_arr_up = arrow.classList.contains("arrow-up"); // if it isn't, it's arrow-down
   const parent = arrow.parentElement; // the input wrapper
 
   const getInput = () => {
     for (let el of parent.children) {
-      if (el.matches('input')) return el;
+      if (el.matches("input")) return el;
     }
   };
 
@@ -287,12 +287,25 @@ export function arrowsFunc(arrow, is_from_arrows = true) {
 
   let curr_input_val = Number(input.value); // current value
 
+  //for Note Midi Ranges check min and max
+  if (input.classList.contains("midi-range")) {
+    const subs = input.id.slice(-3);
+    const range = input.id.substring(10,16);
+    const max = Number(q('#note-midi-range2'+subs).value);
+    const min = Number(q("#note-midi-range1" + subs).value);
+    if ((max-min) >= 120 && (((range == "range1") && !is_arr_up) || ((range == "range2") && is_arr_up))) return;
+  }
+
   // Don't allow values beyond the data-max or data-min
   // if it's not from arrows, it's already checked at minMax function
   if (is_from_arrows) {
-    const max = Number(input.getAttribute('data-max'));
-    const min = Number(input.getAttribute('data-min'));
-    if ((is_arr_up && curr_input_val >= max) || (!is_arr_up && curr_input_val <= min)) return;
+    const max = Number(input.getAttribute("data-max"));
+    const min = Number(input.getAttribute("data-min"));
+    if (
+      (is_arr_up && curr_input_val >= max) ||
+      (!is_arr_up && curr_input_val <= min)
+    )
+      return;
   }
 
   // If it's edited directly, get current input
@@ -303,10 +316,10 @@ export function arrowsFunc(arrow, is_from_arrows = true) {
       : curr_input_val - 1
     : curr_input_val;
 
-  input.setAttribute('value', new_input_val);
+  input.setAttribute("value", new_input_val);
   input.value = new_input_val;
 
-  if (input.classList.value.includes('nrpn')) {
+  if (input.classList.value.includes("nrpn")) {
     // special treatment of NRPN
     // calculate MSB and LSB, and change input to main PARAM one
     // the other inputs are not to be sent to module
@@ -319,7 +332,7 @@ export function arrowsFunc(arrow, is_from_arrows = true) {
   //set midi ch to all functions in voice
   //setMidiChVoice(input);
 
-  if (input.classList.value.includes('redraw_adsr')) {
+  if (input.classList.value.includes("redraw_adsr")) {
     const port_num = input.dataset.mtPort;
     const port_id = BoxNames[port_num];
     drawAllADSR(port_id);
@@ -372,16 +385,40 @@ function _calculate_msb_lsb_nrpn_values(input) {
  * @param {HTMLElement} input The input field
  */
 export function minMax(input) {
-  const max = Number(input.getAttribute('data-max'));
-  const min = Number(input.getAttribute('data-min'));
+  const max = Number(input.getAttribute("data-max"));
+  const min = Number(input.getAttribute("data-min"));
+  let max_range = 0;
+  let min_range = 0;
   var value = Number(input.value);
+
+  //for Note Midi Ranges check min and max
+  if (input.classList.contains("midi-range")) {
+    const subs = input.id.slice(-3);
+    const range = input.id.substring(10,16);
+    if (range == "range1") {
+      max_range = Number(q("#note-midi-range2" + subs).value);
+      min_range = value;
+    }
+    else if (range == "range2") {
+      max_range = value;
+      min_range = Number(q("#note-midi-range1" + subs).value);
+    }
+    if (max_range - min_range > 120) {
+      showModal(
+        "error",
+        "The MIDI range difference cannot be greater than 120"
+      );
+      input.value = (range == "range1") ? 7 : 120;
+      return;
+    }
+  }
   if (value > max) {
     value = max;
-    showModal('error', 'The max value cannot go over ' + max);
+    showModal("error", "The max value cannot go over " + max);
     input.value = max;
   } else if (value < min) {
     value = min;
-    showModal('error', 'The min value cannot be less than ' + min);
+    showModal("error", "The min value cannot be less than " + min);
     input.value = min;
   }
 }
