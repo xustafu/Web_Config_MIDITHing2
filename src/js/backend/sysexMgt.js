@@ -332,7 +332,7 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
 
   var send_arr = new Uint8Array(enc_data.length + 4);
 
-  send_arr[0] = 23; // Device = SINGLESYSEX + THING_mode;      ///< MT2 Single message(0x10) + module ID (7 para el MidiThing) == 23 (16+7)
+  send_arr[0] = 25; // Device = SINGLESYSEX + THING_mode;      ///< MT2 Single message(0x10) + module ID (7 para el MidiThing) == 23 (16+7)
   send_arr[1] = type_and_num; // typeAndNumber=0;                        ///< Port, MIDI Channel, Voice (3 bits) and number (5 bits)
   send_arr[2] = index; // Parameter;                              ///< Parameter Number
   send_arr[3] = enc_length; // Length;                                 ///< Parameter Length (56 Max)
