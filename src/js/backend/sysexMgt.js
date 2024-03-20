@@ -142,7 +142,7 @@ function _processParamSysex(type, number, param, data) {
   switch (type) {
     case PORT:
       DeviceConfig.ports[number][attr] = value;
-      if (attr == "clip_min" && DeviceConfig.ports[number].funct == MIDIVOICEGATE)
+      if (attr == "min" && DeviceConfig.ports[number].funct == MIDIVOICEGATE)
          DeviceConfig.ports[number].clip_max = value;
       break;
     case MIDICH:

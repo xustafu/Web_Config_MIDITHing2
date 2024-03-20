@@ -224,7 +224,7 @@ function _setNoteParams(port, voice, midi_ch) {
   var value = Number(voice.portamento_time)/10;
   _setParamValue("note-glide-time-input-" + port.id, value);
   //set midi range (VOICE)
-  _setParamValue("note-midi-range1-" + port.id,port.clip_min);
+  _setParamValue("note-midi-range1-" + port.id,port.min);
   _setParamValue("note-midi-range2-" + port.id, port.clip_max);
   // set assign selector (MIDI)
   _setParamValue("note-input-assign-" + port.id, midi_ch.voice_sel);

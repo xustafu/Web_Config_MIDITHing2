@@ -5,12 +5,20 @@
   <div class="box-num-mult input-wrap" id="note-midi-ranges-<?= $port_id ?>">
     <label class="box-num-mult-label block">MIDI Range</label>
     <div class="input-number-wrap">
-      <input class="box-num-input round-sm" type="text" value="0" data-mt-type="PORT" data-mt-port="<?= $i ?>" data-mt-parameter="PORTCLIPMINVAL" id="note-midi-range1-<?= $port_id ?>" name="note-midi-range1-<?= $port_id ?>" data-type="number" data-min="0" data-max="127" data-digits="3" />
+      <input class="box-num-input round-sm" 
+      type="text" value="0" data-mt-type="PORT" 
+      data-mt-port="<?= $i ?>" data-mt-parameter="PORTMINVAL" 
+      id="note-midi-range1-<?= $port_id ?>" name="note-midi-range1-<?= $port_id ?>" 
+      data-type="number" data-min="0" data-max="127" data-digits="3" />
       <span class="arrow-up"></span>
       <span class="arrow-down"></span>
     </div>
     <div class="input-number-wrap">
-      <input class="box-num-input round-sm" type="text" value="120" data-mt-type="PORT" data-mt-port="<?= $i ?>" data-mt-parameter="PORTCLIPMAXVAL" id="note-midi-range2-<?= $port_id ?>" name="note-midi-range2-<?= $port_id ?>" data-type="number" data-min="0" data-max="127" data-digits="3" />
+      <input class="box-num-input round-sm" 
+      type="text" value="120" data-mt-type="PORT" data-mt-port="<?= $i ?>" 
+      data-mt-parameter="PORTCLIPMAXVAL" id="note-midi-range2-<?= $port_id ?>" 
+      name="note-midi-range2-<?= $port_id ?>" data-type="number" data-min="0" 
+      data-max="127" data-digits="3" />
       <span class="arrow-up"></span>
       <span class="arrow-down"></span>
     </div>
