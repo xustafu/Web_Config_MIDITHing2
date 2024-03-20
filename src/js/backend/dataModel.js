@@ -58,7 +58,7 @@ class VoiceConfig {
     this.portamento_type = 0;
     this.adsr_retrig_mode = 2;
     this.adsr_affect_osc = false;
-    this.vel_affect_adsr = true;
+    this.vel_affect_adsr = false;
     this.use_local_config_adsr = false;
     this.voice_retrigger = true;
     this.note_off_osc = false;

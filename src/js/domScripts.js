@@ -677,8 +677,7 @@ export function domInit() {
 /**
  * Toggles the checkbox attribute of the companion input
  */
-export function checkBox(box) {
-  var input = q(`#${box.id} input`);
+export function checkBox(input) {
   input.classList.toggle('checked');
   input.checked = !input.checked;
 }

@@ -238,9 +238,14 @@ qA('button.reveal').forEach(button => {
 /**
  * Toggle checkbox state
  */
-qA('.toggle-wrap').forEach(toggle => {
-  toggle.addEventListener('click', () => {
-    checkBox(toggle);
+qA('.toggle-wrap').forEach(box => {
+  box.addEventListener('click', () => {
+    var input = q(`#${box.id} input`);
+    checkBox(input);
+    if (TriggerInputChange) {
+      sendParameterSysex(input);
+      requestConfig();
+    }
   });
 });
 
@@ -278,32 +283,12 @@ q('#file_load').addEventListener('change', e => {
 /****************************************************/
 /****************************************************/
 
-//if anything changes in the web, send sysex to module with new info
-qA('input:not(.no-trigger)').forEach(input => {
+//if anything changes in the web, send sysex to module with new info, except toggle-wraps which do it separatedly
+qA('input.not([type="checkbox"]).not(.no-trigger)').forEach(input => {
   input.addEventListener('change', e => {
     if (TriggerInputChange) {
       sendParameterSysex(e.target);
       requestConfig();
     }
-    //setMidiChVoice(input);
   });
 });
-
-/*export function setMidiChVoice(input) {
-  if (input.classList.contains("midich-sel")) {
-    var port = input.dataset.mtPort;
-    var port_id = BoxNames[port];
-    var funct = Number(q("#main-func-box-" + port_id).value);
-    var is_voice_function = funct >= 1 && funct <= 7;
-    if (is_voice_function){
-      var voice = DeviceConfig.ports[port].voice;
-      var midi_ch = DeviceConfig.ports[port].midi_ch;
-      DeviceConfig.ports.forEach((port)=>{
-        if (port.voice == voice) {
-          DeviceConfig.ports[port.port_num-1].midi_ch = midi_ch;
-          q("#midi-ch-" + port_id).setAttribute("value", midi_ch);
-        }
-      });
-    } 
-  }
-}*/
