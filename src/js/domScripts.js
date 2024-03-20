@@ -597,7 +597,8 @@ export function showModal(type, msg) {
           TriggerInputChange = true;
           addFunctionToVoice(port_num, li, true);
           const input = q('#main-func-box-' + port_id);
-          input.dispatchEvent(new Event('change'));
+          sendParameterSysex(input);
+          requestConfig();
         }
       });
   }
