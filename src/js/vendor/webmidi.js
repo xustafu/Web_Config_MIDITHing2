@@ -2642,12 +2642,7 @@
       data,
       this._parseTimeParameter(options.time)
     );
-    /*this.send(
-      wm.MIDI_SYSTEM_MESSAGES.sysex,
-      data,
-      this._parseTimeParameter(options.time)
-    );*/
-
+    
     return this;
   };
 

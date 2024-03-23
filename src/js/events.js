@@ -46,15 +46,6 @@ q(`body`).addEventListener('click', e => {
 });
 
 /**
- * LiveSend button
- * Change the value of LiveSend and the icon colour on click
- 
-q('#live').addEventListener('click', e => {
-  LiveSend = !LiveSend;
-  e.target.parentElement.style.fill = LiveSend ? '#06b900' : '#ff0000';
-});*/
-
-/**
  * Expand selector menus on click on any selector and selectors with
  * submenus
  * NOTE: the parameter for the expand function is the actual
@@ -95,15 +86,6 @@ qA('.selector-item.settings').forEach(li => {
     selectSettings(li);
   });
 });
-
-/**
- * Device selector > on click
- */
-/*qA('li.device-selector').forEach(li => {
-  li.addEventListener('click', e => {
-    selectDevice(e.target);
-  });
-}); ==> THIS IS DONE PROGRAMATICALLY AT initMidi.js > _initDeviceSelect()*/
 
 /**
  * A function menu option > on click
@@ -218,7 +200,6 @@ q('#modal-wrap').addEventListener('click', e => {
   if (e.target.classList.contains('modal-wrap')) {
     e.target.classList.toggle('hidden', true);
     window.removeEventListener('scroll', dynModal, true);
-    // genListener.abort();
   }
 });
 

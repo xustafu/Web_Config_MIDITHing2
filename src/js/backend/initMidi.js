@@ -120,18 +120,6 @@ function _initDeviceSelect() {
 export function selectMIDIinput(inp) {
   if (inp == null) return;
   if (MIDIinput != null) MIDIinput.removeListener();
-  //MIDIinput = WebMidi.inputs[inp];
   MIDIinput = inp;
   MIDIinput.addListener("sysex", "all", onSysexReceive);
-  // if (inp.name.includes("MIDI")) {
-  //   document.getElementById("site-title").style = "color:MediumSeaGreen;"; //",animation-duration: 4s;";
-  //   if (inp.name == "Teensy MIDI") {
-  //     document.getElementById("site-title").innerHTML = "MIDI Thing V2";
-  //   } else {
-  //     document.getElementById("site-title").innerHTML = "Unknown Device";
-  //   }
-  //   //if (!LiveSend) $("#Liveid").click();
-  // } else {
-  //   document.getElementById("MIDIThingLabel").style = "color:DarkGray;";
-  // }
 }

@@ -26,8 +26,6 @@ export function handleFiles(files) {
 
   if (file.type == "application/json") {
     reader.onloadend = function (evt) {
-      //console.log(reader.readyState);
-      //console.log(reader.result);
       var json;
 
       try {
@@ -62,7 +60,6 @@ export function sendToModule() {
     sendParameterSysex(input);
   });
   var bodies = qA(".box-body:not(.hidden):not(.multiple-box):not(.ignore-send)");
-  //var inputs = qA("input:not(.no-trigger):not(.header-input");
   bodies.forEach((body) => {
     body.querySelectorAll("input").forEach((input) => {
       sendParameterSysex(input);

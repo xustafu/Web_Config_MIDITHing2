@@ -13,10 +13,6 @@ import {
   credits,
   setPreDefSetup
 } from './settingsFuncs.js';
-import { setPort } from './backend/refreshWeb.js';
-//import { setMidiChVoice } from './events.js';
-
-// export const genListener = new AbortController();
 
 /**
  * Settings functions selector
@@ -85,8 +81,6 @@ export function activateMidiThingie(name = 'MIDIThingie') {
     // wrap the main content in div to allow for horizontal scrolling on defined sizes
     if (viewPortWidth > 821 && viewPortWidth < 1532) {
       main.classList = 'main mt2';
-      //q("#exp-selector").classList.remove("hidden");
-      //q("#exp-selector ul").classList.remove("hidden");
 
       // change the name of the MIDI Input field and return if wrapper already exists
       if (mt2Wrap) return (q('#MIDIInputSelectLabel').innerHTML = name);
@@ -137,7 +131,6 @@ export function expandMenu(el) {
   const elRect = el.getBoundingClientRect();
   const elTop = elRect.top;
   const elHeight = elRect.height;
-  //const elX = elRect.left;
   const viewportHeight = window.innerHeight;
   const viewportWidth = window.innerWidth;
   const is_lfo_quad = el.classList.contains('lfo-quad-sel');
@@ -328,9 +321,6 @@ export function arrowsFunc(arrow, is_from_arrows = true) {
 
   // trigger the input change to send the sysex. It doesnt work automagically.
   sendParameterSysex(input);
-
-  //set midi ch to all functions in voice
-  //setMidiChVoice(input);
 
   if (input.classList.value.includes("redraw_adsr")) {
     const port_num = input.dataset.mtPort;
@@ -682,23 +672,6 @@ export function _handleMainFunc(li, box_id, is_automatic) {
     newNonVoiceFunction(port_num, box_id);
   }
 
-  // if (!is_automatic) {
-  //   var prev_port = DeviceConfig.ports[port_num];
-  //   var new_port = new PortConfig(Number(port_num) + 1);
-  //   new_port.funct = prev_port.funct;
-  //   new_port.isAddToVoice = prev_port.isAddToVoice;
-  //   new_port.isNewVoice = prev_port.isNewVoice;
-  //   new_port.isVoiceFunction = prev_port.isVoiceFunction;
-  //   new_port.voice = prev_port.voice;
-  //   new_port.midi_ch = prev_port.midi_ch;
-  //   new_port.volts = prev_port.volts;
-  //   DeviceConfig.ports[port_num] = new_port;
-  //   DeviceConfig.voices_port[port_num] = new VoiceConfig();
-  //   var index = DeviceConfig.voices_port_used.indexOf(Number(port_num));
-  //   if (index >= 0)
-  //     DeviceConfig.voices[index] = new VoiceConfig();
-  //   setPort(new_port);
-  // }
   // Hide/unhide the corresponding body types
   _revealBody(li, port_num, is_automatic);
 }
@@ -763,30 +736,6 @@ export function setLFOGraph(elem, quad_num, is_global) {
     'src',
     './assets/png/' + graph_name + '.png'
   );
-
-  // const quad_num = is_global ? -1 : elem.dataset.quad;
-  // if (is_global) {
-  //   for (var i = 1; i <= 4; i++) {
-  //     var img = q('#lfo-graph-q' + i + '-' + port_num);
-  //     img.setAttribute('src', './assets/png/' + graph_name + '_q' + i + '.png');
-  //     q('#lfo-quad' + i + '-img-' + port_id).setAttribute(
-  //       'src',
-  //       './assets/png/' + graph_name + '.png'
-  //     );
-  //   }
-  //   q('#lfo-global-img-' + port_id).setAttribute('src', './assets/png/' + graph_name + '.png');
-  // } else {
-  //   var img = q('#lfo-graph-q' + quad_num + '-' + port_num);
-  //   img.setAttribute('src', './assets/png/' + graph_name + '_q' + quad_num + '.png');
-  //   q('#lfo-quad' + quad_num + '-img-' + port_id).setAttribute(
-  //     'src',
-  //     './assets/png/' + graph_name + '.png'
-  //   );
-  // }
-
-  // Hide <ul> after click if global.
-  //if (is_global)
-  //  elem.parentElement.classList.toggle("hidden", true);
 
   //trigger "change" event of 4 quadranst or one
   const input_wrap = getParent(elem, true, 'input-wrap');

@@ -43,7 +43,6 @@ export function newVoiceFunction(port_num, box_id) {
       DeviceConfig.voices_port_free.indexOf(port.port_num-1)
     );
   }
-  //_reorganizeVoiceSelectors();
 }
 
 /**
@@ -82,9 +81,7 @@ export function addFunctionToVoice(port_num, li, is_automatic) {
     }
   }
   const port = DeviceConfig.ports[port_num];
-  /* if it was previously a voice creator, reorganize voices
-  //if (port.isNewVoice) _reorganizeVoices(port); */
-
+  
   port.isNewVoice = false;
   port.isAddToVoice = true;
   // Hide the port name drop-down arrow
@@ -99,15 +96,6 @@ export function addFunctionToVoice(port_num, li, is_automatic) {
 
   changePortsColors(port_num, "ADD2VOICE");
   _changeVoice(box_id, li, port_name);
-
-  // hide this voice from voice selectors if it was a voice before
-  /*const index = DeviceConfig.voices_port_used.indexOf(port.port_num - 1);
-  if (index > -1) {
-    DeviceConfig.voices_port_used.splice(index, 1);
-    DeviceConfig.voices_port_free.push(port.port_num - 1);
-    DeviceConfig.voices_port_free.sort();
-  }
-  _reorganizeVoiceSelectors();*/
 }
 
 /**
@@ -117,8 +105,6 @@ export function addFunctionToVoice(port_num, li, is_automatic) {
  */
 export function newNonVoiceFunction(port_num, box_id) {
   const port = DeviceConfig.ports[port_num];
-  // if it was previously a voice creator, reorganize voices
-  //if (port.isNewVoice) _reorganizeVoices(port);
 
   port.isNewVoice = false;
   port.isAddToVoice = false;
@@ -135,7 +121,6 @@ export function newNonVoiceFunction(port_num, box_id) {
     DeviceConfig.voices_port_free.push(port.port_num - 1);
     DeviceConfig.voices_port_free.sort();
   }
-  //_reorganizeVoiceSelectors();
 }
 
 /**
@@ -174,34 +159,6 @@ function _changeVoice(box_id, li, port) {
     }
   }
 }
-
-/*function _reorganizeVoices(port) {
-  //a voice has been destroyed. We must find a new representant
-  //TO DO for offline functionality
-}*/
-
-/*function _reorganizeVoiceSelectors() {
-  if (DeviceConfig.voices_port_used.length > 0) {
-    let frag = document.createDocumentFragment();
-    DeviceConfig.voices_port_used.forEach(voice => {
-      const li = document.createElement('li');
-      li.classList.add('box-selector-item');
-      li.classList.add('voice-selector-item');
-      li.setAttribute('data-value', voice);
-      li.innerHTML = BoxNames[voice];
-      li.addEventListener('click', e => {
-        alert('hola');
-        li.parentElement.classList.toggle('hidden', true);
-      });
-      frag.appendChild(li);
-    });
-    qA('.voice-selector').forEach(ul => {
-      ul.innerHTML = '';
-      ul.appendChild(frag.cloneNode(true));
-    });
-  }
-}*/
-
 
 
 

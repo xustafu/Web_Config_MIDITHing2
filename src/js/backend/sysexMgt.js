@@ -32,8 +32,8 @@ export function onSysexReceive(msg) {
   var enc_data = msg.data.slice(6, 6 + length); ///< Data
   var sysex_end = msg.data[msg.data.length - 1]; ///< End of SysEx
 
-  console.log(msg);
-  console.log(msg.data);
+  //console.log(msg);
+  //console.log(msg.data);
 
   if (sysex_start == 0xf0 && edu == 0x7d && sysex_end == 0xf7)
     console.log("MIDI Thing SysEx Rcv");
@@ -44,13 +44,12 @@ export function onSysexReceive(msg) {
   var type = _extractType(type_and_num);
   var num = _extractNumber(type_and_num);
 
-  // if (ntype == VCMCSysExtype.DUMPCHANNEL) {
   enc_data = new Uint8Array(enc_data);
-  console.log(" Data: " + enc_data);
+  //console.log(" Data: " + enc_data);
   var dec_data = new Uint8Array(enc_data.length);
   length = _decodeSysEx(enc_data, dec_data); // Decode 7 bit SysEx info from message
   dec_data = dec_data.slice(0, length);
-  console.log(" Decoded Length: " + length + " Data: " + dec_data);
+  //console.log(" Decoded Length: " + length + " Data: " + dec_data);
   _processSysex(type, num, parameter, dec_data);
   
   //global constant to check last sysex received and refresh web
@@ -312,7 +311,6 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
     dec_data = new Uint8Array(6);
     dec_data[0] = port.funct;
     send_drum_funct = (type == PORT) && (param == PORTFUNCTION) && (value == MIDIDRUMTRIG);
-    if (send_drum_funct) dec_data[0] = MIDIVOICEGATE; // if DRUM, we send GATE instead, and vo min & max at end of code here
     dec_data[1] = port.midi_ch;
     var funct_arr = new ArrayBuffer(4);
     var funct_view = new DataView(funct_arr);
@@ -335,11 +333,11 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
     eval("view.set" + data_type + "(0," + value + ",true)");
     dec_data = dec_data.slice(0, length);
   }
-  console.log(" Decoded Send length: " + length + " Data: " + dec_data);
+  //console.log(" Decoded Send length: " + length + " Data: " + dec_data);
 
   var enc_length = _encodeSysEx(dec_data, enc_data); // Decode 7 bit SysEx info from message
   enc_data = enc_data.slice(0, enc_length);
-  console.log(" Send size: " + enc_length + " Data: " + enc_data);
+  //console.log(" Send size: " + enc_length + " Data: " + enc_data);
 
   var send_arr = new Uint8Array(enc_data.length + 4);
 
@@ -348,7 +346,7 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
   send_arr[2] = index; // Parameter;                              ///< Parameter Number
   send_arr[3] = enc_length; // Length;                                 ///< Parameter Length (56 Max)
   send_arr.set(enc_data, 4); // pData[SysExpacketDataLength + 1] = {0}; ///< Data
-  console.log("SysEx length: " + send_arr.length + " Data:" + send_arr);
+  //console.log("SysEx length: " + send_arr.length + " Data:" + send_arr);
 
   MIDIoutput.sendSysex(0x7d, Array.from(send_arr));
 
@@ -378,9 +376,7 @@ function _storeWebData(type, number, attr, value, is_global_adsr){
           // reset default values
           _resetValues(number)
           if (value == MIDIDRUMTRIG){
-            // special case of DRUM function.
-            // at module it's gate function, and clip_min and clip_max get 0-120
-            DeviceConfig.ports[number].funct == MIDIVOICEGATE;
+            // special case of DRUM function. clip_min and clip_max get 0-120
             DeviceConfig.voices_port[number].vo_min_note = 60;
             DeviceConfig.voices_port[number].vo_max_note = 60;
           }
