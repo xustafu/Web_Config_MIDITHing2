@@ -238,7 +238,7 @@ function _setVelocityParams(port, voice) {
   //set voice tag
   q("#label-velocity-voice-" + port.id).innerHTML = port.voice_rep;
   //set ADSR toggle
-  q("#velocity-vel-input-"+port.id).checked = !voice.vel_affect_adsr;
+  q("#velocity-vel-input-"+port.id).checked = voice.vel_affect_adsr;
 }
 
 function _setDrumParams(port, voice) {
