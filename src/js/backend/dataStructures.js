@@ -266,6 +266,7 @@ const REQ_CONFIG = 1;
 const SAVE_CONFIG_TO_SLOT = 2;
 const LOAD_CONFIG_FROM_SLOT = 3;
 const SET_LEARN_MODE = 4;
+const MIDI_MERGE = 5;
 
 
 
@@ -365,10 +366,11 @@ const SYSEX_OBJ = {
     [SAVE_CONFIG_TO_SLOT]: { index: 2, type: "Uint16", length: 2 },
     [LOAD_CONFIG_FROM_SLOT]: { index: 3, type: "Uint16", length: 2 },
     [SET_LEARN_MODE]: { index: 4, type: "Uint16", length: 2 },
+    [MIDI_MERGE]: { index: 5, type: "Uint16", length: 2 },
   },
   [PORT]: {
-    [PORTTYPE]: { index: 1, type: "Uint8", length: 1, attr: "type"},
-    [PORTMODE]: { index: 2, type: "Uint8", length: 1, attr: "volts"},
+    [PORTTYPE]: { index: 1, type: "Uint8", length: 1, attr: "type" },
+    [PORTMODE]: { index: 2, type: "Uint8", length: 1, attr: "volts" },
     [PORTFUNCTION]: { index: 3, type: "Uint16", length: 6, attr: "funct" },
     [PORTMINVAL]: { index: 4, type: "Int16", length: 2, attr: "min" },
     [PORTMAXVAL]: { index: 5, type: "Int16", length: 2, attr: "max" },

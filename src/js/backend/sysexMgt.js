@@ -94,6 +94,8 @@ function _processGeneralSysex(param, data) {
       break;
     case 4: //"SET_LEARN_MODE":
       break;
+    case 5: //"MIDI_MERGE":
+      break;
     default: //ERROR
       showModal("error","Error: type of GENERAL Sysex command not recognized, examples: SET_DEF_CONFIG, SAVE_CONFIG_TO_SLOT");
       break;
@@ -368,7 +370,6 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
   if (LogSentSysex) console.log("F0 7D "+b.toString().replaceAll(",", " ").toUpperCase());
   if (LogSentSysex) console.log(" ");
 
-  var send_drum_funct = (type == PORT && DeviceConfig.ports[number].param == PORTFUNCTION && value == MIDIDRUMTRIG);
   if (send_drum_funct) {
     // special case for using drum function
     // convert gate to drum by sending vo min note == vo max note
