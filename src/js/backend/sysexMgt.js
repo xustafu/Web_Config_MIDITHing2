@@ -319,6 +319,8 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
 
   var dec_data = new Uint8Array(10);
   var enc_data = new Uint8Array(12);
+  var send_drum_funct = (type == PORT && param == PORTFUNCTION && value == MIDIDRUMTRIG);
+  var is_port_midich = (type == PORT && param == PORTMIDICHAN);
 
   if (type == PORT && [PORTFUNCTION, PORTMIDICHAN, PORTFUNCPARAMETER].includes(param)) {
     // function special case
@@ -329,7 +331,7 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
     dec_data[1] = port.midi_ch;
     var funct_arr = new ArrayBuffer(4);
     var funct_view = new DataView(funct_arr);
-    if (port.isAddToVoice) {
+    if (port.isAddToVoice || is_port_midich) {
       for (var i=0; i < DeviceConfig.ports.length; i++) {
         let p = DeviceConfig.ports[i];
         if (p.voice == param && (i != (port.port_num - 1))) {
