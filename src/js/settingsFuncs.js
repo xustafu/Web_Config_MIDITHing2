@@ -81,7 +81,8 @@ export function requestConfig() {
   if (RequestConfig) {
     sendSysex("GENERAL", 0, "REQ_CONFIG", 0);
     refreshWeb();
-    console.log("requesting from module");
+    if (LogSentSysex) console.log("REQUEST FROM MODULE");
+    if (LogSentSysex) console.log(" ");
   }
 }
 
@@ -91,7 +92,8 @@ export function setPreDefSetup(num) {
   sendSysex("GENERAL", 0, "SET_DEF_CONFIG", num);
   setDefaultConfig(num, true);
   refreshWeb();
-  console.log("setting default config");
+  if (LogSentSysex) console.log("SET PREDEF " + (num - 32));
+  if (LogSentSysex) console.log(" ");
 }
 
 export function credits() {

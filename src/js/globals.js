@@ -5,6 +5,10 @@ export const qA = selector => document.querySelectorAll(selector);
 
 export let LiveSend = false;
 
+//to log sysex sent or received
+self.LogSentSysex = true;
+self.LogRcvdSysex = false;
+
 //to trigger event "change" of input or not
 self.TriggerInputChange = true;
 

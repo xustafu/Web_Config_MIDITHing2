@@ -32,24 +32,25 @@ export function onSysexReceive(msg) {
   var enc_data = msg.data.slice(6, 6 + length); ///< Data
   var sysex_end = msg.data[msg.data.length - 1]; ///< End of SysEx
 
-  //console.log(msg);
-  //console.log(msg.data);
-
-  if (sysex_start == 0xf0 && edu == 0x7d && sysex_end == 0xf7)
-    console.log("MIDI Thing SysEx Rcv");
-  else {
-    console.log("Not MIDI Thing Sysex");
+  //console logging
+  if (sysex_start == 0xf0 && edu == 0x7d && sysex_end == 0xf7) {
+    if (LogRcvdSysex) console.log("SYSEX RECEIVED:");
+    var b=[];
+    msg.data.forEach((x) => {
+      b.push(x.toString(16).padStart(2,'0'));
+    });
+    if (LogRcvdSysex) console.log(b.toString().replaceAll(",", " ").toUpperCase());
+  } else {
+    if (LogRcvdSysex) console.log("Not MIDI Thing Sysex");
     return;
   }
   var type = _extractType(type_and_num);
   var num = _extractNumber(type_and_num);
 
   enc_data = new Uint8Array(enc_data);
-  //console.log(" Data: " + enc_data);
   var dec_data = new Uint8Array(enc_data.length);
   length = _decodeSysEx(enc_data, dec_data); // Decode 7 bit SysEx info from message
   dec_data = dec_data.slice(0, length);
-  //console.log(" Decoded Length: " + length + " Data: " + dec_data);
   _processSysex(type, num, parameter, dec_data);
   
   //global constant to check last sysex received and refresh web
@@ -81,6 +82,8 @@ function _processGeneralSysex(param, data) {
   var command = SYSEX_OBJ[0][param].index;
   switch (command) {
     case 0: //"SET_DEF_CONFIG":
+      if (LogRcvdSysex) console.log("Set predef num." + data[0]);
+      if (LogRcvdSysex) console.log(" ");
       setDefaultConfig(data[0]);
       break;
     case 1: //"REQ_CONFIG":
@@ -116,6 +119,10 @@ function _processPortFunctionSysex(port_num, data) {
   port.isAddToVoice = isVoiceFunction && port.port_num-1 != port.param;
   port.voice = (isVoiceFunction ? port.param : 100);
   port.voice_rep = calculateVoiceId(port.voice);
+  //console log
+  var funct_name = FirmwareFunctions2Web[funct];
+  if (LogRcvdSysex) console.log("Set port function "+funct_name.toUpperCase()+" at port "+port.port_num+" and voice "+port.voice_rep);
+  if (LogRcvdSysex) console.log(" ");
   //set default values
   var def_funct = DEF_FUNCT_VALUES[funct];
   port.volts = def_funct.volts;
@@ -143,12 +150,18 @@ function _processParamSysex(type, number, param, data) {
       DeviceConfig.ports[number][attr] = value;
       if (attr == "min" && DeviceConfig.ports[number].funct == MIDIVOICEGATE)
          DeviceConfig.ports[number].clip_max = value;
+      //console log 
+      if (LogRcvdSysex) console.log("Set PORT PARAM at port "+(number+1)+", "+attr+"="+value);
       break;
     case MIDICH:
       DeviceConfig.midi_channels[number - 1][attr] = value;
+      //console log 
+      if (LogRcvdSysex) console.log("Set MIDICH PARAM at midi ch."+(number)+", "+attr+"="+value);
       break;
     case VOICE:
       DeviceConfig.voices[number][attr] = value;
+      //console log 
+      if (LogRcvdSysex) console.log("Set VOICE PARAM at voice "+number+", "+attr+"="+value);
       break;
     default: 
       showModal('error', "Error: type of Sysex command not recognized, must be GENERAL, PORT, MIDI CH. or VOICE");
@@ -165,6 +178,8 @@ function _processMIDIparam(number, param, data) {
   const value = eval("view.get"+SYSEX_OBJ[VOICE][param].type+"(0, true)");
   const attr = SYSEX_OBJ[VOICE][param].attr;
   DeviceConfig.voices_midi_ch[midi_ch-1][attr] = value;
+  //console log
+  if (LogRcvdSysex) console.log("Set GLOBAL MIDI PARAM at midi ch."+midi_ch+", "+attr+"="+value);
 }
 
 /*! \brief Decode System Exclusive messages.
@@ -264,6 +279,7 @@ function _extractNum(type, port) {
 
 
 export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
+  if (LogSentSysex) console.log("SYSEX SENT: ");
   if (MIDIoutput == null) return;
   try {
     var type = eval(dtype);
@@ -333,11 +349,9 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
     eval("view.set" + data_type + "(0," + value + ",true)");
     dec_data = dec_data.slice(0, length);
   }
-  //console.log(" Decoded Send length: " + length + " Data: " + dec_data);
 
   var enc_length = _encodeSysEx(dec_data, enc_data); // Decode 7 bit SysEx info from message
   enc_data = enc_data.slice(0, enc_length);
-  //console.log(" Send size: " + enc_length + " Data: " + enc_data);
 
   var send_arr = new Uint8Array(enc_data.length + 4);
 
@@ -346,10 +360,16 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
   send_arr[2] = index; // Parameter;                              ///< Parameter Number
   send_arr[3] = enc_length; // Length;                                 ///< Parameter Length (56 Max)
   send_arr.set(enc_data, 4); // pData[SysExpacketDataLength + 1] = {0}; ///< Data
-  //console.log("SysEx length: " + send_arr.length + " Data:" + send_arr);
 
   MIDIoutput.sendSysex(0x7d, Array.from(send_arr));
-
+  
+  //console log
+  var b=[];
+  Array.from(send_arr).forEach((x) => {
+    b.push(x.toString(16).padStart(2, "0"));
+  });
+  if (LogSentSysex) console.log("F0 7D "+b.toString().replaceAll(",", " ").toUpperCase());
+  if (LogSentSysex) console.log(" ");
   if (send_drum_funct) {
     // special case for using drum function
     // convert gate to drum by sending vo min note == vo max note
@@ -369,28 +389,33 @@ function _storeWebData(type, number, attr, value, is_global_adsr){
   if (is_global_adsr && type == VOICE){
     //special case of voice parameters of global ADSR 
     DeviceConfig.voices_midi_ch[number - 18][attr] = value;
+    if (LogSentSysex) console.log("Set GLOBAL MIDICH PARAM at midi ch."+(number-18)+", "+attr+"="+value);
   } else {
     switch (type) {
       case PORT:
         if (attr == "funct"){
           // reset default values
-          _resetValues(number)
+          _resetValues(number);
           if (value == MIDIDRUMTRIG){
             // special case of DRUM function. clip_min and clip_max get 0-120
             DeviceConfig.voices_port[number].vo_min_note = 60;
             DeviceConfig.voices_port[number].vo_max_note = 60;
           }
+          if (LogSentSysex) console.log("Set FUNCT "+FirmwareFunctions2Web[value]+" at port "+(number+1));
         }else {
           DeviceConfig.ports[number][attr] = value;
+          if (LogSentSysex) console.log("Set PORT PARAM at port"+(number+1)+", "+attr+"="+value);
         }
         break;
       case VOICE:
         var port_num = DeviceConfig.voices_port_used[number];
         DeviceConfig.voices_port[port_num][attr] = value;
         DeviceConfig.voices[number][attr] = value;
+        if (LogSentSysex) console.log("Set VOICE PARAM at port "+(port_num+1)+", voice "+number+", "+attr+"="+value);
         break;
       case MIDICH:
         DeviceConfig.midi_channels[number-1][attr] = value;
+        if (LogSentSysex) console.log("Set MIDICH PARAM at midi ch."+(number)+", "+attr+"="+value);
         break;
       default:
         break;
