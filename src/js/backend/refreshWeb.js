@@ -127,30 +127,42 @@ function _setHeaderParams(port) {
 }
 
 function _setBodyParams(port) {
-  var midi_ch = DeviceConfig.midi_channels[port.midi_ch-1];
-  var funct_name = FirmwareFunctions2Web[port.funct];
-  var voice = DeviceConfig.voices_port[port.voice];
-  const is_global_adsr = (funct_name == "adsr") && !voice.use_local_config_adsr;
-  if (is_global_adsr) {
+  const midi_ch = DeviceConfig.midi_channels[port.midi_ch-1];
+  const funct_name = FirmwareFunctions2Web[port.funct];
+  let voice = DeviceConfig.voices_port[port.voice];
+  const is_global_adsr = (funct_name == "velocity") || ((funct_name == "adsr") && !voice.use_local_config_adsr);
+  if (is_global_adsr)
     voice = DeviceConfig.voices_midi_ch[port.midi_ch-1];
-  } else {
-    voice = DeviceConfig.voices_port[port.voice];
-  }
+  voice.voice = port.voice;
   switch (funct_name) {
     case "note":
       _setNoteParams(port, voice, midi_ch);
       break;
     case "velocity":
       _setVelocityParams(port, voice);
+      if (!is_global_adsr)
+        for (let [i, v] of DeviceConfig.ports.map((x) => x.voice).entries()) {
+          var p = DeviceConfig.ports[i]
+          if (p.voice == voice.voice){
+            _setADSRParams(p, voice);
+          } 
+        }
+      break;
+    case "adsr":
+      _setADSRParams(port, voice);
+      if (!is_global_adsr)
+        for (let [i, v] of DeviceConfig.ports.map((x) => x.voice).entries()) {
+          var p = DeviceConfig.ports[i];
+          if (p.voice == voice.voice) {
+            _setVelocityParams(p, voice);
+          }
+        }
       break;
     case "gate":
       _setGateParams(port, voice);
       break;
     case "drum":
       _setDrumParams(port, voice);
-      break;
-    case "adsr":
-      _setADSRParams(port, voice);
       break;
     case "osc":
       _setOscParams(port, voice, midi_ch);

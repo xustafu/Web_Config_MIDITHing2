@@ -179,7 +179,7 @@ function _processMIDIparam(number, param, data) {
   const attr = SYSEX_OBJ[VOICE][param].attr;
   DeviceConfig.voices_midi_ch[midi_ch-1][attr] = value;
   //console log
-  if (LogRcvdSysex) console.log("Set GLOBAL MIDI PARAM at midi ch."+midi_ch+", "+attr+"="+value);
+  if (LogRcvdSysex) console.log("Set MIDICH PARAM at midi ch."+midi_ch+", "+attr+"="+value);
 }
 
 /*! \brief Decode System Exclusive messages.
@@ -237,13 +237,13 @@ export function sendParameterSysex(element) {
     //"NoteOffOsc is sent reversed. Checked sends false, not checked sends true"
     if (parameter == "NoteOffOsc") element.checked ? (value = 0) : (value = 1);
   }
-  const is_adsr_funct = DeviceConfig.ports[port_num].funct == MIDIVOICEADSR;
+  const is_adsr_funct = [MIDIVOICEADSR, MIDIVOICEVEL].includes(DeviceConfig.ports[port_num].funct);
   const is_global_adsr = is_adsr_funct && !DeviceConfig.voices[number].use_local_config_adsr;
   const adsr_params = [
     "ADSRTPredelay", "ADSRLMax", "ADSRTAttack", "ADSRTDecay", "ADSRLSustain", "ADSRRSustain",
     "ADSRTRelease", "ADSRAffectOSC", "ADSRCurveType", "ADSRRetrigMode", "VelAffectADSR"];
   const is_global_adsr_param = adsr_params.includes(parameter) && is_global_adsr;
-  if (is_adsr_funct && type == "VOICE" && is_global_adsr_param) {
+  if (type == "VOICE" && is_global_adsr_param) {
     var midich = Number(DeviceConfig.ports[port_num].midi_ch);
     sendSysex(type, midich + 17, parameter, value, is_global_adsr_param);
     refreshWeb();
@@ -318,15 +318,12 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
   var dec_data = new Uint8Array(10);
   var enc_data = new Uint8Array(12);
 
-  var send_drum_funct = false;
-
   if (type == PORT && [PORTFUNCTION, PORTMIDICHAN, PORTFUNCPARAMETER].includes(param)) {
     // function special case
     var port = DeviceConfig.ports[number];
     var param = port.param;
     dec_data = new Uint8Array(6);
     dec_data[0] = port.funct;
-    send_drum_funct = (type == PORT) && (param == PORTFUNCTION) && (value == MIDIDRUMTRIG);
     dec_data[1] = port.midi_ch;
     var funct_arr = new ArrayBuffer(4);
     var funct_view = new DataView(funct_arr);
@@ -370,6 +367,8 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
   });
   if (LogSentSysex) console.log("F0 7D "+b.toString().replaceAll(",", " ").toUpperCase());
   if (LogSentSysex) console.log(" ");
+
+  var send_drum_funct = (type == PORT && DeviceConfig.ports[number].param == PORTFUNCTION && value == MIDIDRUMTRIG);
   if (send_drum_funct) {
     // special case for using drum function
     // convert gate to drum by sending vo min note == vo max note
@@ -389,7 +388,7 @@ function _storeWebData(type, number, attr, value, is_global_adsr){
   if (is_global_adsr && type == VOICE){
     //special case of voice parameters of global ADSR 
     DeviceConfig.voices_midi_ch[number - 18][attr] = value;
-    if (LogSentSysex) console.log("Set GLOBAL MIDICH PARAM at midi ch."+(number-18)+", "+attr+"="+value);
+    if (LogSentSysex) console.log("Set GLOBAL MIDICH PARAM at midi ch."+(number-17)+", "+attr+"="+value);
   } else {
     switch (type) {
       case PORT:
@@ -411,7 +410,7 @@ function _storeWebData(type, number, attr, value, is_global_adsr){
         var port_num = DeviceConfig.voices_port_used[number];
         DeviceConfig.voices_port[port_num][attr] = value;
         DeviceConfig.voices[number][attr] = value;
-        if (LogSentSysex) console.log("Set VOICE PARAM at port "+(port_num+1)+", voice "+number+", "+attr+"="+value);
+        if (LogSentSysex) console.log("Set VOICE PARAM at voice "+number+", "+attr+"="+value);
         break;
       case MIDICH:
         DeviceConfig.midi_channels[number-1][attr] = value;
