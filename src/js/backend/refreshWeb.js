@@ -17,7 +17,8 @@ export function setDefaultConfig(num, forced=false) {
 }
 
 function _setDefaultConfig(num) {
-  var config = DEFAULT_CONFIGS[num-32];
+  num = (num-32 >= 0) ? num-32 : num;
+  var config = DEFAULT_CONFIGS[num];
   var voice_ids = [];
   DeviceConfig.voices_assigned = ['V12','V11','V10','V9','V8','V7','V6','V5','V4','V3','V2','V1'];
   config.forEach((item, i) => {
