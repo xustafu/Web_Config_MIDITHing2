@@ -56,7 +56,7 @@ class VoiceConfig {
     this.lfo_pre_delay = 0;
     this.portamento_time = 0;
     this.portamento_type = 0;
-    this.adsr_retrig_mode = 2;
+    this.adsr_retrig_mode = 0;
     this.adsr_affect_osc = false;
     this.vel_affect_adsr = false;
     this.use_local_config_adsr = false;

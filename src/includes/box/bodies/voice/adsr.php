@@ -53,7 +53,7 @@
       id="adsr-retrig-input-<?= $port_id ?>" 
       value="0" 
     />
-    <label for="adsr-retrig-input-<?= $port_id ?>" class="box-selector-label round-sm block">Retriger</label>
+    <label for="adsr-retrig-input-<?= $port_id ?>" class="box-selector-label round-sm block">Continue</label>
     <ul class="selector-options hidden round-sm">
       <li class="box-selector-item" data-value="2">Retrigger</li>
       <li class="box-selector-item" data-value="1">No Retrigger</li>

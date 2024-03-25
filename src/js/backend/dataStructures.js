@@ -237,9 +237,9 @@ const LFOCurvesPNG = {
 };
 
 const ADSRRetrigNames = {
-  2: "Retrigger",
+  0: "Continue",
   1: "No Retrigger",
-  0: "Continue"
+  2: "Retrigger"
 }
 
 
