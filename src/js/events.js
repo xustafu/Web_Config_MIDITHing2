@@ -54,7 +54,6 @@ q(`body`).addEventListener('click', e => {
 [
   qA('label[class*=selector-label]'),
   qA('.color-selector'),
-  //qA('.port-color-drop-arrow'),
   qA('[for^=lfo-global-input] img'),
   qA('li.has-submenu')
 ].forEach(item => {

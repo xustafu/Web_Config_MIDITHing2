@@ -17,6 +17,7 @@ import { showModal } from './domScripts.js';
 export function changePortsColors(port, type) {
   const boxId = "box-"+BoxNames[port];
   const portName = q(`#${boxId} .box-header-title`);
+  const voice_rep = DeviceConfig.ports[port].voice_rep;
 
   // Grab the current background colour for the port
   const currCol = portName.style.backgroundColor;
@@ -24,6 +25,7 @@ export function changePortsColors(port, type) {
   // reset all styles first
   portName.style.backgroundColor = 'inherit';
   portName.style.borderColor = 'none';
+  
 
   switch (type) {
     case "RESET": 
@@ -36,29 +38,24 @@ export function changePortsColors(port, type) {
     case "NEWVOICE":
       // Go through the global array of colours
       // and as soon as there is one that isn't used, use it
-      for (let a = 0; a < colors.length; a++) {
-        if (!colors[a].used) {
-          portName.style.backgroundColor = colors[a].hex;
-          portName.style.borderColor = colors[a].hex;
-          portName.style.color = colors[a].darkfont ? '#000' : '#fff';
-
-          // Mark the colour as used
-          colors[a].used = true;
-          colors[a].voice = DeviceConfig.ports[port].voice;
-          colors[a].port = boxId.substring(3);
-          setAvailableColors();
-          break;
-        }
+      var i = colors.findIndex((c) => c.voice == voice_rep);
+      if ((typeof(i) != "undefined") & (i != -1)) {
+        var color = colors[i];
+        portName.style.backgroundColor = color.hex;
+        portName.style.borderColor = color.hex;
+        portName.style.color = color.darkfont ? '#000' : '#fff';
+        colors[i].used = true;
+        setAvailableColors();
       }
       break;
     case "ADD2VOICE":
       // Find the color associated to that voice
-      for (let a = 0; a < colors.length; a++) {
-        if (colors[a].voice == DeviceConfig.ports[port].voice) {
-          portName.style.backgroundColor = "transparent";
-          portName.style.borderColor = colors[a].hex;
-          portName.style.color = "#fff";
-        }
+      var i = colors.findIndex((c) => (c.voice == voice_rep));
+      if ((typeof(i) != "undefined") && (i != -1)) {
+        portName.style.backgroundColor = "transparent";
+        portName.style.borderColor = colors[i].hex;
+        portName.style.color = "#fff";
+        colors[i].used = true;
       }
       break;
     default:
@@ -115,20 +112,20 @@ export function setAvailableColors() {
 function _changeManualColor(li) {
   var colorSel = getParent(li, true, "box-header-title");
   const port = Number(colorSel.dataset.port);
-  const voice = DeviceConfig.ports[port].voice;
+  const voice_rep = DeviceConfig.ports[port].voice_rep;
   const liColor = li.getAttribute("data-color");
   const dark = li.classList.contains("dark-font");
 
   colors.forEach((color, i) => {
-    if (color.voice == voice){ 
+    if (color.voice == voice_rep) {
       color.used = false;
       color.port = "";
-      color.voice = -1;
+      color.voice_rep = "";
     }
     if (color.hex == liColor) {
       color.used = true;
       color.port = "-" + BoxNames[port];
-      color.voice = voice;
+      color.voice = voice_rep;
     }
   });
 
@@ -141,7 +138,7 @@ function _changeManualColor(li) {
   // propagate colour changes across the DOM for
   // ports that are adding to this voice
   DeviceConfig.ports.forEach( port => {
-    if (port.isVoiceFunction && port.isAddToVoice && port.voice == voice) {
+    if (port.isVoiceFunction && port.isAddToVoice && port.voice_rep == voice_rep) {
       colorSel = q("#color-selector-" + port.id);
       colorSel.style.backgroundColor = "transparent";
       colorSel.style.borderColor = liColor;
@@ -164,7 +161,7 @@ export function resetColorObj(currCol) {
     if (currHex === nextCol.hex) {
       colors[a].port = '';
       colors[a].used = false;
-      colors[a].voice = -1;
+      colors[a].voice = "V"+(a+1);
       break;
     }
   }

@@ -94,8 +94,9 @@ export function addFunctionToVoice(port_num, li, is_automatic) {
 
   const port_name = "-" + BoxNames[voice];
 
-  changePortsColors(port_num, "ADD2VOICE");
   _changeVoice(box_id, li, port_name);
+
+  changePortsColors(port_num, "ADD2VOICE");
 }
 
 /**

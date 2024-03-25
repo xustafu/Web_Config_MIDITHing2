@@ -36,7 +36,7 @@ export const colors = [
     darkfont: false,
     used: false,
     port: "",
-    voice: -1,
+    voice: "V1",
   },
   {
     id: 2,
@@ -44,7 +44,7 @@ export const colors = [
     darkfont: false,
     used: false,
     port: "",
-    voice: -1,
+    voice: "V2",
   },
   {
     id: 3,
@@ -52,7 +52,7 @@ export const colors = [
     darkfont: false,
     used: false,
     port: "",
-    voice: -1,
+    voice: "V3",
   },
   {
     id: 4,
@@ -60,7 +60,7 @@ export const colors = [
     darkfont: true,
     used: false,
     port: "",
-    voice: -1,
+    voice: "V4",
   },
   {
     id: 5,
@@ -68,7 +68,7 @@ export const colors = [
     darkfont: true,
     used: false,
     port: "",
-    voice: -1,
+    voice: "V5",
   },
   {
     id: 6,
@@ -76,7 +76,7 @@ export const colors = [
     darkfont: false,
     used: false,
     port: "",
-    voice: -1,
+    voice: "V6",
   },
   {
     id: 7,
@@ -84,7 +84,7 @@ export const colors = [
     darkfont: true,
     used: false,
     port: "",
-    voice: -1,
+    voice: "V7",
   },
   {
     id: 8,
@@ -92,7 +92,7 @@ export const colors = [
     darkfont: false,
     used: false,
     port: "",
-    voice: -1,
+    voice: "V8",
   },
   {
     id: 9,
@@ -100,7 +100,7 @@ export const colors = [
     darkfont: false,
     used: false,
     port: "",
-    voice: -1,
+    voice: "V9",
   },
   {
     id: 10,
@@ -108,7 +108,7 @@ export const colors = [
     darkfont: false,
     used: false,
     port: "",
-    voice: -1,
+    voice: "V10",
   },
   {
     id: 11,
@@ -116,7 +116,7 @@ export const colors = [
     darkfont: false,
     used: false,
     port: "",
-    voice: -1,
+    voice: "V11",
   },
   {
     id: 12,
@@ -124,6 +124,6 @@ export const colors = [
     darkfont: false,
     used: false,
     port: "",
-    voice: -1,
+    voice: "V12",
   },
 ];

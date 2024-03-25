@@ -610,23 +610,19 @@ export function showModal(type, msg) {
       voice_select_div.classList.toggle('hidden', false);
 
       button.addEventListener('click', e => {
-        if (DeviceConfig.voices_port_used == 1) {
-          return DeviceConfig.voices_port_used[0];
-        } else {
-          const port_num = button.dataset.port;
-          const port_id = BoxNames[Number(port_num)];
-          const funct = button.dataset.funct;
-          DeviceConfig.ports[Number(port_num)].voice = Number(q('#select-voice').value);
-          const li = q(
-            '#func-selector-wrap-box-' + port_id + ' li.add_to_voice[data-body="' + funct + '"]'
-          );
-          q('#modal-wrap').classList.toggle('hidden', true);
-          TriggerInputChange = true;
-          addFunctionToVoice(port_num, li, true);
-          const input = q('#main-func-box-' + port_id);
-          sendParameterSysex(input);
-          requestConfig();
-        }
+        const port_num = button.dataset.port;
+        const port_id = BoxNames[Number(port_num)];
+        const funct = button.dataset.funct;
+        const v = Number(q('#select-voice').value);
+
+        DeviceConfig.ports[Number(port_num)].voice = v;
+        const li = q('#func-selector-wrap-box-' + port_id + ' li.add_to_voice[data-body="' + funct + '"]');
+        q('#modal-wrap').classList.toggle('hidden', true);
+        TriggerInputChange = true;
+        addFunctionToVoice(port_num, li, true);
+        const input = q('#main-func-box-' + port_id);
+        sendParameterSysex(input);
+        requestConfig();
       });
   }
 
