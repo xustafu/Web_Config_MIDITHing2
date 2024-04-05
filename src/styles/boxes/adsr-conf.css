@@ -88,6 +88,26 @@ canvas.flotr-overlay {
   background-position-y: -8.7rem;
 }
 
+.box-body[id^='adsr-conf'] .adsr-conf-body-globals .input-number-wrap > span[class^='arrow'] {
+  width: 1.1rem;
+  background-size: 29.2rem;
+  background-position-x: -0.9rem;
+}
+
+.box-body[id^='adsr-conf'] .adsr-conf-body-globals .input-number-wrap > span.arrow-down {
+  background-position-y: -12.7rem;
+}
+
+.box-body[id^='adsr-conf'] .adsr-conf-body-globals .input-number-wrap > span.arrow-up {
+  background-position-y: -11.2rem;
+}
+
+.box-body[id^='adsr-conf'] .adsr-conf-body-globals .input-number-wrap > span[class^='arrow']:hover,
+.box-body[id^='adsr-conf'] .adsr-conf-body-globals .input-number-wrap > span[class^='arrow']:active,
+.box-body[id^='adsr-conf'] .adsr-conf-body-globals .input-number-wrap > span[class^='arrow']:focus {
+  background-position-x: -2.7rem;
+}
+
 @media only screen and (max-width: 1181px) {
   .box-body[id^='adsr-conf'] {
     row-gap: 1.3rem;
@@ -112,6 +132,25 @@ canvas.flotr-overlay {
     flex-wrap: wrap;
     justify-content: space-between;
   }
+
+  /* .box-body[id^='adsr-conf'] .adsr-conf-body-globals .input-number-wrap > span.arrow-down {
+    background-position-y: -12.7rem;
+  }
+
+  .box-body[id^='adsr-conf']
+    .adsr-conf-body-globals
+    .input-number-wrap
+    > span[class^='arrow']:hover,
+  .box-body[id^='adsr-conf']
+    .adsr-conf-body-globals
+    .input-number-wrap
+    > span[class^='arrow']:active,
+  .box-body[id^='adsr-conf']
+    .adsr-conf-body-globals
+    .input-number-wrap
+    > span[class^='arrow']:focus {
+    background-position-x: -2.7rem;
+  } */
 }
 
 @media only screen and (max-width: 821px) {
@@ -493,6 +532,8 @@ canvas.flotr-overlay {
 
 .box-body[id^='adsr-conf'] .adsr-conf-body-globals .input-number-wrap input {
   font-size: 1.3rem;
+  padding-block: 0.3rem;
+  padding-right: 1.3rem;
 }
 
 .box-body[id^='adsr-conf'] .adsr-conf-body-globals [for^='adsr-global-input'] {
@@ -810,6 +851,11 @@ canvas.flotr-overlay {
   gap: 0.5rem;
   align-items: center;
   flex-wrap: wrap;
+  /* column-gap: 1rem; */
+}
+
+.adsr-conf-body-globals {
+  column-gap: 0.9rem;
 }
 
 .box-body[id^='adsr-conf'] input {
@@ -830,6 +876,7 @@ canvas.flotr-overlay {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 0.9rem;
 }
 
 .box-num-single[id^='adsr-conf-note'] {
@@ -1013,6 +1060,10 @@ canvas.flotr-overlay {
 
 .box-body[id^='adsr-conf'] input[data-digits='3'] {
   max-width: 2.8rem;
+}
+
+.box-body[id^='adsr-conf'] input[id^='adsr-conf-note-input'] {
+  max-width: 4rem;
 }
 
 .mt2 .adsr-conf-body-globals {
