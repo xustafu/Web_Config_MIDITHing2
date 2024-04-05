@@ -105,7 +105,6 @@ function _initDeviceSelect() {
 
   // Request config to module on connection
   if (found) {
-    requestConfig();
     q(".live-button svg").style.fill = "#06b900";
   } else {
     q(".live-button svg").style.fill = "#ff0000";
@@ -115,6 +114,7 @@ function _initDeviceSelect() {
        device connected. If no such device is found, the data shown on the website may be erroneous.'
     );
   }
+  requestConfig();
 }
 
 export function selectMIDIinput(inp) {

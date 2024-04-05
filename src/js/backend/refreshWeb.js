@@ -417,10 +417,6 @@ function _setClockParams(port) {
   _setParamValue("clock-multiplier-input-" + port.id, port.clk_mult);
 }
 
-function _setStartStopParams(port) {
-  //NOTHING for now
-}
-
 function _setStSpLatchParams(port) {
   var funct_name = FirmwareFunctions2Web[port.funct];
   //set pulse ms
