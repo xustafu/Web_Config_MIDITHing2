@@ -183,7 +183,6 @@ function _setBodyParams(port) {
       _setPrChParams(port);
       break;
     case "pitch-bend":
-      _setPitchBendParams(port, midi_ch);
       break;
     case "key-press":
       //TO DO: _setKeyPressParams(port);
@@ -196,7 +195,6 @@ function _setBodyParams(port) {
     case "st-latch":
     case "sp-latch":
     case "cont-latch":
-      _setStartStopParams(port);
       break;
     case "st-trig":
     case "sp-trig":
@@ -462,12 +460,6 @@ function _setPrChParams(port) {
   _setParamValue("pr-ch-clip-low-input-" + port.id, port.clip_min);
   _setParamValue("pr-ch-clip-high-input-" + port.id, port.clip_max);
 }
-
-function _setPitchBendParams(port, midi_ch) {
-  //set semitones
-  _setParamValue("pitch-bend-semit-input-" + port.id, midi_ch.bend_span);
-}
-
 
   
 
