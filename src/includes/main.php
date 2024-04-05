@@ -83,7 +83,7 @@
               <span class="arrow-down"></span>
             </div>
           </div>
-          <button class="box-learn-button round">Learn</button>
+          <!--button class="box-learn-button round">Learn</button-->
         </header>
         <!-- BOX HEADER END -->
 
