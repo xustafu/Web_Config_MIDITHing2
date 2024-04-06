@@ -144,6 +144,10 @@ function _processPortFunctionSysex(port_num, data) {
   port.clip_max = def_funct.max;
   //save port object
   DeviceConfig.ports[port_num] = port;
+  if (funct_name == "gate"){
+    DeviceConfig.voices_port[port.port_num - 1].vo_min_note = 0;
+    DeviceConfig.voices_port[port.port_num - 1].vo_max_note = 120;
+  }
   return;
 }
 
