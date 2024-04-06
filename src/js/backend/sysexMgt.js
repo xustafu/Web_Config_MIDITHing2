@@ -87,14 +87,24 @@ function _processGeneralSysex(param, data) {
       setDefaultConfig(data[0]);
       break;
     case 1: //"REQ_CONFIG":
+      if (LogRcvdSysex) console.log("Request Config " + data[0]);
+      if (LogRcvdSysex) console.log(" ");
       break;
     case 2: //"SAVE_CONFIG_TO_SLOT":
+      if (LogRcvdSysex) console.log("Save Config to Slot " + data[0]);
+      if (LogRcvdSysex) console.log(" ");
       break;
     case 3: //"LOAD_CONFIG_FROM_SLOT":
+      if (LogRcvdSysex) console.log("Load Config from Slot " + data[0]);
+      if (LogRcvdSysex) console.log(" ");
       break;
     case 4: //"SET_LEARN_MODE":
+      if (LogRcvdSysex) console.log("Set Learn Mode " + data[0]);
+      if (LogRcvdSysex) console.log(" ");
       break;
     case 5: //"MIDI_MERGE":
+      if (LogRcvdSysex) console.log("Midi Merge " + data[0]);
+      if (LogRcvdSysex) console.log(" ");
       break;
     default: //ERROR
       showModal("error","Error: type of GENERAL Sysex command not recognized, examples: SET_DEF_CONFIG, SAVE_CONFIG_TO_SLOT");

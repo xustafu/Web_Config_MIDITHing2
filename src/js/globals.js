@@ -7,7 +7,7 @@ export let LiveSend = false;
 
 //to log sysex sent or received
 self.LogSentSysex = true;
-self.LogRcvdSysex = false;
+self.LogRcvdSysex = true;
 
 //to trigger event "change" of input or not
 self.TriggerInputChange = true;

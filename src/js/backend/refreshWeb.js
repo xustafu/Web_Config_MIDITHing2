@@ -63,8 +63,8 @@ function _selectWebFunction(port) {
   if (funct_name == "gate" && (voice_port.vo_min_note == voice_port.vo_max_note)) 
     funct_name = "drum";
   var isVoiceFunction = port.funct >= 1 && port.funct <= 7;
-  var voice_str = isVoiceFunction ? (port.isNewVoice ? ".new_voice" : ".add_to_voice" ) : "";
-  var li = q("#func-selector-wrap-box-" +port.id +' li'+voice_str+'[data-body="' +funct_name +'"]');
+  var voice_str = isVoiceFunction ? (port.isNewVoice ? ".new_voice" : ".add_to_voice") : "";
+  var li = q("#func-selector-wrap-box-" + port.id + " li" + voice_str + '[data-body="' + funct_name + '"]');
   TriggerInputChange = false;
   selectFunction(li, true);
   TriggerInputChange = true;
