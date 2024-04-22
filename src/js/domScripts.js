@@ -455,7 +455,7 @@ function _revealBody(li, port_num, is_automatic) {
 /**
  * Changes the list of volts values
  * If GATE, then the VOLTS list has to be 0/5, 0/8 and 0/10
- * Otherwise, 0/10, -5/5, -10/0, 0/8, 0/5
+ * Otherwise, 0/10, -5/5, 0/8, 0/5
  * @param {String} port_num > the number of port we are in (Ej:2)
  * @param {Boolean} gate Whether we are in a gate function
  */
@@ -514,12 +514,9 @@ function changeVolts(port_num, gate) {
           li.innerHTML = '-5/5';
           break;
         case 3:
-          li.innerHTML = '-10/0';
-          break;
-        case 4:
           li.innerHTML = '0/8';
           break;
-        case 5:
+        case 4:
           li.innerHTML = '0/5';
       }
       frag.appendChild(li);

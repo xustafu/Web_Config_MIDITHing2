@@ -57,12 +57,12 @@
                 data-value="1">0/10</li>
               <li class="box-selector-item volts-sel"
                 data-value="2">-5/5</li>
+              <!--li class="box-selector-item volts-sel"
+                data-value="3">-10/0</li-->
               <li class="box-selector-item volts-sel"
-                data-value="3">-10/0</li>
+                data-value="3">0/8</li>
               <li class="box-selector-item volts-sel"
-                data-value="4">0/8</li>
-              <li class="box-selector-item volts-sel"
-                data-value="5">0/5</li>
+                data-value="4">0/5</li>
             </ul>
           </div>
           <div class="box-header-field-mc">

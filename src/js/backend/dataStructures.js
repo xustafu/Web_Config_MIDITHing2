@@ -24,16 +24,16 @@ const BoxNames =  ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "
 const NOPORTMODE = 0;
 const MODE10V = 1;
 const MODEPN5V = 2;
-const MODENEG10V = 3;
-const MODE8V = 4;
-const MODE5V = 5;
-const LASTPORTMODE = 6;
+//const MODENEG10V = 3;
+const MODE8V = 3;
+const MODE5V = 4;
+const LASTPORTMODE = 5;
 
 
 const VoltsNames = [
   [MODE10V, '0/10'],
   [MODEPN5V, '-5/5'],
-  [MODENEG10V, '-10/0'],
+  //[MODENEG10V, '-10/0'],
   [MODE8V, '0/8'],
   [MODE5V, '0/5']
 ]; 
