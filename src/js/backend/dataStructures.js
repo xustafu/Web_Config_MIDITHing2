@@ -153,7 +153,7 @@ DEF_FUNCT_VALUES = {
   [MIDISTOPTRIG]: { volts: MODE10V,   min: 0, max: digOutMax, midich: 1, param: 0},
   [MIDICONTLATCH]: { volts:MODE10V,  min: 0, max: digOutMax, midich: 1, param: 0},
   [MIDICONTTRIG]: { volts:MODE10V,   min: 0, max: digOutMax, midich: 1, param: 0},
-  [MIDICLOCK]: { volts: MODE10V,      min: 0, max: digOutMax, midich: 1, param: 0}
+  [MIDICLOCK]: { volts: MODE10V,      min: 0, max: digOutMax, midich: 1, param: 24}
 }
 
 /************************************************/
