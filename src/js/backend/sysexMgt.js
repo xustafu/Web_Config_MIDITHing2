@@ -335,25 +335,27 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
   var enc_data = new Uint8Array(12);
   var send_drum_funct = (type == PORT && param == PORTFUNCTION && value == MIDIDRUMTRIG);
   var is_port_midich = (type == PORT && param == PORTMIDICHAN);
+  var is_port_funct_or_param =
+    type == PORT && [PORTFUNCTION, PORTFUNCPARAMETER].includes(param);
+  var port = DeviceConfig.ports[number];
+  var param = port.param;
+  if (port.isAddToVoice || is_port_midich) {
+    for (var i = 0; i < DeviceConfig.ports.length; i++) {
+      let p = DeviceConfig.ports[i];
+      if (p.voice == param && i != port.port_num - 1) {
+        param = p.port_num - 1;
+        break;
+      }
+    }
+  } 
 
-  if (type == PORT && [PORTFUNCTION, PORTMIDICHAN, PORTFUNCPARAMETER].includes(param)) {
+  if (is_port_funct_or_param) {
     // function special case
-    var port = DeviceConfig.ports[number];
-    var param = port.param;
     dec_data = new Uint8Array(6);
     dec_data[0] = port.funct;
     dec_data[1] = port.midi_ch;
     var funct_arr = new ArrayBuffer(4);
     var funct_view = new DataView(funct_arr);
-    if (port.isAddToVoice || is_port_midich) {
-      for (var i=0; i < DeviceConfig.ports.length; i++) {
-        let p = DeviceConfig.ports[i];
-        if (p.voice == param && (i != (port.port_num - 1))) {
-          param = p.port_num - 1;
-          break;
-        }
-      }
-    } 
     funct_view.setUint32(0, param, true);
     funct_arr = new Uint8Array(funct_arr);
     dec_data.set(funct_arr, 2);
@@ -383,7 +385,7 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
   Array.from(send_arr).forEach((x) => {
     b.push(x.toString(16).padStart(2, "0"));
   });
-  if (LogSentSysex) console.log("F0 7D "+b.toString().replaceAll(",", " ").toUpperCase());
+  if (LogSentSysex) console.log("F0 7D "+b.toString()+" F7".replaceAll(",", " ").toUpperCase());
   if (LogSentSysex) console.log(" ");
 
   if (send_drum_funct) {
