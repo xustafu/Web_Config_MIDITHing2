@@ -11,6 +11,7 @@ const GENERAL = 0;
 const PORT = 1;
 const MIDICH = 2;
 const VOICE = 3;
+const BATCH_SYSEX = 4;
 
 
 /************************************************/

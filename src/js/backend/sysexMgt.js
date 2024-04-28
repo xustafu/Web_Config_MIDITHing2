@@ -44,7 +44,8 @@ export function onSysexReceive(msg) {
     if (LogRcvdSysex) console.log("Not MIDI Thing Sysex");
     return;
   }
-  var type = _extractType(type_and_num);
+  //if we receive 53 (hex 35) it's a batch sysex with all ports information in one message
+  var type = (type_and_num == 53) ? BATCH_SYSEX : _extractType(type_and_num);
   var num = _extractNumber(type_and_num);
 
   enc_data = new Uint8Array(enc_data);
@@ -71,9 +72,13 @@ function _processSysex(type, number, param, data) {
   if (type == GENERAL)
     _processGeneralSysex(param, data);
   else if (type == PORT && param == PORTFUNCTION) 
-    _processPortFunctionSysex(number, data);
-  else if (type > 3)
+    _processPortFunctionSysex(number, data, false);
+  else if (type > 4)
     showModal('error', "Error: type of Sysex command not recognized, must be GENERAL, PORT, MIDI CH. or VOICE");
+  else if (type == BATCH_SYSEX) {
+    _processBatchSysex(param, data);
+    _fixVoices();
+  }
   else
     _processParamSysex(type, number, param, data);
 }
@@ -112,17 +117,23 @@ function _processGeneralSysex(param, data) {
   }
 }
 
-function _processPortFunctionSysex(port_num, data) {
+function _processPortFunctionSysex(port_num, data, is_batch) {
   //function number
   const funct = data[0];
   var port = DeviceConfig.ports[port_num];
   port.funct = funct;
   //midi channel
   port.midi_ch = (data[1] == "0") ? 1 : data[1];
-  //decode param data
-  var buf = data.slice(2).buffer;
-  var view = new DataView(buf);
-  var value = view.getUint32(0, true);
+  var value = 0;
+  if (is_batch) {
+    value = parseInt(data[2]) + parseInt(data[3])*16;
+    value += parseInt(data[3])*16*3 + parseInt(data[4])*16*3;
+  } else {
+    //decode param data
+    var buf = data.slice(2).buffer;
+    var view = new DataView(buf);
+    value = view.getUint32(0, true);
+  }
   port.param = value;
   //voice values
   var isVoiceFunction = (data[0] >= 1 && data[0] <= 7);
@@ -133,7 +144,8 @@ function _processPortFunctionSysex(port_num, data) {
   port.voice_rep = calculateVoiceId(port.voice);
   //console log
   var funct_name = FirmwareFunctions2Web[funct];
-  if (LogRcvdSysex) console.log("Set port function "+funct_name.toUpperCase()+" at port "+port.port_num+" and voice "+port.voice_rep);
+  if (LogRcvdSysex && port.isVoiceFunction) console.log("Set port function "+funct_name.toUpperCase()+" at port "+port.port_num+" and voice "+port.voice_rep);
+  if (LogRcvdSysex && !port.isVoiceFunction) console.log("Set port function "+funct_name.toUpperCase()+" at port "+port.port_num+" and param "+port.param);
   if (LogRcvdSysex) console.log(" ");
   //set default values
   var def_funct = DEF_FUNCT_VALUES[funct];
@@ -149,6 +161,22 @@ function _processPortFunctionSysex(port_num, data) {
     DeviceConfig.voices_port[port.port_num - 1].vo_max_note = 120;
   }
   return;
+}
+
+function _processBatchSysex(num_ports, array) {
+  const ports = [];
+  for (let i = 0; i < array.length; i++) {
+    const last = ports[ports.length - 1];
+    if (!last || last.length === 6) {
+      ports.push([array[i]]);
+    } else {
+      last.push(array[i]);
+    }
+  }
+  ports.forEach((port, i) => {
+    _processPortFunctionSysex(i, port, true);
+  });
+  //refreshWeb();
 }
 
 function _processParamSysex(type, number, param, data) {
@@ -196,6 +224,13 @@ function _processMIDIparam(number, param, data) {
   DeviceConfig.voices_midi_ch[midi_ch-1][attr] = value;
   //console log
   if (LogRcvdSysex) console.log("Set MIDICH PARAM at midi ch."+midi_ch+", "+attr+"="+value);
+}
+
+function _fixVoices(){
+  DeviceConfig.ports.forEach((port, i) => {
+    port.voice_rep = calculateVoiceId(port.voice);
+    DeviceConfig.ports[i] = port;
+  });
 }
 
 /*! \brief Decode System Exclusive messages.
@@ -335,8 +370,8 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
   var enc_data = new Uint8Array(12);
   var send_drum_funct = (type == PORT && param == PORTFUNCTION && value == MIDIDRUMTRIG);
   var is_port_midich = (type == PORT && param == PORTMIDICHAN);
-  var is_port_funct_or_param =
-    type == PORT && [PORTFUNCTION, PORTFUNCPARAMETER].includes(param);
+  var is_port_funct = (type == PORT && param == PORTFUNCTION);
+  var is_port_param = (type == PORT && param == PORTFUNCPARAMETER);
   var port = DeviceConfig.ports[number];
   var param = port.param;
   if (port.isAddToVoice || is_port_midich) {
@@ -349,15 +384,23 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
     }
   } 
 
-  if (is_port_funct_or_param) {
+  /*if (is_port_funct) {
+    dec_data = new Uint8Array(72);
+    enc_data = new Uint8Array(83);
+    DeviceConfig.ports.forEach((port, i) => {
+      dec_data[6*i] = port.funct;
+      dec_data[6*i+1] = port.midi_ch;
+      var funct_arr = _createParamArray(port.param);
+      dec_data.set(funct_arr, 6*i+2);
+    });
+  }
+  else*/ 
+  if (is_port_param || is_port_funct) {
     // function special case
     dec_data = new Uint8Array(6);
     dec_data[0] = port.funct;
     dec_data[1] = port.midi_ch;
-    var funct_arr = new ArrayBuffer(4);
-    var funct_view = new DataView(funct_arr);
-    funct_view.setUint32(0, param, true);
-    funct_arr = new Uint8Array(funct_arr);
+    var funct_arr = _createParamArray(param);
     dec_data.set(funct_arr, 2);
     index = PORTFUNCTION;
   } else {
@@ -373,8 +416,8 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
   var send_arr = new Uint8Array(enc_data.length + 4);
 
   send_arr[0] = 25; // Device = SINGLESYSEX + THING_mode;      ///< MT2 Single message(0x10) + module ID (7 para el MidiThing) == 23 (16+7)
-  send_arr[1] = type_and_num; // typeAndNumber=0;                        ///< Port, MIDI Channel, Voice (3 bits) and number (5 bits)
-  send_arr[2] = index; // Parameter;                              ///< Parameter Number
+  send_arr[1] = /*(is_port_funct) ? 53 : */type_and_num; // typeAndNumber=0;                        ///< Port, MIDI Channel, Voice (3 bits) and number (5 bits)
+  send_arr[2] = /*(is_port_funct) ? 12 : */index; // Parameter;                              ///< Parameter Number
   send_arr[3] = enc_length; // Length;                                 ///< Parameter Length (56 Max)
   send_arr.set(enc_data, 4); // pData[SysExpacketDataLength + 1] = {0}; ///< Data
 
@@ -385,7 +428,8 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
   Array.from(send_arr).forEach((x) => {
     b.push(x.toString(16).padStart(2, "0"));
   });
-  if (LogSentSysex) console.log("F0 7D "+b.toString()+" F7".replaceAll(",", " ").toUpperCase());
+  var console_text = "F0 7D "+b.toString().replaceAll(",", " ").toUpperCase();
+  if (LogSentSysex) console.log(console_text+" F7");
   if (LogSentSysex) console.log(" ");
 
   if (send_drum_funct) {
@@ -401,6 +445,16 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
     sendSysex("VOICE", number, "VO_MinNote", 60);
     sendSysex("VOICE", number, "VO_MaxNote", 60);
   }
+}
+
+function _createParamArray(param)
+{
+  var funct_arr = new ArrayBuffer(4);
+  new ArrayBuffer(4);
+  var funct_view = new DataView(funct_arr);
+  funct_view.setUint32(0, param, true);
+  funct_arr = new Uint8Array(funct_arr);
+  return funct_arr;
 }
 
 function _storeWebData(type, number, attr, value, is_global_adsr){
