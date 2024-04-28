@@ -63,8 +63,8 @@ export function addFunctionToVoice(port_num, li, is_automatic) {
     //if manual selection (click), if no voices used, return error
     if (DeviceConfig.voices_port_used.length == 0) {
       showModal(
-        'warning',
-        'There is no voice available to add a function to. A new voice will be created instead.'
+        "warning",
+        "There is no voice available to add a function to. A new voice will be created instead."
       );
       return;
     }
@@ -81,11 +81,11 @@ export function addFunctionToVoice(port_num, li, is_automatic) {
     }
   }
   const port = DeviceConfig.ports[port_num];
-  
+
   port.isNewVoice = false;
   port.isAddToVoice = true;
-  // Hide the port name drop-down arrow
-  q(`#${box_id} .port-color-drop-arrow`).classList.toggle("hidden", true);
+  // reveal the port name drop-down arrow
+  q(`#${box_id} .port-color-drop-arrow`).classList.toggle("hidden", false);
 
   port.voice = voice;
   port.voice_rep = calculateVoiceId(voice);

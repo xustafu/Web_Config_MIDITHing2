@@ -28,40 +28,35 @@ export function changePortsColors(port, type) {
   
 
   switch (type) {
-    case "RESET": 
-      portName.style.borderColor = 'var(--border)';
-      portName.style.color = '#fff';
-      portName.color = '#fff';
-      if (currCol && currCol !== 'inherit' && currCol !== 'transparent') resetColorObj(currCol);
+    case "RESET":
+      portName.style.borderColor = "var(--border)";
+      portName.style.color = "#fff";
+      portName.color = "#fff";
+      if (currCol && currCol !== "inherit" && currCol !== "transparent")
+        resetColorObj(currCol);
       setAvailableColors();
       return;
     case "NEWVOICE":
+    case "ADD2VOICE":
       // Go through the global array of colours
       // and as soon as there is one that isn't used, use it
       var i = colors.findIndex((c) => c.voice == voice_rep);
-      if ((typeof(i) != "undefined") & (i != -1)) {
-        var color = colors[i];
+      if ((typeof i != "undefined") & (i != -1)) {
+        /*let color = colors[i];
         portName.style.backgroundColor = color.hex;
         portName.style.borderColor = color.hex;
-        portName.style.color = color.darkfont ? '#000' : '#fff';
-        colors[i].used = true;
-        setAvailableColors();
-      }
-      break;
-    case "ADD2VOICE":
-      // Find the color associated to that voice
-      var i = colors.findIndex((c) => (c.voice == voice_rep));
-      if ((typeof(i) != "undefined") && (i != -1)) {
+        portName.style.color = color.darkfont ? "#000" : "#fff";*/
         portName.style.backgroundColor = "transparent";
         portName.style.borderColor = colors[i].hex;
         portName.style.color = "#fff";
         colors[i].used = true;
+        if (type == "NEWVOICE") setAvailableColors();
       }
       break;
     default:
-      showModal('error', "Error: change color type not recognized");
+      showModal("error", "Error: change color type not recognized");
       break;
-    }
+  }
 }
 
 /**
@@ -131,15 +126,13 @@ function _changeManualColor(li) {
 
   setAvailableColors();
 
-  colorSel.style.backgroundColor = liColor;
-  colorSel.style.borderColor = liColor;
-  colorSel.style.color = dark ? "#000" : "#fff";
-
-  // propagate colour changes across the DOM for
-  // ports that are adding to this voice
+  // propagate colour changes across the DOM for all ports with this voice
   DeviceConfig.ports.forEach( port => {
-    if (port.isVoiceFunction && port.isAddToVoice && port.voice_rep == voice_rep) {
+    if (port.isVoiceFunction && port.voice_rep == voice_rep) {
       colorSel = q("#color-selector-" + port.id);
+      /*colorSel.style.backgroundColor = liColor;
+      colorSel.style.borderColor = liColor;
+      colorSel.style.color = dark ? "#000" : "#fff";*/
       colorSel.style.backgroundColor = "transparent";
       colorSel.style.borderColor = liColor;
       colorSel.style.color = "#fff";
