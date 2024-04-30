@@ -133,7 +133,8 @@ function _processPortFunctionSysex(port_num, data) {
   port.voice_rep = calculateVoiceId(port.voice);
   //console log
   var funct_name = FirmwareFunctions2Web[funct];
-  if (LogRcvdSysex) console.log("Set port function "+funct_name.toUpperCase()+" at port "+port.port_num+" and voice "+port.voice_rep);
+  if (LogRcvdSysex && port.isVoiceFunction) console.log("Set port function "+funct_name.toUpperCase()+" at port "+port.port_num+" and voice "+port.voice_rep);
+  if (LogRcvdSysex && !port.isVoiceFunction) console.log("Set port function "+funct_name.toUpperCase()+" at port "+port.port_num+" and param "+port.param);
   if (LogRcvdSysex) console.log(" ");
   //set default values
   var def_funct = DEF_FUNCT_VALUES[funct];
@@ -385,7 +386,8 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
   Array.from(send_arr).forEach((x) => {
     b.push(x.toString(16).padStart(2, "0"));
   });
-  if (LogSentSysex) console.log("F0 7D "+b.toString()+" F7".replaceAll(",", " ").toUpperCase());
+  var console_text = "F0 7D "+b.toString().replaceAll(",", " ").toUpperCase();
+  if (LogSentSysex) console.log(console_text+" F7");
   if (LogSentSysex) console.log(" ");
 
   if (send_drum_funct) {
