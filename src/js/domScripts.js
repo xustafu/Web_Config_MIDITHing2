@@ -481,7 +481,7 @@ function changeVolts(port_num, gate) {
   // Create a document fragment with the new <li>s
   let frag = document.createDocumentFragment();
   if (gate) {
-    for (let a = 1; a < 6; a++) {
+    for (let a = 1; a < 5; a++) {
       const li = document.createElement('li');
       li.classList.add('box-selector-item');
       li.setAttribute('data-value', a);
@@ -490,19 +490,19 @@ function changeVolts(port_num, gate) {
           li.innerHTML = '0/10';
           frag.appendChild(li);
           break;
-        case 4:
+        case 3:
           li.innerHTML = '0/8';
           frag.appendChild(li);
           break;
-        case 5:
+        case 4:
           li.innerHTML = '0/5';
           frag.appendChild(li);
           break;
       }
     }
-    label.innerHTML = '0/5';
+    label.innerHTML = '0/10';
   } else {
-    for (let a = 1; a < 6; a++) {
+    for (let a = 1; a < 5; a++) {
       const li = document.createElement('li');
       li.classList.add('box-selector-item');
       li.setAttribute('data-value', a);
@@ -534,7 +534,7 @@ function changeVolts(port_num, gate) {
 
   //Set value stored
   const port = DeviceConfig.ports[port_num];
-  if (!(gate && [2, 3].includes(port.volts))) {
+  if (!gate  || port.volts != 2) {
     q('#volts-' + port.id).setAttribute('value', port.volts);
     q("label[for='volts-" + port.id + "']").innerHTML = VoltsNames[port.volts - 1][1];
   }
