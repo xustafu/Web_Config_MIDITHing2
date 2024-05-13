@@ -649,7 +649,7 @@ export function _handleMainFunc(li, box_id, is_automatic) {
   const port_num = getLiPortNumber(li);
 
   // Change the volts list
-  const is_gate = bodyStr.includes('gate');
+  const is_gate = bodyStr.includes('gate') || bodyStr.includes('drum');
   changeVolts(port_num, is_gate);
 
   //new voice function
