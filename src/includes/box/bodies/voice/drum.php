@@ -25,8 +25,8 @@
         data-min="0"
         data-max="127"
         data-digits="3" />
-      <span class="arrow-up"></span>
-      <span class="arrow-down"></span>
+      <span class="arrow-up drum-arrow"></span>
+      <span class="arrow-down drum-arrow"></span>
     </div>
   </div>
   <!-- DRUM NOTE END -->

@@ -53,7 +53,7 @@
         </a>
       </li>
       <li>
-        <a class="selector-item settings" href='#' id='save_to_file' data-func="load" style="text-decoration:none;">
+        <a class="selector-item settings" href='#' id='load_from_file' data-func="load" style="text-decoration:none;">
           Load from file
         </a>
         <form>

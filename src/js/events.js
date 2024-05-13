@@ -176,11 +176,29 @@ qA('.lfo-radio').forEach(input => {
 /**
  * Numeric input arrows functionality
  */
-qA('.input-number-wrap span').forEach(arrowButton => {
+qA('.input-number-wrap span:not(.drum-arrow)').forEach(arrowButton => {
   arrowButton.addEventListener('click', e => {
     arrowsFunc(e.target);
   });
 });
+
+qA(".drum-arrow").forEach((arrowButton) => {
+  arrowButton.addEventListener("click", (e) => {
+    processDrumNoteArrows(e);
+  });
+});
+
+const processDrumNoteArrows = debounce((e) => arrowsFunc(e.target))
+
+function debounce(func, timeout = 200){
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, timeout);
+  };
+}
 
 /**
  * Numeric inputs onchange
