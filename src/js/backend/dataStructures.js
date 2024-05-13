@@ -212,6 +212,7 @@ const PORTAMENTOTime=21; // "Portamento Time", u32T, 1000lu, 1, MAXPORTAMENTOTIM
 const PORTAMENTOType=22; // "Portamento Type", u8T, PORTA_LIN_CURVE, PORTA_LIN_CURVE, PORTA_LAST_CURVE-1}, 
 const ADSRRetrigMode=23; // "ADSR Retrigger Mode", u8T, 0, 0, 2},
 const LFOMIDIClkMult=24; // "LFO Clk Mult", u8T, 1, 1, 30},             // Period 1000 to 0.1 Hz
+const LFOOffset=25;      // "LFO Offset", u8T, 50, 0, 100},            // Offset LFO level
 const ADSRAffectOSC=100; // "ADSR in OSC", boolT, 1, 0, 1},
 const VelAffectADSR=101; // "Vel.Impact", boolT, 1, 0, 1},
 const UseLocalConfigADSR=102; // "ADSR local config", boolT, 0, 0, 1},
@@ -552,6 +553,7 @@ const SYSEX_OBJ = {
     [PORTAMENTOType]: { index: 22, type: "Uint8", length: 1, attr: "portamento_type" },
     [ADSRRetrigMode]: { index: 23, type: "Uint8", length: 1, attr: "adsr_retrig_mode"},
     [LFOMIDIClkMult]: { index: 24, type: "Uint8", length: 1, attr: "lfo_midi_clk_mult" },
+    [LFOOffset]:     {index: 25, type: "Uint8", length: 1, attr:"lfo_offset" },
     [ADSRAffectOSC]: { index: 100, type: "Uint8", length: 1, attr: "adsr_affect_osc" },
     [VelAffectADSR]: { index: 101, type: "Uint8", length: 1, attr: "vel_affect_adsr" },
     [UseLocalConfigADSR]: { index: 102, type: "Uint8", length: 1, attr: "use_local_config_adsr" },

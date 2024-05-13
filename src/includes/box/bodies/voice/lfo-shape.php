@@ -69,29 +69,6 @@
   <!-- GLOBAL SETTINGS -->
   <section class="shapes-globals">
 
-    <!-- ATTENUATE -->
-    <div class="box-num-single" id="lfo-attenuate-<?=$port_id?>">
-      <label class="box-num-single-label inline" for="lfo-attenuate-input-<?=$port_id?>">Attenuate</label>
-      <div class="input-number-wrap round-sm">
-        <input
-          class="box-num-input round-sm"
-          type="text"
-          value="0"
-          data-mt-type="VOICE" 
-          data-mt-port="<?=$i?>" 
-          data-mt-parameter="LFOMaxLevel" 
-          name="lfo-attenuate-input-<?=$port_id?>"
-          id="lfo-attenuate-input-<?=$port_id?>"
-          data-type="number"
-          data-min="1"
-          data-max="999"
-          data-digits="3" />
-        <span class="arrow-up"></span>
-        <span class="arrow-down"></span>
-      </div>
-    </div>
-    <!-- ATTENUATE END -->
-
     <!-- GLOBAL SHAPE SELECTOR -->
     <div class="body-selector-parent input-wrap" id="lfo-global-<?=$port_id?>">
       <h3 class="box-body-select-title inline">Global</h3>
@@ -130,19 +107,66 @@
     </div>
     <!-- GLOBAL SHAPE SELECTOR END -->
 
+    <!-- ATTENUATE -->
+    <div class="box-num-single" id="lfo-attenuate-<?=$port_id?>">
+      <label class="box-num-single-label inline" for="lfo-attenuate-input-<?=$port_id?>">Attenuate</label>
+      <div class="input-number-wrap round-sm">
+        <input
+          class="box-num-input round-sm"
+          type="text"
+          value="0"
+          data-mt-type="VOICE" 
+          data-mt-port="<?=$i?>" 
+          data-mt-parameter="LFOMaxLevel" 
+          name="lfo-attenuate-input-<?=$port_id?>"
+          id="lfo-attenuate-input-<?=$port_id?>"
+          data-type="number"
+          data-min="1"
+          data-max="999"
+          data-digits="3" />
+        <span class="arrow-up"></span>
+        <span class="arrow-down"></span>
+      </div>
+    </div>
+    <!-- ATTENUATE END -->
+
   </section>
   <!-- GLOBAL SETTINGS END -->
 
-  <!-- BACK BUTTON -->
-  <button 
-    type="button" 
-    class="back-button round-l reveal"
-    data-show="lfo-body-<?=$port_id?>"
-    data-hide="lfo-shape-<?=$port_id?>"
-  >
-  <span class="arrow-back"></span>Back</button>
-  <!-- BACK BUTTON END -->
+  <section class="shapes-globals">
+    <!-- BACK BUTTON -->
+    <button 
+      type="button" 
+      class="back-button round-l reveal"
+      data-show="lfo-body-<?=$port_id?>"
+      data-hide="lfo-shape-<?=$port_id?>"
+    >
+    <span class="arrow-back"></span>Back</button>
+    <!-- BACK BUTTON END -->
 
-
+    <!-- OFFSET -->
+      <div class="box-num-single" id="lfo-offset-<?=$port_id?>">
+        <label class="box-num-single-label inline" for="lfo-offset-input-<?=$port_id?>">Offset</label>
+        <div class="input-number-wrap round-sm">
+          <input
+            class="box-num-input round-sm"
+            type="text"
+            value="50"
+            data-mt-type="VOICE" 
+            data-mt-port="<?=$i?>" 
+            data-mt-parameter="LFOOffset" 
+            name="lfo-offset-input-<?=$port_id?>"
+            id="lfo-offset-input-<?=$port_id?>"
+            data-type="number"
+            data-min="0"
+            data-max="100"
+            data-digits="3" />
+          <span class="arrow-up"></span>
+          <span class="arrow-down"></span>
+        </div>
+      </div>
+      <!-- ATTENUATE END -->
+  </section>
+  
 </section> 
 <!-- SHAPE CONF BOX END -->

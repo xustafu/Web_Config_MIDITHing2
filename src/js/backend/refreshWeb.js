@@ -374,6 +374,8 @@ function _setLFOParams(port, voice) {
   /******************  GRAPH  ****************/
   //set attenuate
   _setParamValue("lfo-attenuate-input-" + port.id, voice.lfo_max_level);
+  //set offset
+  _setParamValue("lfo-offset-input-" + port.id, voice.lfo_offset);
   //quad graphs
   const q1 = voice.lfo_curve_type_q1;
   const q2 = voice.lfo_curve_type_q2;

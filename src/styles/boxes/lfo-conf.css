@@ -50,6 +50,7 @@ div[id^='lfo-quad'] {
   display: flex;
   gap: 0.8rem;
   margin-bottom: 1rem;
+  justify-content: space-between;
 }
 
 .conf-window-wrap .shapes-globals .box-selector-label[for*='global'] {
@@ -121,7 +122,7 @@ div[id^='lfo-quad'] {
 
   .shapes-globals {
     margin-top: 3rem;
-    justify-content: space-around;
+    justify-content: space-between;
   }
 
   .conf-window-wrap .box-selector-label[for^='lfo-quad'] {
