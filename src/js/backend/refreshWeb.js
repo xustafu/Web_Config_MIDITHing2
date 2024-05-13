@@ -42,6 +42,8 @@ function _setDefaultConfig(num) {
         port.isNewVoice = true;
         voice_ids[param] = DeviceConfig.voices_assigned.pop();
         port.voice_rep = voice_ids[param];
+        DeviceConfig.voices_port[param].vo_min_note = port.min;
+        DeviceConfig.voices_port[param].vo_max_note = port.max;
       }
     }
     DeviceConfig.ports[i] = port;

@@ -92,6 +92,10 @@ export function setPreDefSetup(num) {
   sendSysex("GENERAL", 0, "SET_DEF_CONFIG", num);
   setDefaultConfig(num, true);
   refreshWeb();
+  if (num == 32) { // weird case: set polyphony (1)
+    setDefaultConfig(num, true);
+    refreshWeb();
+  }
   if (LogSentSysex) console.log("SET PREDEF " + (num - 32));
   if (LogSentSysex) console.log(" ");
 }
