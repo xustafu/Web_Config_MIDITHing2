@@ -571,7 +571,7 @@ export function showModal(type, msg) {
       p.innerHTML = "This web editor is designed to work with Befaco MIDI Thing 2.&nbsp;";
       p.innerHTML += "Please visit our website for further information, ";
       p.innerHTML += "and check Web configuration tool section of our User Manual: [Insert link here]<br/>";
-      p.innerHTML += "<br/>Website developed by <a href='mailto:hugobraulio@gmail.com'>Hugo Vazquez</a> & Yago Nuchera";
+      p.innerHTML += "<br/>Website developed by <a href='mailto:hugobraulio@gmail.com'>Hugo Vazquez</a> & Yago De la Torre";
       frag.appendChild(h1);
       frag.appendChild(p);
       break;
