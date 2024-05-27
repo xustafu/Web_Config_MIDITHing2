@@ -278,14 +278,14 @@ const MIDI_MERGE = 5;
 /*          DEFAULT CONFIGS                     */
 /************************************************/
 const POLYPHONY = 0;
-const POLYPHONY_OSC = 1;
-const MULTI_TIMBRIC = 2;
-const MULTI_TIMBRIC_OSC = 3;
-const DRUM_MODE = 4;
-const DRUM_MODE_MIX = 5;
-const CCS_MIX = 6;
-const VCV_PITCH_BEND = 7;
-const BLANK_PRESET = 8;
+//const POLYPHONY_OSC = 1;
+const MULTI_TIMBRIC = 1;
+//const MULTI_TIMBRIC_OSC = 3;
+const DRUM_MODE = 2;
+const VCV_PITCH_BEND = 3;
+const DRUM_MODE_MIX = 4;
+const CCS_MIX = 5;
+const BLANK_PRESET = 6;
 
 const DEFAULT_CONFIGS = {
   // Initial configuration of Midi Thing as stated in the firmware
@@ -311,7 +311,7 @@ const DEFAULT_CONFIGS = {
     [19, "Voice Gate", MAXDIGOUTPUT, MODE5V, GENDIGOUTPUT, 0, 120, 1, 18],
     [20, "Voice Gate", MAXDIGOUTPUT, MODE5V, GENDIGOUTPUT, 0, 120, 1, 19]*/
   ],
-  [POLYPHONY_OSC]: [
+  /*[POLYPHONY_OSC]: [
     [1,"Voice Note", MAXDACOUTPUT, MODE10V, MIDIVOICENOTE, 0, 120, 1, 0],
     [2,"Voice Osc ", MAXDIGOUTPUT, MODE10V, MIDIVOICEOSC, 0, 120, 1, 0],
     [3,"Voice ADSR", MAXDACOUTPUT, MODE10V, MIDIVOICEADSR, 0, 120, 1, 0],
@@ -331,8 +331,8 @@ const DEFAULT_CONFIGS = {
     [17,"Voice Gate", MAXDIGOUTPUT, MODE5V, GENDIGOUTPUT, 0, 120, 1, 16],
     [18,"Voice Gate", MAXDIGOUTPUT, MODE5V, GENDIGOUTPUT, 0, 120, 1, 17],
     [19,"Voice Gate", MAXDIGOUTPUT, MODE5V, GENDIGOUTPUT, 0, 120, 1, 18],
-    [20,"Voice Gate", MAXDIGOUTPUT, MODE5V, GENDIGOUTPUT, 0, 120, 1, 19]*/
-  ],
+    [20,"Voice Gate", MAXDIGOUTPUT, MODE5V, GENDIGOUTPUT, 0, 120, 1, 19]
+  ],*/
   [MULTI_TIMBRIC]: [
     [1,"Voice Note", MAXDACOUTPUT, MODE10V, MIDIVOICENOTE, 0, 120, 1, 0],
     [2,"Voice Gate", MAXDACOUTPUT, MODE10V, MIDIVOICEGATE, 0, 120, 1, 0],
@@ -355,7 +355,7 @@ const DEFAULT_CONFIGS = {
     [19,"Voice Gate", MAXDIGOUTPUT, MODE5V, GENDIGOUTPUT, 0, 120, 1, 18],
     [20,"Voice Gate", MAXDIGOUTPUT, MODE5V, GENDIGOUTPUT, 0, 120, 1, 19]*/
   ],
-  [MULTI_TIMBRIC_OSC]: [
+  /*[MULTI_TIMBRIC_OSC]: [
     [1,"Voice Note", MAXDACOUTPUT, MODE10V, MIDIVOICENOTE, 0, 120, 1, 0],
     [2,"Voice Osc ", MAXDIGOUTPUT, MODE10V, MIDIVOICEOSC, 0, 120, 1, 0],
     [3,"Voice ADSR", MAXDACOUTPUT, MODE10V, MIDIVOICEADSR, 0, 120, 1, 0],
@@ -375,8 +375,8 @@ const DEFAULT_CONFIGS = {
     [17,"Voice Gate", MAXDIGOUTPUT, MODE5V, GENDIGOUTPUT, 0, 120, 1, 16],
     [18,"Voice Gate", MAXDIGOUTPUT, MODE5V, GENDIGOUTPUT, 0, 120, 1, 17],
     [19,"Voice Gate", MAXDIGOUTPUT, MODE5V, GENDIGOUTPUT, 0, 120, 1, 18],
-    [20,"Voice Gate", MAXDIGOUTPUT, MODE5V, GENDIGOUTPUT, 0, 120, 1, 19]*/
-  ],
+    [20,"Voice Gate", MAXDIGOUTPUT, MODE5V, GENDIGOUTPUT, 0, 120, 1, 19]
+  ],*/
   [DRUM_MODE]: [
     [1,"Voice Drum", MAXDACOUTPUT, MODE10V, MIDIDRUMTRIG, 35, 35, 10, 0],
     [2,"Voice Drum", MAXDACOUTPUT, MODE10V, MIDIDRUMTRIG, 38, 38, 10, 1],
