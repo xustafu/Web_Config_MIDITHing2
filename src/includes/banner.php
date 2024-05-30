@@ -69,10 +69,10 @@
           <!--li class="box-suboptions-item selector-item settings" data-body="2" data-value="33" data-func="predef">Polyphony + OSC</li-->
           <li class="box-suboptions-item selector-item settings" data-body="2" data-value="33" data-func="predef">Multi-timbric</li>
           <!--li class="box-suboptions-item selector-item settings" data-body="4" data-value="35" data-func="predef">Multi-timbric + OSC</li-->
-          <li class="box-suboptions-item selector-item settings" data-body="3" data-value="34" data-func="predef">Drum Mode</li>
+          <li class="box-suboptions-item selector-item settings" data-body="3" data-value="34" data-func="predef">CCs MIX</li>
           <li class="box-suboptions-item selector-item settings" data-body="4" data-value="35" data-func="predef">VCV Pitch Bend</li>
-          <li class="box-suboptions-item selector-item settings" data-body="5" data-value="36" data-func="predef">Drum Mode MIX</li>
-          <li class="box-suboptions-item selector-item settings" data-body="6" data-value="37" data-func="predef">CCs MIX</li>
+          <li class="box-suboptions-item selector-item settings" data-body="5" data-value="36" data-func="predef">Drum Mode</li>
+          <li class="box-suboptions-item selector-item settings" data-body="6" data-value="37" data-func="predef">Drum Mode MIX</li>
           <li class="box-suboptions-item selector-item settings" data-body="7" data-value="38" data-func="predef">Blank Preset</li>
         </ul>
       </li>

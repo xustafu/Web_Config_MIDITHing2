@@ -281,10 +281,10 @@ const POLYPHONY = 0;
 //const POLYPHONY_OSC = 1;
 const MULTI_TIMBRIC = 1;
 //const MULTI_TIMBRIC_OSC = 3;
-const DRUM_MODE = 2;
+const CCS_MIX = 2;
 const VCV_PITCH_BEND = 3;
-const DRUM_MODE_MIX = 4;
-const CCS_MIX = 5;
+const DRUM_MODE = 4;
+const DRUM_MODE_MIX = 5;
 const BLANK_PRESET = 6;
 
 const DEFAULT_CONFIGS = {
