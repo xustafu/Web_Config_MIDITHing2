@@ -66,6 +66,7 @@ export function addFunctionToVoice(port_num, li, is_automatic) {
         "warning",
         "There is no voice available to add a function to. A new voice will be created instead."
       );
+      newVoiceFunction(port_num, 'box-'+BoxNames[port_num])
       return;
     }
     //if we select manually "add to voice", and there is only one, we select that

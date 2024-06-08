@@ -241,6 +241,37 @@ export function selectFunction(li, is_automatic = false) {
 }
 
 /**
+ * Handles the main function changes
+ * @param {HTMLElement} li The li that got clicked
+ * @param {String} box_id The ID of the box
+ * @param {Boolean} is_automatic is selected mamually or from sysex
+ */
+export function _handleMainFunc(li, box_id, is_automatic) {
+  const bodyStr = `${li.getAttribute('data-body')}`;
+  const port_num = getLiPortNumber(li);
+
+  // Change the volts list
+  const is_gate = bodyStr.includes('gate') || bodyStr.includes('drum');
+  changeVolts(port_num, is_gate);
+
+  //new voice function
+  if (li.classList.contains('new_voice')) {
+    newVoiceFunction(port_num, box_id, li);
+  }
+  //add function to voice
+  else if (li.classList.contains('add_to_voice')) {
+    addFunctionToVoice(port_num, li, is_automatic);
+  }
+  //new non-voice function
+  else {
+    newNonVoiceFunction(port_num, box_id);
+  }
+
+  // Hide/unhide the corresponding body types
+  _revealBody(li, port_num, is_automatic);
+}
+
+/**
  * Hides <ul>s on blur and deactivates all labels
  * @param {HTMLElement} element The element that was being hovered
  */
@@ -636,37 +667,6 @@ export function showModal(type, msg) {
 export function dynModal() {
   const scrollPos = window.scrollY;
   q(`#modal-wrap`).style.top = `${scrollPos}px`;
-}
-
-/**
- * Handles the main function changes
- * @param {HTMLElement} li The li that got clicked
- * @param {String} box_id The ID of the box
- * @param {Boolean} is_automatic is selected mamually or from sysex
- */
-export function _handleMainFunc(li, box_id, is_automatic) {
-  const bodyStr = `${li.getAttribute('data-body')}`;
-  const port_num = getLiPortNumber(li);
-
-  // Change the volts list
-  const is_gate = bodyStr.includes('gate') || bodyStr.includes('drum');
-  changeVolts(port_num, is_gate);
-
-  //new voice function
-  if (li.classList.contains('new_voice')) {
-    newVoiceFunction(port_num, box_id, li);
-  }
-  //add function to voice
-  else if (li.classList.contains('add_to_voice')) {
-    addFunctionToVoice(port_num, li, is_automatic);
-  }
-  //new non-voice function
-  else {
-    newNonVoiceFunction(port_num, box_id);
-  }
-
-  // Hide/unhide the corresponding body types
-  _revealBody(li, port_num, is_automatic);
 }
 
 /**
