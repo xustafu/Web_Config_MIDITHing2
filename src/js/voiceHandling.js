@@ -91,7 +91,8 @@ export function addFunctionToVoice(port_num, li, is_automatic) {
   port.voice = voice;
   port.voice_rep = calculateVoiceId(voice);
   port.param = voice;
-  port.midi_ch = DeviceConfig.voices[voice].midi_ch;
+  if (voice != -1)
+    port.midi_ch = DeviceConfig.voices[voice].midi_ch;
   DeviceConfig.ports[port_num] = port;
 
   const port_name = "-" + BoxNames[voice];

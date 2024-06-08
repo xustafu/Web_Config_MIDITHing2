@@ -134,7 +134,7 @@ function _setBodyParams(port) {
   let voice = (port.voice <= 12) ? DeviceConfig.voices_port[port.voice] : new VoiceConfig();
   const is_global_adsr = (funct_name == "velocity") || ((funct_name == "adsr") && !voice.use_local_config_adsr);
   if (is_global_adsr)
-    voice = DeviceConfig.voices_midi_ch[port.midi_ch-1];
+    voice = DeviceConfig.voices_midi_ch[voice.midi_ch-1];
   voice.voice = port.voice;
   switch (funct_name) {
     case "note":
