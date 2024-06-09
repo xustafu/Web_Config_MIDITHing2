@@ -131,7 +131,7 @@ function _setHeaderParams(port) {
 function _setBodyParams(port) {
   const midi_ch = DeviceConfig.midi_channels[port.midi_ch-1];
   const funct_name = FirmwareFunctions2Web[port.funct];
-  let voice = (port.voice <= 12) ? DeviceConfig.voices_port[port.voice] : new VoiceConfig();
+  let voice = (port.voice >= 0 && port.voice <= 12) ? DeviceConfig.voices_port[port.voice] : new VoiceConfig();
   const is_global_adsr = (funct_name == "velocity") || ((funct_name == "adsr") && !voice.use_local_config_adsr);
   if (is_global_adsr)
     voice = DeviceConfig.voices_midi_ch[voice.midi_ch-1];

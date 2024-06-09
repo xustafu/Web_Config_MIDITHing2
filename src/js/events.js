@@ -211,13 +211,17 @@ qA('input[class*=num]').forEach(input => {
 });
 
 /**
- * Clicking on the outside of the modal hides it
+ * Clicking on the outside of the modal or on cancel button hides it
  */
 q('#modal-wrap').addEventListener('click', e => {
   if (e.target.classList.contains('modal-wrap')) {
     e.target.classList.toggle('hidden', true);
     window.removeEventListener('scroll', dynModal, true);
   }
+});
+q("#add2voice_cancel").addEventListener("click", e => {
+  q('#modal-wrap').classList.toggle("hidden", true);
+  window.removeEventListener("scroll", dynModal, true);
 });
 
 /**

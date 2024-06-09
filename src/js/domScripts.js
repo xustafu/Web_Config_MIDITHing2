@@ -208,10 +208,43 @@ export function expandMenu(el) {
  */
 export function selectFunction(li, is_automatic = false) {
   const port_num = Number(getLiPortNumber(li));
+  if (!is_automatic && li.classList.contains('add_to_voice') && DeviceConfig.voices_port_used.length > 1) {
+    q("#add2voice_submit").setAttribute("data-port", port_num);
+    q("#add2voice_submit").setAttribute("data-funct", li.dataset.body);
+    showModal("add_to_voice", "");
+    TriggerInputChange = false;
+    return;
+  }
+  _handleMainFunction(li, is_automatic)
+}
+
+function _handleMainFunction(li, is_automatic, voice=-1) {
+  const port_num = Number(getLiPortNumber(li));
   const port_id = BoxNames[port_num];
   const box_id = 'box-' + port_id;
-  changePortsColors(port_num, 'RESET');
-  _handleMainFunc(li, box_id, is_automatic);
+  const bodyStr = `${li.getAttribute("data-body")}`;
+
+  changePortsColors(port_num, "RESET");
+
+  // Change the volts list
+  const is_gate = bodyStr.includes("gate") || bodyStr.includes("drum");
+  changeVolts(port_num, is_gate);
+
+  //new voice function
+  if (li.classList.contains("new_voice")) {
+    newVoiceFunction(port_num, box_id, li);
+  }
+  //add function to voice
+  else if (li.classList.contains("add_to_voice")) {
+    addFunctionToVoice(port_num, li, is_automatic, voice);
+  }
+  //new non-voice function
+  else {
+    newNonVoiceFunction(port_num, box_id);
+  }
+
+  // Hide/unhide the corresponding body types
+  _revealBody(li, port_num, is_automatic);
 
   //set function
   const funct = Number(li.getAttribute('data-value'));
@@ -647,7 +680,8 @@ export function showModal(type, msg) {
         const li = q('#func-selector-wrap-box-' + port_id + ' li.add_to_voice[data-body="' + funct + '"]');
         q('#modal-wrap').classList.toggle('hidden', true);
         TriggerInputChange = true;
-        addFunctionToVoice(port_num, li, true);
+        _handleMainFunction(li, false, v)
+        //addFunctionToVoice(port_num, li, true, v);
         const input = q('#main-func-box-' + port_id);
         sendParameterSysex(input);
         requestConfig();
