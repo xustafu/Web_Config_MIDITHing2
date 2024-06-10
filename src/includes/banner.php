@@ -19,7 +19,7 @@
     </svg>
   </figure>
 
-  <h1 class="banner-title"><span id="title">MIDI Thing 2</span><span class="banner-subtitle"> | Editor</span></h1>
+  <h1 class="banner-title"><span id="title">MIDI Thing 2 fw 1.1</span><span class="banner-subtitle"> | Editor</span></h1>
 
   <figure class="live-button">
     <svg
@@ -53,7 +53,7 @@
         </a>
       </li>
       <li>
-        <a class="selector-item settings" href='#' id='save_to_file' data-func="load" style="text-decoration:none;">
+        <a class="selector-item settings" href='#' id='load_from_file' data-func="load" style="text-decoration:none;">
           Load from file
         </a>
         <form>
@@ -65,11 +65,15 @@
       <li class="settings has-submenu">
         Load default setup
         <ul class="box-selector-suboptions round-sm hidden">
-          <li class="box-suboptions-item selector-item settings" data-body="1" data-value="32" data-func="predef">4 Voices 1 Channel</li>  
-          <li class="box-suboptions-item selector-item settings" data-body="1" data-value="33" data-func="predef">4 Voices 4 Channel</li>
-          <li class="box-suboptions-item selector-item settings" data-body="2" data-value="34" data-func="predef">Various</li>
-          <li class="box-suboptions-item selector-item settings" data-body="3" data-value="35" data-func="predef">Pitch Bends</li>
-          <li class="box-suboptions-item selector-item settings" data-body="4" data-value="36" data-func="predef">12 Voices 1 Channel</li>
+          <li class="box-suboptions-item selector-item settings" data-body="1" data-value="32" data-func="predef">Polyphony</li>  
+          <!--li class="box-suboptions-item selector-item settings" data-body="2" data-value="33" data-func="predef">Polyphony + OSC</li-->
+          <li class="box-suboptions-item selector-item settings" data-body="2" data-value="33" data-func="predef">Multi-timbric</li>
+          <!--li class="box-suboptions-item selector-item settings" data-body="4" data-value="35" data-func="predef">Multi-timbric + OSC</li-->
+          <li class="box-suboptions-item selector-item settings" data-body="3" data-value="34" data-func="predef">CCs MIX</li>
+          <li class="box-suboptions-item selector-item settings" data-body="4" data-value="35" data-func="predef">VCV Pitch Bend</li>
+          <li class="box-suboptions-item selector-item settings" data-body="5" data-value="36" data-func="predef">Drum Mode</li>
+          <li class="box-suboptions-item selector-item settings" data-body="6" data-value="37" data-func="predef">Drum Mode MIX</li>
+          <li class="box-suboptions-item selector-item settings" data-body="7" data-value="38" data-func="predef">Blank Preset</li>
         </ul>
       </li>
       <li class="selector-item settings" data-func="credits">Credits</li>

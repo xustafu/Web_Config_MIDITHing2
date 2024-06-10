@@ -54,6 +54,7 @@ class VoiceConfig {
     this.lfo_midi_clk_div = 24;
     this.lfo_max_level = 20;
     this.lfo_pre_delay = 0;
+    this.lfo_offset = 50;
     this.portamento_time = 0;
     this.portamento_type = 0;
     this.adsr_retrig_mode = 0;

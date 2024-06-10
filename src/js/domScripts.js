@@ -208,10 +208,43 @@ export function expandMenu(el) {
  */
 export function selectFunction(li, is_automatic = false) {
   const port_num = Number(getLiPortNumber(li));
+  if (!is_automatic && li.classList.contains('add_to_voice') && DeviceConfig.voices_port_used.length > 1) {
+    q("#add2voice_submit").setAttribute("data-port", port_num);
+    q("#add2voice_submit").setAttribute("data-funct", li.dataset.body);
+    showModal("add_to_voice", "");
+    TriggerInputChange = false;
+    return;
+  }
+  _handleMainFunction(li, is_automatic)
+}
+
+function _handleMainFunction(li, is_automatic, voice=-1) {
+  const port_num = Number(getLiPortNumber(li));
   const port_id = BoxNames[port_num];
   const box_id = 'box-' + port_id;
-  changePortsColors(port_num, 'RESET');
-  _handleMainFunc(li, box_id, is_automatic);
+  const bodyStr = `${li.getAttribute("data-body")}`;
+
+  changePortsColors(port_num, "RESET");
+
+  // Change the volts list
+  const is_gate = bodyStr.includes("gate") || bodyStr.includes("drum");
+  changeVolts(port_num, is_gate);
+
+  //new voice function
+  if (li.classList.contains("new_voice")) {
+    newVoiceFunction(port_num, box_id, li);
+  }
+  //add function to voice
+  else if (li.classList.contains("add_to_voice")) {
+    addFunctionToVoice(port_num, li, is_automatic, voice);
+  }
+  //new non-voice function
+  else {
+    newNonVoiceFunction(port_num, box_id);
+  }
+
+  // Hide/unhide the corresponding body types
+  _revealBody(li, port_num, is_automatic);
 
   //set function
   const funct = Number(li.getAttribute('data-value'));
@@ -238,6 +271,37 @@ export function selectFunction(li, is_automatic = false) {
   q('#func-selector-wrap-box-' + port_id + ' .box-selector-label').innerHTML = li.innerHTML;
   // Hide <ul> after click
   li.parentElement.classList.toggle('hidden', true);
+}
+
+/**
+ * Handles the main function changes
+ * @param {HTMLElement} li The li that got clicked
+ * @param {String} box_id The ID of the box
+ * @param {Boolean} is_automatic is selected mamually or from sysex
+ */
+export function _handleMainFunc(li, box_id, is_automatic) {
+  const bodyStr = `${li.getAttribute('data-body')}`;
+  const port_num = getLiPortNumber(li);
+
+  // Change the volts list
+  const is_gate = bodyStr.includes('gate') || bodyStr.includes('drum');
+  changeVolts(port_num, is_gate);
+
+  //new voice function
+  if (li.classList.contains('new_voice')) {
+    newVoiceFunction(port_num, box_id, li);
+  }
+  //add function to voice
+  else if (li.classList.contains('add_to_voice')) {
+    addFunctionToVoice(port_num, li, is_automatic);
+  }
+  //new non-voice function
+  else {
+    newNonVoiceFunction(port_num, box_id);
+  }
+
+  // Hide/unhide the corresponding body types
+  _revealBody(li, port_num, is_automatic);
 }
 
 /**
@@ -568,10 +632,10 @@ export function showModal(type, msg) {
   switch (type) {
     case 'credits':
       h1.innerHTML = "Credits";
-      p.innerHTML = "This web editor is designed to work with Befaco MIDI Thing 2 Firmware version 1.0.&nbsp;";
-      p.innerHTML += "Please visit our <a href='https://www.befaco.org/midi-thing-v2/' target='_new'>website</a> for further information, ";
+      p.innerHTML = "This web editor is designed to work with Befaco MIDI Thing 2 firmware 1.1.&nbsp;";
+      p.innerHTML += "Please visit our website for further information, ";
       p.innerHTML += "and check Web configuration tool section of our User Manual: [Insert link here]<br/>";
-      p.innerHTML += "<br/>Website developed by <a href='mailto:hugobraulio@gmail.com'>Hugo Vazquez</a> & Yago Nuchera";
+      p.innerHTML += "<br/>Website developed by <a href='mailto:hugobraulio@gmail.com'>Hugo Vazquez</a> & Yago De la Torre";
       frag.appendChild(h1);
       frag.appendChild(p);
       break;
@@ -616,7 +680,8 @@ export function showModal(type, msg) {
         const li = q('#func-selector-wrap-box-' + port_id + ' li.add_to_voice[data-body="' + funct + '"]');
         q('#modal-wrap').classList.toggle('hidden', true);
         TriggerInputChange = true;
-        addFunctionToVoice(port_num, li, true);
+        _handleMainFunction(li, false, v)
+        //addFunctionToVoice(port_num, li, true, v);
         const input = q('#main-func-box-' + port_id);
         sendParameterSysex(input);
         requestConfig();
@@ -636,37 +701,6 @@ export function showModal(type, msg) {
 export function dynModal() {
   const scrollPos = window.scrollY;
   q(`#modal-wrap`).style.top = `${scrollPos}px`;
-}
-
-/**
- * Handles the main function changes
- * @param {HTMLElement} li The li that got clicked
- * @param {String} box_id The ID of the box
- * @param {Boolean} is_automatic is selected mamually or from sysex
- */
-export function _handleMainFunc(li, box_id, is_automatic) {
-  const bodyStr = `${li.getAttribute('data-body')}`;
-  const port_num = getLiPortNumber(li);
-
-  // Change the volts list
-  const is_gate = bodyStr.includes('gate');
-  changeVolts(port_num, is_gate);
-
-  //new voice function
-  if (li.classList.contains('new_voice')) {
-    newVoiceFunction(port_num, box_id, li);
-  }
-  //add function to voice
-  else if (li.classList.contains('add_to_voice')) {
-    addFunctionToVoice(port_num, li, is_automatic);
-  }
-  //new non-voice function
-  else {
-    newNonVoiceFunction(port_num, box_id);
-  }
-
-  // Hide/unhide the corresponding body types
-  _revealBody(li, port_num, is_automatic);
 }
 
 /**

@@ -51,45 +51,39 @@ export function newVoiceFunction(port_num, box_id) {
  * @param {HTMLElement} "li" > The element that receives the click
  * @param {Boolean} is_automatic > is selected maually or from sysex
  */
-export function addFunctionToVoice(port_num, li, is_automatic) {
-  port_num = Number(port_num);
+export function addFunctionToVoice(port_num, li, is_automatic, voice) {
   const box_id = "box-" + BoxNames[port_num];
-  var voice = -1;
-  //get the voice depending on manual or automatic
+
+  //get the voice if automatic
   if (is_automatic) {
-    // if the call comes from sysex or modal voice selection
     voice = DeviceConfig.ports[port_num].voice;
   } else {
     //if manual selection (click), if no voices used, return error
     if (DeviceConfig.voices_port_used.length == 0) {
       showModal(
-        'warning',
-        'There is no voice available to add a function to. A new voice will be created instead.'
+        "warning",
+        "There is no voice available to add a function to. A new voice will be created instead."
       );
+      newVoiceFunction(port_num, 'box-'+BoxNames[port_num])
       return;
     }
     //if we select manually "add to voice", and there is only one, we select that
     else if (DeviceConfig.voices_port_used.length == 1) {
       voice = DeviceConfig.voices_port_used[0];
     }
-    //if there is more than one voice, select it with modal
-    else {
-      q("#add2voice_submit").setAttribute("data-port", port_num);
-      q("#add2voice_submit").setAttribute("data-funct", li.dataset.body);
-      showModal("add_to_voice", "");
-      TriggerInputChange = false;
-    }
   }
   const port = DeviceConfig.ports[port_num];
-  
+
   port.isNewVoice = false;
   port.isAddToVoice = true;
-  // Hide the port name drop-down arrow
-  q(`#${box_id} .port-color-drop-arrow`).classList.toggle("hidden", true);
+  // reveal the port name drop-down arrow
+  q(`#${box_id} .port-color-drop-arrow`).classList.toggle("hidden", false);
 
   port.voice = voice;
   port.voice_rep = calculateVoiceId(voice);
   port.param = voice;
+  if (voice != -1)
+    port.midi_ch = DeviceConfig.voices_port[voice].midi_ch;
   DeviceConfig.ports[port_num] = port;
 
   const port_name = "-" + BoxNames[voice];

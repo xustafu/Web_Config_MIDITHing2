@@ -24,6 +24,9 @@
         id="add2voice_submit"
         data-port
         data-funct>Confirm</button>
+      <button type="button"
+        class="round-l"
+        id="add2voice_cancel">Cancel</button>
     </div>
     <!-- MODAL BODY END -->
     <!-- MODAL FOOTER -->
