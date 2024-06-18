@@ -372,6 +372,8 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
   var is_port_midich = (type == PORT && param == PORTMIDICHAN);
   var is_port_funct = (type == PORT && param == PORTFUNCTION);
   var is_port_param = (type == PORT && param == PORTFUNCPARAMETER);
+  if (is_global_adsr && type == VOICE && number >= 18)
+    number = number - 18
   var port = DeviceConfig.ports[number];
   var param = port.param;
   if (port.isAddToVoice || is_port_midich) {
