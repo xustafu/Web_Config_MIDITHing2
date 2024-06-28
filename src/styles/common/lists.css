@@ -3,6 +3,10 @@
   position: absolute;
 }
 
+li {
+  cursor: pointer !important;
+}
+
 .box-selector-item {
   position: relative;
 }
