@@ -32,7 +32,7 @@
     </svg>
   </figure>
 
-  <div class="banner-device-select input-wrap" id="banner-device-selector-wrap">
+  <div class="banner-device-select input-wrap select-box" id="banner-device-selector-wrap">
     <input
     class="selector no-trigger"
     type="hidden"
@@ -44,7 +44,7 @@
     </ul>
   </div>
 
-  <div class="banner-settings-select input-wrap" id="banner-settings-select-wrap">
+  <div class="banner-settings-select input-wrap select-box" id="banner-settings-select-wrap">
     <label for="settings" class="selector-label round">Settings</label>
     <ul id="settings-ul" class="selector-options round hidden">
       <li>

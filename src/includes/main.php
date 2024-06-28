@@ -38,7 +38,7 @@
           <span class="port-color-drop-arrow hidden"
             data-port="<?= $i; ?>"></span>
           </h1>
-          <div class="box-header-field-v input-wrap"
+          <div class="box-header-field-v input-wrap select-box"
             id="volts-wrap-<?= $port_id ?>">
             <h2 class="box-header-subtitle">Volts</h2>
             <input class="selector header-input"
@@ -88,7 +88,7 @@
         <!-- BOX HEADER END -->
 
         <!-- MAIN FUNCTION SELECTOR -->
-        <section class="box-func-select input-wrap"
+        <section class="box-func-select input-wrap select-box"
           id="func-selector-wrap-box-<?= $port_id ?>">
           <input type="hidden"
             class="selector header-input"

@@ -1,14 +1,12 @@
 import { q, qA, LiveSend } from './globals.js';
 import {
   expandMenu,
-  hideList,
   arrowsFunc,
   minMax,
   domInit,
   checkBox,
   selectSettings,
   selectFunction,
-  selectDevice,
   setLabelWidths,
   selectParameter,
   setLFOGraph,
@@ -68,10 +66,42 @@ q(`body`).addEventListener('click', e => {
 //  * Menu with submenu > on hover
 //  */
 qA('li.has-submenu').forEach(li => {
-  li.addEventListener('mouseover', e => {
+  li.addEventListener("mouseover", (e) => {
     expandMenu(e.target);
   });
+  li.addEventListener("mouseleave", (e) => {
+    _hideList(e.target.children[0]);
+  });
 });
+
+qA('ul').forEach(ul => {
+  ul.addEventListener("mouseleave", (e) => {
+    _hideList(e.target);
+  });
+})
+
+qA(".select-box, .box-selector-parent, .body-selector-parent").forEach((box) => {
+  box.addEventListener("mouseleave", (e) => {
+    e.target.querySelectorAll('ul').forEach((el) => {
+      _hideList(el);
+    });
+  });
+});
+
+function _hideList(element) {
+  let reEnter = false;
+  element.addEventListener("mouseenter", () => {
+    reEnter = true;
+  });
+  setTimeout(() => {
+    if (!reEnter) {
+        element.classList.toggle("hidden", true);
+        qA(`label[class*="selector-label"]`).forEach((label) =>
+          label.classList.remove("active")
+        )      
+    }
+  }, 100);
+}
 
 /****************************************************/
 /*              LI CLICK FUNCTIONALITY
@@ -159,19 +189,6 @@ qA('.lfo-radio').forEach(input => {
 /*            END OF LI CLICK FUNCTIONALITY
 /****************************************************/
 
-/**
- * Hide <ul>s on blur
- */
-[qA('ul[class*="selector-options"]'), qA('ul[class*="selector-suboptions"]')].forEach(list => {
-  list.forEach(ul => {
-    ul.addEventListener('mouseleave', e => {
-      hideList(e.target);
-    });
-    ul.removeEventListener('mouseleave', e => {
-      hideList(e.target);
-    }); // cleaning up to save memory
-  });
-});
 
 /**
  * Numeric input arrows functionality

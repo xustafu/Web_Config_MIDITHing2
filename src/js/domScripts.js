@@ -305,25 +305,6 @@ export function _handleMainFunc(li, box_id, is_automatic) {
 }
 
 /**
- * Hides <ul>s on blur and deactivates all labels
- * @param {HTMLElement} element The element that was being hovered
- */
-export function hideList(element) {
-  let reEnter = false;
-  element.addEventListener('mouseenter', () => {
-    reEnter = true;
-  });
-  setTimeout(() => {
-    if (!reEnter) {
-      qA('ul[class*="options"').forEach(optionList => {
-        optionList.classList.toggle('hidden', true);
-      });
-      qA(`label[class*="selector-label"]`).forEach(label => label.classList.remove('active'));
-    }
-  }, 1000);
-}
-
-/**
  * Deals with arrows functionality
  * @param {HTMLElement} arrow The HTML element that received the event
  * @param {Boolean} is_from_arrows > if the change came from arrows,
