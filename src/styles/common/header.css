@@ -241,10 +241,15 @@ ul[class*='color-selector-options']:not(ul[class*='hidden']) {
 
   .box-header span[class*='arrow'] {
     width: 4.7rem;
-    height: 6.4rem;
-    background-size: 45.3rem;
-    background-position-x: 0;
+    height: 3.1rem;
+    background-size: 46.3rem;
+    background-position-x: -65px;
     background-position-y: 0;
+  }
+  
+  .box-header span[class*="arrow-down"] {
+    top: 25px;
+    background-position-y: -8rem;
   }
 
   ul[class*='color-selector-options']:not(.hidden) {
