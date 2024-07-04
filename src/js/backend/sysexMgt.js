@@ -397,7 +397,7 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
     });
   }
   else*/ 
-  if (is_port_param || is_port_funct) {
+  if (is_port_param || is_port_funct || is_port_midich) {
     // function special case
     dec_data = new Uint8Array(6);
     dec_data[0] = port.funct;
