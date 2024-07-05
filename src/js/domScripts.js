@@ -75,7 +75,7 @@ export function activateMidiThingie(name = 'MIDIThingie') {
   const main = q('#main');
   const viewPortWidth = window.innerWidth;
 
-  if (name.includes('MIDIThingie')) {
+  if (name.includes('MIDIThingie')) { //if (true)
     const mt2Wrap = q('.mt2-main-wrap');
 
     // wrap the main content in div to allow for horizontal scrolling on defined sizes
@@ -194,7 +194,7 @@ export function expandMenu(el) {
     // Reveal the appropriate suboptions menu
     suboptions.classList.toggle('hidden');
     suboptions.style.top = el.classList.contains('settings') ? '0' : '-1px';
-    if (suboptions.getBoundingClientRect().left > viewportWidth) {
+    if (suboptions.getBoundingClientRect().left + 10 > viewportWidth) {
       suboptions.style.left = `-${suboptions.getBoundingClientRect().width}px`;
     }
   }
