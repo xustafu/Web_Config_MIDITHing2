@@ -61,21 +61,23 @@ export function selectDevice(li) {
   selectMIDIinput(WebMidi.inputs[li.dataset.value]);
   requestConfig();
   // Show the correct Main Area
-  activateMidiThingie(li.innerHTML);
+  activateMidiThingy(li.innerHTML);
 
   // Hide <ul> after click
   li.parentElement.classList.toggle('hidden', true);
 }
 
 /**
- * Activate Midi Thingie if exist
+ * Activate Midi Thingy if exist
  * @param {string} name - the name of the device
  */
-export function activateMidiThingie(name = 'MIDIThingie') {
+export function activateMidiThingy(name = 'MIDIThingy') {
   const main = q('#main');
   const viewPortWidth = window.innerWidth;
 
-  if (name.includes('MIDIThingie')) { //if (true)
+  if (name.includes('MIDIThingy')) { //if (true)
+    q('#title').innerHTML = "MIDI Thingy"
+    q('#head-title').innerHTML = "Web MIDI Thingy"
     const mt2Wrap = q('.mt2-main-wrap');
 
     // wrap the main content in div to allow for horizontal scrolling on defined sizes

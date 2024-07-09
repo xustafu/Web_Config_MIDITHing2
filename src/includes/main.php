@@ -1,11 +1,11 @@
 <!-- MAIN AREA -->
 <main class="main mt" id="main">
 
-  <!-- EXP SELECTOR (only for MIDI Thingie)
+  <!-- EXP SELECTOR (only for MIDI Thingy)
   <section id="exp-selector" class="hidden">
     <nav>
       <ul>
-        <li data-selected>MIDI Thingie</li>
+        <li data-selected>MIDI Thingy</li>
         <li>Exp. 1</li>
         <li>Exp. 2</li>
       </ul>

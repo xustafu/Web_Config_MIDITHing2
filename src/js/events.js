@@ -11,7 +11,7 @@ import {
   selectParameter,
   setLFOGraph,
   dynModal,
-  activateMidiThingie
+  activateMidiThingy
 } from './domScripts.js';
 import { sendParameterSysex } from './backend/sysexMgt.js';
 import { requestConfig, handleFiles } from './settingsFuncs.js';
@@ -27,7 +27,7 @@ window.addEventListener('resize', () => {
   activeADSRWrappers.forEach(wrapper =>
     drawAllADSR(document.querySelector(`${wrapper.id} .adsr-container`))
   );
-  activateMidiThingie(q('#MIDIInputSelectLabel').innerHTML);
+  activateMidiThingy(q('#MIDIInputSelectLabel').innerHTML);
 });
 
 /**
