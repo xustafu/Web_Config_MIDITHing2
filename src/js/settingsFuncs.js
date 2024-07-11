@@ -51,9 +51,14 @@ export function handleFiles(files) {
 
 export function sendToModule() {
   //first we send all functions
-  DeviceConfig.ports.forEach((port) => {
+  DeviceConfig.voices_port_used.forEach((num) => {
+    port = DeviceConfig.ports[num]
     sendSysex("PORT", port.port_num-1, "PORTFUNCTION", port.funct,  false);
   })
+  DeviceConfig.voices_port_free.forEach((num) => {
+    port = DeviceConfig.ports[num];
+    sendSysex("PORT", port.port_num - 1, "PORTFUNCTION", port.funct, false);
+  });
 
   // send all web to module
   qA("input.header-input").forEach((input) => {

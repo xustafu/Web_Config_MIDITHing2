@@ -293,7 +293,10 @@ qA('.redraw_adsr').forEach(input => {
  * Settings - loading files
  */
 q('#file_load').addEventListener('change', e => {
-  handleFiles(e.target.files);
+  if (e.target.files && e.target.files[0]) {
+    handleFiles(e.target.files);
+  }
+  e.target.value=''; //reset value of input to trigger change if same file is selected
 });
 
 /****************************************************/
