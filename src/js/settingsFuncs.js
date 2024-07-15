@@ -51,6 +51,7 @@ export function handleFiles(files) {
 
 export function sendToModule() {
   //first we send all functions
+  var port = new PortConfig();
   DeviceConfig.voices_port_used.forEach((num) => {
     port = DeviceConfig.ports[num]
     sendSysex("PORT", port.port_num-1, "PORTFUNCTION", port.funct,  false);

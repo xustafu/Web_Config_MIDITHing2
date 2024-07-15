@@ -74,8 +74,6 @@ export function addFunctionToVoice(port_num, li, is_automatic, voice) {
   }
   const port = DeviceConfig.ports[port_num];
 
-  port.isNewVoice = false;
-  port.isAddToVoice = true;
   // reveal the port name drop-down arrow
   q(`#${box_id} .port-color-drop-arrow`).classList.toggle("hidden", false);
 
@@ -84,6 +82,13 @@ export function addFunctionToVoice(port_num, li, is_automatic, voice) {
   port.param = voice;
   if (voice != -1)
     port.midi_ch = DeviceConfig.voices_port[voice].midi_ch;
+
+  if (_check_there_is_some_voice_rep(port))
+  {
+    port.isNewVoice = false;
+    port.isAddToVoice = true;
+  }
+
   DeviceConfig.ports[port_num] = port;
 
   const port_name = "-" + BoxNames[voice];
@@ -91,6 +96,15 @@ export function addFunctionToVoice(port_num, li, is_automatic, voice) {
   _changeVoice(box_id, li, port_name);
 
   changePortsColors(port_num, "ADD2VOICE");
+}
+
+function _check_there_is_some_voice_rep(port){
+  var there_is = false
+  DeviceConfig.ports.forEach((p) => {
+    there_is = (p.voice == port.voice && !(p.port_num == port.port_num) && p.isNewVoice)
+    if (there_is) return there_is;
+  });
+  return there_is;
 }
 
 /**
