@@ -329,7 +329,7 @@ function _extractNum(type, port) {
 }
 
 
-export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
+export function sendSysex(dtype, number, dparam, value, is_global_adsr, is_send_to_module=false) {
   if (LogSentSysex) console.log("SYSEX SENT: ");
   if (MIDIoutput == null) return;
   try {
@@ -376,7 +376,7 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
     number = number - 18
   var port = DeviceConfig.ports[number];
   var param = port.param;
-  if (port.isAddToVoice || is_port_midich) {
+  if (is_port_midich || (!is_send_to_module && port.isAddToVoice)) { 
     for (var i = 0; i < DeviceConfig.ports.length; i++) {
       let p = DeviceConfig.ports[i];
       if (p.voice == param && i != port.port_num - 1) {
@@ -386,17 +386,6 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr) {
     }
   } 
 
-  /*if (is_port_funct) {
-    dec_data = new Uint8Array(72);
-    enc_data = new Uint8Array(83);
-    DeviceConfig.ports.forEach((port, i) => {
-      dec_data[6*i] = port.funct;
-      dec_data[6*i+1] = port.midi_ch;
-      var funct_arr = _createParamArray(port.param);
-      dec_data.set(funct_arr, 6*i+2);
-    });
-  }
-  else*/ 
   if (is_port_param || is_port_funct || is_port_midich) {
     // function special case
     dec_data = new Uint8Array(6);

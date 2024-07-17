@@ -54,15 +54,15 @@ export function sendToModule() {
   var port = new PortConfig();
   DeviceConfig.voices_port_used.forEach((num) => {
     port = DeviceConfig.ports[num]
-    sendSysex("PORT", port.port_num-1, "PORTFUNCTION", port.funct,  false);
+    sendSysex("PORT", port.port_num-1, "PORTFUNCTION", port.funct,  false, true);
   })
   DeviceConfig.voices_port_free.forEach((num) => {
     port = DeviceConfig.ports[num];
-    sendSysex("PORT", port.port_num - 1, "PORTFUNCTION", port.funct, false);
+    sendSysex("PORT", port.port_num - 1, "PORTFUNCTION", port.funct, false, true);
   });
 
   // send all web to module
-  qA("input.header-input").forEach((input) => {
+  qA("input.header-input:not(.funct-input)").forEach((input) => {
     sendParameterSysex(input);
   });
   var bodies = qA(".box-body:not(.hidden):not(.multiple-box):not(.ignore-send)");

@@ -91,7 +91,7 @@
         <section class="box-func-select input-wrap select-box"
           id="func-selector-wrap-box-<?= $port_id ?>">
           <input type="hidden"
-            class="selector header-input"
+            class="selector header-input funct-input"
             name="main-func-box-<?= $port_id ?>"
             id="main-func-box-<?= $port_id ?>"
             data-mt-type="PORT"
