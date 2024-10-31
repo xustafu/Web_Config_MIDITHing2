@@ -221,6 +221,7 @@ const NoteOffOsc=104; // "Retrigger Gate", boolT, 0, 0, 1},
 const LFOAffectOSC=105; // "LFO in OSC", boolT, 0, 0, 1},
 const LFOUseMIDIClock=106; // "LFO use MIDI Clock", boolT, 0, 0, 1},
 const LFOSingleCycle=107; // "LFO single Cycle", boolT, 0, 0, 1});
+const LFOUseNoteOff=108; // "Stop with Note off",  boolT, 1, 0, 1}
 
 const GlideModes = ["Lineal", "Fast", "Slow"];
 const ADSRGlobalNames = ["Global", "Local"];
@@ -562,5 +563,6 @@ const SYSEX_OBJ = {
     [LFOAffectOSC]: { index: 105, type: "Uint8", length: 1, attr: "lfo_affect_osc" },
     [LFOUseMIDIClock]: { index: 106, type: "Uint8", length: 1, attr: "lfo_use_midi_clock" },
     [LFOSingleCycle]: { index: 107, type: "Uint8", length: 1, attr: "lfo_single_cycle" },
+    [LFOUseNoteOff]: { index: 108, type: "Uint8", length: 1, attr: "lfo_stop" },
   },
 };

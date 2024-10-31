@@ -370,6 +370,8 @@ function _setLFOParams(port, voice) {
   q("#lfo-options-singleshot-input-" + port.id).checked = voice.lfo_single_cycle;
   //set lfo-osc toggle
   q("#lfo-options-lfo-osc-input-" + port.id).checked = voice.lfo_affect_osc;
+  //set lfo-stop toggle
+  q("#lfo-stop-input-" + port.id).checked = voice.lfo_stop;
 
   /******************  GRAPH  ****************/
   //set attenuate

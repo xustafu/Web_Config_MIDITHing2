@@ -66,5 +66,21 @@
   >
   <span class="arrow-back"></span>Back</button>
   <!-- LFO CONF BACK BUTTON END -->
+
+  <!-- LFO STOP -->
+  <div class="toggle-wrap" id="lfo-stop-<?=$port_id?>">
+    <h3 class="box-body-select-title">Stop</h3>
+    <label for="lfo-stop-input-<?=$port_id?>" class="toggle round-l"></label>
+    <input 
+      type="checkbox" 
+      data-mt-type="VOICE"
+      data-mt-port="<?=$i?>"
+      data-mt-parameter="LFOUseNoteOff"
+      name="lfo-stop-input-<?=$port_id?>" 
+      id="lfo-stop-input-<?=$port_id?>" 
+    />
+    <div class="slider-wrap"><span class="slider round-l"></span></div>
+  </div>
+  <!-- CLOCK STOP END -->  
 </main>
 <!-- BOX BODY NEW VOICE LFO END-->

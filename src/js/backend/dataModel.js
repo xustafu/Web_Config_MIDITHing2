@@ -66,6 +66,7 @@ class VoiceConfig {
     this.lfo_affect_osc = false;
     this.lfo_use_midi_clock = false;
     this.lfo_single_cycle = false;
+    this.lfo_stop = true;
     this.midi_ch = -1;
   }
 }
