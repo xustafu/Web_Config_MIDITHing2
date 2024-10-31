@@ -271,6 +271,14 @@ const SAVE_CONFIG_TO_SLOT = 2;
 const LOAD_CONFIG_FROM_SLOT = 3;
 const SET_LEARN_MODE = 4;
 const MIDI_MERGE = 5;
+const SER_DEV_OPTIONS = 6;
+const USB_DEV_OPTIONS = 7;
+const USB_HOST1_OPTIONS = 8;
+const USB_HOST2_OPTIONS = 9;
+const USB_HOST3_OPTIONS = 10;
+const USB_HOST4_OPTIONS = 11;
+const USE_MIDI_CLOCK = 12;
+const CLOCK_PERIOD = 13;
 
 
 
@@ -502,6 +510,14 @@ const SYSEX_OBJ = {
     [LOAD_CONFIG_FROM_SLOT]: { index: 3, type: "Uint16", length: 2 },
     [SET_LEARN_MODE]: { index: 4, type: "Uint16", length: 2 },
     [MIDI_MERGE]: { index: 5, type: "Uint16", length: 2 },
+    [SER_DEV_OPTIONS]: { index: 6, type: "Uint16", length: 2 },
+    [USB_DEV_OPTIONS]: { index: 7, type: "Uint16", length: 2 },
+    [USB_HOST1_OPTIONS]: { index: 8, type: "Uint16", length: 2 },
+    [USB_HOST2_OPTIONS]: { index: 9, type: "Uint16", length: 2 },
+    [USB_HOST3_OPTIONS]: { index: 10, type: "Uint16", length: 2 },
+    [USB_HOST4_OPTIONS]: { index: 11, type: "Uint16", length: 2 },
+    [USE_MIDI_CLOCK]: { index: 12, type: "Uint16", length: 2 },
+    [CLOCK_PERIOD]: { index: 13, type: "Uint16", length: 2 },
   },
   [PORT]: {
     [PORTTYPE]: { index: 1, type: "Uint8", length: 1, attr: "type" },
