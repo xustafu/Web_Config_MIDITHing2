@@ -185,6 +185,24 @@ qA('.lfo-radio').forEach(input => {
   });
 });
 
+/**
+ * CLOCK > bpm/divider clock
+ */
+qA('.clock-radio').forEach(input => {
+  input.addEventListener('change', e => {
+    var use_midi_clock = e.target.classList.contains('clock-radio');
+    var port_id = BoxNames[Number(e.target.dataset.mtPort)];
+    q('#clock-bpm-' + port_id).dataset.disabled = use_midi_clock;
+    q('#clock-bpm-input-' + port_id).disabled = use_midi_clock;
+    q('#clock-divider-' + port_id).dataset.disabled = !use_midi_clock;
+    q('#clock-divider-input-' + port_id).disabled = !use_midi_clock;
+    q("#clock-multiplier-" + port_id).dataset.disabled = !use_midi_clock;
+    q("#clock-multiplier-input-" + port_id).disabled = !use_midi_clock;
+    q('#clock-com-bpm-' + port_id).checked = use_midi_clock;
+    q('#clock-com-divider-' + port_id).checked = !use_midi_clock;
+  });
+});
+
 /****************************************************/
 /*            END OF LI CLICK FUNCTIONALITY
 /****************************************************/
@@ -201,7 +219,8 @@ qA('.input-number-wrap span:not(.drum-arrow)').forEach(arrowButton => {
 
 qA(".drum-arrow").forEach((arrowButton) => {
   arrowButton.addEventListener("click", (e) => {
-    processDrumNoteArrows(e);
+    var is_float = e.target.classList.contains("is-float");
+    processDrumNoteArrows(e, true, is_float);
   });
 });
 
@@ -223,7 +242,8 @@ function debounce(func, timeout = 200){
 qA('input[class*=num]').forEach(input => {
   input.addEventListener('change', e => {
     minMax(input);
-    arrowsFunc(e.target, false);
+    var is_float = e.target.classList.contains('is-float')
+    arrowsFunc(e.target, false, is_float);
   });
 });
 

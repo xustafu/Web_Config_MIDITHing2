@@ -15,7 +15,7 @@ class PortConfig {
     this.clip_max = 120;
     this.delay = 0;
     this.pulse_time = 10;
-    this.period = 1136;
+    this.period = 1000000;
     this.clk_div = 24;
     this.clk_pulse_width = 99;
     this.clk_mult = 1;

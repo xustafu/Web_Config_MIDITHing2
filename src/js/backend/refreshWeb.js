@@ -416,9 +416,20 @@ function _setCCParams(port) {
 function _setClockParams(port) {
   //set start/stop toggle
   q("#clock-stop-input-" + port.id).checked = port.start_stop_clock;
+  //set clock BPM
+  _setParamValue("clock-bpm-input-" + port.id, (60000000/port.period).toFixed(1));
   //set clock divider
   _setParamValue("clock-divider-input-" + port.id, port.clk_div);
   q("label[for='clock-divider-input-" + port.id + "']").innerHTML = MIDIClockNames[port.clk_div];
+  var use_midi_clock = port.use_midi_clock == 1;
+  q("#clock-bpm-" + port.id).dataset.disabled = use_midi_clock;
+  q("#clock-bpm-input-" + port.id).disabled = use_midi_clock;
+  q("#clock-divider-" + port.id).dataset.disabled = !use_midi_clock;
+  q("#clock-divider-input-" + port.id).disabled = !use_midi_clock;
+  q("#clock-multiplier-" + port.id).dataset.disabled = !use_midi_clock;
+  q("#clock-multiplier-input-" + port.id).disabled = !use_midi_clock;
+  q("#clock-com-bpm-" + port.id).checked = !use_midi_clock;
+  q("#clock-com-divider-" + port.id).checked = use_midi_clock;
   //set clock multiplier
   _setParamValue("clock-multiplier-input-" + port.id, port.clk_mult);
 }

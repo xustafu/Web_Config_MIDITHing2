@@ -313,7 +313,7 @@ export function _handleMainFunc(li, box_id, is_automatic) {
  *                                or from editing directly the number
  * @returns
  */
-export function arrowsFunc(arrow, is_from_arrows = true) {
+export function arrowsFunc(arrow, is_from_arrows = true, is_float=false) {
   const is_arr_up = arrow.classList.contains("arrow-up"); // if it isn't, it's arrow-down
   const parent = arrow.parentElement; // the input wrapper
 
@@ -350,10 +350,11 @@ export function arrowsFunc(arrow, is_from_arrows = true) {
 
   // If it's edited directly, get current input
   // If it's from arrows, increase or decrease
+  const num_add = is_float ? 1 : 0.1
   const new_input_val = is_from_arrows
     ? is_arr_up
-      ? curr_input_val + 1
-      : curr_input_val - 1
+      ? curr_input_val + num_add
+      : curr_input_val - num_add
     : curr_input_val;
 
   input.setAttribute("value", new_input_val);

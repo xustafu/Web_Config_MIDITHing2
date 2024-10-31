@@ -1,57 +1,100 @@
-[id^='clock-divider'] {
-  /* width: 13.5rem; */
-}
-
-.box-body .input-wrap label[for^='clock-divider-input'] {
-  padding-right: 2.2rem;
-}
-[id^='clock-stop'] {
-  order: 1;
-  margin-left: 16.5rem;
+[id^='clock-body'] {
+  display: grid;
+  /* grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(3, 1fr); */
+  row-gap: 1.3rem;
+  grid-template-rows: repeat(1, 2fr);
+  grid-template-columns: 2rem 11rem 10.5rem;
+  top: 1rem;
+  position: relative;
 }
 
 [id^='clock-mult'] {
-  order: 3;
+  grid-column-start: 3;
+  grid-row-start: 3;
+  grid-row-end: 3;
+}
+[id^='clock-mult'] label {
+  margin-left: 1.4rem;
 }
 
-[id^='clock-div'] {
-  order: 2;
+[id^='clock-divider'] {
+  /* Res en machine*/
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 3;
+  grid-row-end: 3;
+}
+
+[id^='clock-bpm'] {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 1;
+  grid-row-end: 1;
+}
+
+[id^='clock-com'] {
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 1;
+  grid-row-end: 2;
+}
+
+[id^='clock-com'] form {
+  position: relative;
+  width: 2rem;
+}
+
+[id^='clock-com-divider'] {
+  position: absolute;
+  left: 0;
+  top: 5.5rem;
+}
+
+[id^='clock-com-bpm'] {
+  position: absolute;
+  left: 0;
+  top: -0.7rem;
+}
+
+[id^='clock-stop'] {
+  grid-column-start: 3;
+  grid-row-start: 1;
+  grid-row-end: 1;
+  bottom: 0.7rem;
+  left: 1.8rem;
+  position: relative;
+}
+
+[id^='clock-stop'] .slider {
+  left: 3.3rem;
 }
 
 @media only screen and (max-width: 821px) {
-  [id^='clock-stop'] {
-    margin-left: 20rem;
-  }
-
-  [id^='clock-body'] .toggle-wrap input:checked + .slider-wrap .slider {
-    transform: translateX(2.1rem);
-  }
-
-  [id^='clock-body'] .slider {
-    top: 2.4rem;
-    left: 1.6rem;
+  [id^='clock-body'] {
+    grid-template-columns: inherit;
   }
 }
+
 @media only screen and (max-width: 668px) {
-  [id^='clock-divider'] {
-    order: 3;
+  [id^='clock-body'] {
+    grid-template-columns: repeat(3, max-content);
+    row-gap: 2rem;
   }
 
-  [id^='clock-mult'] {
-    order: 2;
+  [id^='clock-com-clock'] {
+    top: 4.1rem;
   }
 
-  [id^='clock-stop'] {
-    order: 1;
-    margin-left: 35rem;
+  [id^='clock-body'] button[data-css='shape'] {
+    padding-right: 3rem;
   }
 
-  [id^='clock-body'] .slider {
-    top: 3.7rem;
-    left: 1rem;
-  }
-  [id^='clock-body'] .toggle-wrap input:checked + .slider-wrap .slider {
-    transform: translateX(3.3rem);
+  .box-body[id^='clock-body'] span[class='arrow-for'] {
+    top: 0.3rem;
+    background-position-x: -18rem !important;
+    background-position-y: 0.7rem !important;
+    background-size: 27.1rem;
   }
 }
 
@@ -60,10 +103,36 @@
 * MIDI THINGIE
 *
 */
-.mt2 [id^='clock-stop'] {
-  margin-left: 13.9rem;
+.mt2 [id^='clock-body'] button[data-css] {
+  width: 6.9rem;
+  font-size: 1.1rem;
+  padding-left: 0.6rem;
 }
 
-.mt2 [id^='clock-body'] .slider {
-  top: 1.8rem;
+.mt2 .box-body .box-num-input[id^=clock-freq] {
+  padding-right: 1.4rem;
+}
+
+.mt2 [id^='clock-body'] {
+  row-gap: 0.3rem;
+}
+
+.mt2 [id^='clock-body'] .arrow-for {
+  background-position-x: -12.7rem !important;
+  background-position-y: -0.3rem !important;
+  right: 0.2rem;
+  width: 1.4rem !important;
+  background-size: 18.8rem;
+}
+
+.mt2 [id^='clock-com-clock'] {
+  top: 2.2rem;
+}
+
+.mt2 [id^='clock-div'] h3 {
+  margin-right: 1.3rem;
+}
+
+.mt2 [for^='clock-multiplier'] {
+  margin-left: -1.1rem;
 }

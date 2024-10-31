@@ -111,8 +111,43 @@ function _processGeneralSysex(param, data) {
       if (LogRcvdSysex) console.log("Midi Merge " + data[0]);
       if (LogRcvdSysex) console.log(" ");
       break;
+    case 6: //"SER_DEV_OPTIONS":
+      if (LogRcvdSysex) console.log("SER_DEV_OPTIONS " + data[0]);
+      if (LogRcvdSysex) console.log(" ");
+      break;
+    case 7: //"USB_DEV_OPTIONS":
+      if (LogRcvdSysex) console.log("USB_DEV_OPTIONS " + data[0]);
+      if (LogRcvdSysex) console.log(" ");
+      break;
+    case 8: //"USB_HOST1_OPTIONS":
+      if (LogRcvdSysex) console.log("USB_HOST1_OPTIONS " + data[0]);
+      if (LogRcvdSysex) console.log(" ");
+      break;
+    case 9: //"USB_HOST2_OPTIONS":
+      if (LogRcvdSysex) console.log("USB_HOST2_OPTIONS " + data[0]);
+      if (LogRcvdSysex) console.log(" ");
+      break;
+    case 10: //"USB_HOST3_OPTIONS":
+      if (LogRcvdSysex) console.log("USB_HOST3_OPTIONS " + data[0]);
+      if (LogRcvdSysex) console.log(" ");
+      break;
+    case 11: //"USB_HOST4_OPTIONS":
+      if (LogRcvdSysex) console.log("USB_HOST4_OPTIONS " + data[0]);
+      if (LogRcvdSysex) console.log(" ");
+      break;
+    case 12: //"USE_MIDI_CLOCK":
+      if (LogRcvdSysex) console.log("USE_MIDI_CLOCK " + data[0]);
+      if (LogRcvdSysex) console.log(" ");
+      break;
+    case 13: //"CLOCK_PERIOD":
+      if (LogRcvdSysex) console.log("CLOCK_PERIOD " + data[0]);
+      if (LogRcvdSysex) console.log(" ");
+      break;
     default: //ERROR
-      showModal("error","Error: type of GENERAL Sysex command not recognized, examples: SET_DEF_CONFIG, SAVE_CONFIG_TO_SLOT");
+      showModal(
+        "error",
+        "Error: type of GENERAL Sysex command not recognized, examples: SET_DEF_CONFIG, SAVE_CONFIG_TO_SLOT"
+      );
       break;
   }
 }
@@ -363,6 +398,8 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr, is_send_
         break;
     }
   }
+  if (type == PORT && param == PORTPERIOD)
+    value = parseInt(60000000 / value)
 
   _storeWebData(type, number, attr, value, is_global_adsr);
 
@@ -492,7 +529,7 @@ function _resetValues(num)
   DeviceConfig.ports[num].clip_max = 0;
   DeviceConfig.ports[num].delay = 0;
   DeviceConfig.ports[num].pulse_time = 10;
-  DeviceConfig.ports[num].period = 1136;
+  DeviceConfig.ports[num].period = 1000000;
   DeviceConfig.ports[num].clk_div = 24;
   DeviceConfig.ports[num].clk_pulse_width = 99;
   DeviceConfig.ports[num].clk_mult = 1;
