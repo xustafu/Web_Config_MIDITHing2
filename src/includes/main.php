@@ -254,8 +254,8 @@
       <!-- BODY TYPES END -->
 
       <!-- CONF WINDOWS -->
-      <?php include('./includes/lfo-shape.php') ?>
-      <?php include('./includes/adsr-graph.php') ?>
+      <?php include('./includes/box/bodies/voice/lfo-shape.php') ?>
+      <?php include('./includes/box/bodies/voice/adsr-graph.php') ?>
       <!-- CONF WINDOWS END -->
 
     </section>

@@ -239,6 +239,9 @@ function _setNoteParams(port, voice, midi_ch) {
   //set midi range (VOICE)
   _setParamValue("note-midi-range1-" + port.id,port.min);
   _setParamValue("note-midi-range2-" + port.id, port.clip_max);
+  //set calibration (VOICE)
+  _setParamValue("note-cal-min-" + port.id, port.cal_min);
+  _setParamValue("note-cal-max-" + port.id, port.cal_max);
   // set assign selector (MIDI)
   _setParamValue("note-input-assign-" + port.id, midi_ch.voice_sel);
   q("label[for='note-input-assign-" + port.id + "']").innerHTML = AssignNames[midi_ch.voice_sel];

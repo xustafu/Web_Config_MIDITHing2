@@ -527,6 +527,8 @@ function _resetValues(num)
 {
   DeviceConfig.ports[num].clip_min = 0;
   DeviceConfig.ports[num].clip_max = 0;
+  DeviceConfig.ports[num].cal_min = 0;
+  DeviceConfig.ports[num].cal_max = 0;
   DeviceConfig.ports[num].delay = 0;
   DeviceConfig.ports[num].pulse_time = 10;
   DeviceConfig.ports[num].period = 1000000;

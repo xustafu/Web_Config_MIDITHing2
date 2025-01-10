@@ -313,7 +313,7 @@ export function _handleMainFunc(li, box_id, is_automatic) {
  *                                or from editing directly the number
  * @returns
  */
-export function arrowsFunc(arrow, is_from_arrows = true, is_float=false) {
+export function arrowsFunc(arrow, is_from_arrows=true, is_float=false) {
   const is_arr_up = arrow.classList.contains("arrow-up"); // if it isn't, it's arrow-down
   const parent = arrow.parentElement; // the input wrapper
 
@@ -330,10 +330,27 @@ export function arrowsFunc(arrow, is_from_arrows = true, is_float=false) {
   //for Note Midi Ranges check min and max
   if (input.classList.contains("midi-range")) {
     const subs = input.id.slice(-3);
-    const range = input.id.substring(10,16);
-    const max = Number(q('#note-midi-range2'+subs).value);
+    const range = input.id.substring(10, 16);
+    const max = Number(q("#note-midi-range2" + subs).value);
     const min = Number(q("#note-midi-range1" + subs).value);
-    if ((max-min) >= 120 && (((range == "range1") && !is_arr_up) || ((range == "range2") && is_arr_up))) return;
+    if (
+      max - min >= 120 &&
+      ((range == "range1" && !is_arr_up) || (range == "range2" && is_arr_up))
+    )
+      return;
+  }
+
+  //for Calibration check min and max
+  if (input.classList.contains("calibration")) {
+    const subs = input.id.slice(-3);
+    const range = input.id.substring(9, 12);
+    const max = Number(q("#note-cal-max" + subs).value);
+    const min = Number(q("#note-cal-min" + subs).value);
+    if (
+      max - min >= 1998 &&
+      ((range == "min" && !is_arr_up) || (range == "max" && is_arr_up))
+    )
+      return;
   }
 
   // Don't allow values beyond the data-max or data-min
@@ -350,7 +367,7 @@ export function arrowsFunc(arrow, is_from_arrows = true, is_float=false) {
 
   // If it's edited directly, get current input
   // If it's from arrows, increase or decrease
-  const num_add = is_float ? 1 : 0.1
+  const num_add = is_float ? 0.1 : 1;
   const new_input_val = is_from_arrows
     ? is_arr_up
       ? curr_input_val + num_add

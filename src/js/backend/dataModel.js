@@ -13,6 +13,8 @@ class PortConfig {
     this.param = param;
     this.clip_min = 0;
     this.clip_max = 120;
+    this.cal_min = -999;
+    this.cal_max = 999;
     this.delay = 0;
     this.pulse_time = 10;
     this.period = 1000000;

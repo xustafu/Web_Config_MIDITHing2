@@ -43,6 +43,20 @@
   </div>
   <!-- NOTE VOICE END -->
 
+  <!-- NOTE PRIORITY -->
+  <div class="body-selector-parent input-wrap" id="note-priority-<?= $port_id ?>">
+    <h3 class="box-body-select-title block">Priority</h3>
+    <input type="hidden" class="selector" data-mt-type="MIDICH" data-mt-port="<?= $i ?>" data-mt-parameter="MIDICHPRIORITY" name="note-priority-input-<?= $port_id ?>" id="note-priority-input-<?= $port_id ?>" value="0" />
+    <label for="note-priority-input-<?= $port_id ?>" class="box-selector-label round-sm block">No Steal</label>
+    <ul class="selector-options hidden round-sm">
+      <li class="box-selector-item" data-value="0">No Steal</li>
+      <li class="box-selector-item" data-value="1">First</li>
+      <li class="box-selector-item" data-value="2">Last</li>
+      <li class="box-selector-item" data-value="3">Low</li>
+      <li class="box-selector-item" data-value="4">High</li>
+    </ul>
+  </div>
+  <!-- NOTE PRIORITY END -->
 
   <!-- NOTE OPTIONS BUTTON -->
   <button type="button" class="reveal for-button round-l" data-css="options" data-show="note-options-body-<?= $port_id ?>" data-hide="note-body-<?= $port_id ?>">

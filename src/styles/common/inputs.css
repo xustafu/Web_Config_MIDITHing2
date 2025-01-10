@@ -10,6 +10,13 @@
   max-width: 9.5rem;
 }
 
+.box-num-mult-cal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 12.5rem;
+}
+
 .box-body input[data-type='number'],
 .conf-window-wrap input[data-type='number'] {
   padding: 0.6rem 0.4rem;
@@ -64,6 +71,10 @@
 
   .box-num-mult {
     max-width: 10.4rem;
+  }
+  
+  .box-num-mult-cal {
+    max-width: 13.4rem;
   }
 }
 @media only screen and (max-width: 668px) {
@@ -95,6 +106,14 @@
   max-width: 9.5rem;
 }
 
+.box-num-mult-cal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 12.5rem;
+}
+
+
 .box-body input[data-type='number'],
 .conf-window-wrap input[data-type='number'] {
   padding: 0.6rem 0.4rem;
@@ -150,6 +169,10 @@
   .box-num-mult {
     max-width: 10.4rem;
   }
+
+  .box-num-mult-cal {
+    max-width: 13.4rem;
+  }
 }
 @media only screen and (max-width: 668px) {
   .box-num-input {
@@ -170,6 +193,10 @@
 
   .box-num-mult {
     max-width: 13.6rem;
+  }
+
+  .box-num-mult {
+    max-width: 16.6rem;
   }
 }
 

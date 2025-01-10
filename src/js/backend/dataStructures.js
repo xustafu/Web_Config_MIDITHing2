@@ -179,6 +179,8 @@ const PORTPERIOD=12; //, "PERIOD", u32T, 1136, 40, 1000000}, // 440 Hz default, 
 const PORTCLKDIV=13; //, "CLK DIVISOR", u16T, 24, 1, 48},     // MIDI Clock Divider (how many msgs per pulse)
 const PORTCLKPULSEWIDTH=14; //, "CLK WIDTH", u8T, 10, 1, 99}, // MIDI Clock Pulse Width in ms
 const PORTCLKMULT=15; //, "CLK MULTI", u8T, 1, 1, 50},        // MIDI Clock Multi (how many msgs per pulse)
+const PORTCALMIN=22; //, "CALMIN", i16T, 0, -999, 999},  // Cents to adjust calibration at minimum calibration point (2V)
+const PORTCALMAX=23; //, "CALMAX", i16T, 0, -999, 999},   // Cents to adjust calibration at maximum calibration point (8V)
 const PORTSTStCLOCK=100; //, "Start/Stop Clock", boolT, 1, 0, 1},
 const PORTUseMIDIClock=101; //, "Use MIDI Clock", boolT, 1, 0, 1},
 const PORTGATEPULSE=102; //, "Gate Pulse", boolT, 0, 0, 1}
@@ -535,6 +537,8 @@ const SYSEX_OBJ = {
     [PORTCLKDIV]: { index: 13, type: "Uint16", length: 2, attr: "clk_div" },
     [PORTCLKPULSEWIDTH]: { index: 14, type: "Uint8", length: 1, attr: "clk_pulse_width" },
     [PORTCLKMULT]: { index: 15, type: "Uint8", length: 1, attr: "clk_mult" },
+    [PORTCALMIN]: { index: 22, type: "Int16", length: 2, attr: "cal_min" },
+    [PORTCALMAX]: { index: 23, type: "Int16", length: 2, attr: "cal_max" },
     [PORTSTStCLOCK]: { index: 100, type: "Uint8", length: 1, attr: "start_stop_clock" },
     [PORTUseMIDIClock]: { index: 101, type: "Uint8", length: 1, attr: "use_midi_clock" },
     [PORTGATEPULSE]: { index: 102, type: "Uint8", length: 1, attr: "gate_pulse" },
