@@ -15,7 +15,7 @@ import {
 } from './settingsFuncs.js';
 
 /**
- * Settings functions selector
+ * Settings functions selector test
  * @param {HTMLElement} <li> the settings function selector clicked
  */
 export function selectSettings(li) {
