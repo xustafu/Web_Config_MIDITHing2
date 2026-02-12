@@ -77,8 +77,8 @@ function _initDeviceSelect() {
     li.setAttribute("data-value", index);
     li.innerText = element.name;
     dFrag.appendChild(li);
-    //HUGO TO DO: connect VCMC and MIDI THING and check that dropdown works
-    if (!found && (element.name.includes("MIDIThing"))) {
+     //if (!found && (element.name.includes("MIDIThing") || element.name.includes("MidiThingyRP"))) {
+    if (!found && (element.name.includes("MIDIThing") || element.name.includes("MidiThingyRP"))) {
       selectMIDIinput(element);
       found = true;
       activateMidiThingy(element.name);
