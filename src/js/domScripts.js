@@ -71,11 +71,11 @@ export function selectDevice(li) {
  * Activate Midi Thingy if exist
  * @param {string} name - the name of the device
  */
-export function activateMidiThingy(name = 'MIDIThingy') {
+export function activateMidiThingy(name = 'MidiThingyRP') {
   const main = q('#main');
   const viewPortWidth = window.innerWidth;
 
-  if (name.includes('MIDIThingy')) { //if (true)
+  if (name.includes('MidiThingyRP')) { //if (true)
     q('#title').innerHTML = "MIDI Thingy"
     q('#head-title').innerHTML = "Web MIDI Thingy"
     const mt2Wrap = q('.mt2-main-wrap');
