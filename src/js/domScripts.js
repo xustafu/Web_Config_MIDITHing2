@@ -50,7 +50,7 @@ export function selectSettings(li) {
  * @param {HTMLElement} <li> the device selector clicked
  */
 export function selectDevice(li) {
-  if (!li.innerHTML.includes('MIDIThing')) {
+  if (!li.innerHTML.includes('MIDIThing') && !li.innerHTML.includes('MidiThingyRP')) {
     // not Midi Thing. Show a warning
     showModal(
       "warning",

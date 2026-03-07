@@ -79,8 +79,8 @@ function _initDeviceSelect() {
     dFrag.appendChild(li);
      //if (!found && (element.name.includes("MIDIThing") || element.name.includes("MidiThingyRP"))) {
     if (!found && (element.name.includes("MIDIThing") || element.name.includes("MidiThingyRP"))) {
-      selectMIDIinput(element);
       found = true;
+      selectMIDIinput(element);
       activateMidiThingy(element.name);
       sel_index = index;
       q("label[for='MIDIInputSelect']").innerHTML = element.name;
