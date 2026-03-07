@@ -60,7 +60,7 @@ function _initDeviceSelect() {
   var index = 0;
   var sel_index = 0;
   WebMidi.outputs.forEach((element) => {
-    if (!found && element.name.includes("MIDIThing")) {
+    if (!found && (element.name.includes("MIDIThing") || element.name.includes("MidiThingyRP"))) {
       MIDIoutput = element;
       found = true;
     }
