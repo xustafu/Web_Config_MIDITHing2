@@ -99,8 +99,11 @@ export function activateMidiThingy(name = 'MidiThingyRP') {
       const parent = mt2Wrap.parentElement;
       parent.removeChild(mt2Wrap);
       q('header.banner').insertAdjacentElement('afterend', main);
-    }
+    } else {
+      // viewport >= 1532 or <= 821 with no wrapper: still apply the correct class
+      main.classList = viewPortWidth <= 821 ? 'main mt' : 'main mt2';
   }
+    }
 
   q('#MIDIInputSelectLabel').innerHTML = name;
 }
