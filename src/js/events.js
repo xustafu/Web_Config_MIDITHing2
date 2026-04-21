@@ -283,7 +283,7 @@ qA('.toggle-wrap').forEach(box => {
     checkBox(input);
     if (TriggerInputChange) {
       sendParameterSysex(input);
-      requestConfig();
+      setTimeout(requestConfig, 200);
     }
   });
 });
@@ -330,7 +330,7 @@ qA('input:not([type=checkbox]):not(.no-trigger)').forEach(input => {
   input.addEventListener('change', e => {
     if (TriggerInputChange) {
       sendParameterSysex(e.target);
-      requestConfig();
+      setTimeout(requestConfig, 200);
     }
   });
 });

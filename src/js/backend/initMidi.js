@@ -2,7 +2,7 @@ import { q } from "../globals.js";
 import { onSysexReceive } from "./sysexMgt.js";
 import { requestConfig } from "../settingsFuncs.js";
 import { refreshWeb } from "./refreshWeb.js";
-import { selectDevice, showModal, activateMidiThingy } from "../domScripts.js";
+import { selectDevice, activateMidiThingy } from "../domScripts.js";
 
 // the MIDI input/output
 export let MIDIinput = null,
@@ -39,7 +39,7 @@ for (var i = 0; i < 16; i++) {
 }
 DeviceConfig.voices_port_used = [];
 DeviceConfig.voices_port_free = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-  
+
 
 //set function to be executed every 300 miliseconds
 setInterval(_checkLastSysexRcvd, 300);
@@ -50,26 +50,66 @@ function _checkLastSysexRcvd() {
   }
 }
 
-function _initDeviceSelect() {
-  var count = 0;
+/**
+ * Busca el output cuyo nombre coincide mejor con el nombre del input seleccionado.
+ * Se busca primero por igualdad exacta, luego por coincidencia parcial del primer
+ * segmento del nombre (antes del primer espacio).
+ * Esto evita el desacoplamiento input/output que ocurría cuando Windows cachea el
+ * nombre antiguo del dispositivo o cuando TinyUSB genera nombres ligeramente
+ * distintos para input y output (p.ej. "MidiThingy1" vs "MidiThingy1 MIDI 1").
+ * @param {string} inputName - nombre del input seleccionado
+ * @returns {Output|null} el output correspondiente, o null si no se encuentra
+ */
+function _findMatchingOutput(inputName) {
+  // 1. Coincidencia exacta
+  let out = WebMidi.outputs.find(o => o.name === inputName);
+  if (out) return out;
+  // 2. El nombre del output contiene el primer segmento del nombre del input
+  const baseName = inputName.split(' ')[0];
+  out = WebMidi.outputs.find(o => o.name.includes(baseName));
+  if (out) return out;
+  // 3. Fallback: el output contiene las mismas palabras clave de detección
+  out = WebMidi.outputs.find(o => o.name.includes("MIDIThing") || o.name.includes("MidiThingy"));
+  return out || null;
+}
 
-  var input = q("#MIDIInputSelect");
+/**
+ * Actualiza MIDIoutput para que apunte al output que corresponde al input dado.
+ * Exportada para que selectDevice (domScripts.js) pueda actualizar el output
+ * cuando el usuario selecciona manualmente un dispositivo.
+ * @param {string} inputName - nombre del input seleccionado
+ */
+export function selectMIDIoutput(inputName) {
+  const out = _findMatchingOutput(inputName);
+  if (out) {
+    MIDIoutput = out;
+    console.log("MIDI output set to:", out.name);
+  } else {
+    MIDIoutput = WebMidi.outputs[0] || null;
+    console.warn("No matching MIDI output found for:", inputName, "— using first available");
+  }
+}
+
+function _initDeviceSelect() {
   var ul = q("#device-selector");
   var dFrag = document.createDocumentFragment();
   var found = false;
   var index = 0;
   var sel_index = 0;
-  WebMidi.outputs.forEach((element) => {
-    if (!found && (element.name.includes("MIDIThing") || element.name.includes("MidiThingyRP"))) {
-      MIDIoutput = element;
-      found = true;
-    }
-  });
-  if (!found) {
-    MIDIoutput = WebMidi.outputs[0];
-  }
 
-  found = false;
+  // BUG: Windows cachea los nombres de dispositivos USB MIDI. Al renombrar el
+  // firmware (p.ej. "MidiThingyRP" → "MidiThingy1"), el OS mantiene la entrada
+  // antigua en la lista junto a la nueva. Ambas contienen "MidiThingy", pero el
+  // código encontraba primero la antigua (índice 0, desconectada) y la usaba,
+  // ignorando el dispositivo real (índice 1, connection='open').
+  // FIX: entre todos los candidatos por nombre, preferir el que tiene
+  // connection === 'open' (dispositivo físicamente conectado).
+
+  // Encontrar el mejor input candidato: primero 'open', luego cualquiera
+  const _isMidiThing = (name) => name.includes("MIDIThing") || name.includes("MidiThingy");
+  const candidates = WebMidi.inputs.filter(e => _isMidiThing(e.name));
+  const bestInput = candidates.find(e => e.connection === 'open') || candidates[0];
+
   WebMidi.inputs.forEach((element) => {
     let li = document.createElement("li");
     li.setAttribute("class", "selector-item");
@@ -77,10 +117,10 @@ function _initDeviceSelect() {
     li.setAttribute("data-value", index);
     li.innerText = element.name;
     dFrag.appendChild(li);
-     //if (!found && (element.name.includes("MIDIThing") || element.name.includes("MidiThingyRP"))) {
-    if (!found && (element.name.includes("MIDIThing") || element.name.includes("MidiThingyRP"))) {
+    if (!found && element === bestInput) {
       found = true;
       selectMIDIinput(element);
+      selectMIDIoutput(element.name); // vincula el output al input detectado
       activateMidiThingy(element.name);
       sel_index = index;
       q("label[for='MIDIInputSelect']").innerHTML = element.name;
@@ -91,11 +131,10 @@ function _initDeviceSelect() {
   if (!found) {
     let element = WebMidi.inputs[0];
     selectMIDIinput(element);
+    if (element) selectMIDIoutput(element.name);
     q("label[for='MIDIInputSelect']").innerHTML = element != null ? element.name : "No Device!";
     q("#MIDIInputSelect").setAttribute("value", 0);
   }
-  
-
 
   // Reattach click event listener to all <li>s
   for (let li of dFrag.children) {
@@ -108,11 +147,6 @@ function _initDeviceSelect() {
     q(".live-button svg").style.fill = "#06b900";
   } else {
     q(".live-button svg").style.fill = "#ff0000";
-    showModal(
-      'warning',
-      'This website is designed to work with the MIDI Thing 2 \
-       device connected. If no such device is found, the data shown on the website may be erroneous.'
-    );
   }
   requestConfig();
 }

@@ -43,6 +43,11 @@
   </div>
   <!-- NOTE VOICE END -->
 
+  <!-- NOTE OPTIONS BUTTON -->
+  <button type="button" class="reveal for-button round-l" data-css="options" data-show="note-options-body-<?= $port_id ?>" data-hide="note-body-<?= $port_id ?>">
+    <span class="arrow-for"></span>Options</button>
+  <!-- NOTE OPTIONS BUTTON END -->
+
   <!-- NOTE PRIORITY -->
   <div class="body-selector-parent input-wrap" id="note-priority-<?= $port_id ?>">
     <h3 class="box-body-select-title block">Priority</h3>
@@ -58,10 +63,6 @@
   </div>
   <!-- NOTE PRIORITY END -->
 
-  <!-- NOTE OPTIONS BUTTON -->
-  <button type="button" class="reveal for-button round-l" data-css="options" data-show="note-options-body-<?= $port_id ?>" data-hide="note-body-<?= $port_id ?>">
-    <span class="arrow-for"></span>Options</button>
-  <!-- NOTE OPTIONS BUTTON END -->
 
 
 </main>

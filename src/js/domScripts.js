@@ -2,8 +2,8 @@ import { q, qA } from './globals.js';
 import { getParent } from './helpers.js';
 import { setAvailableColors, changePortsColors } from './colorHandling.js';
 import { newNonVoiceFunction, newVoiceFunction, addFunctionToVoice } from './voiceHandling.js';
-import { sendParameterSysex } from './backend/sysexMgt.js';
-import { selectMIDIinput } from './backend/initMidi.js';
+import { sendParameterSysex, setModuleBase, setTargetDevNum } from './backend/sysexMgt.js';
+import { selectMIDIinput, selectMIDIoutput } from './backend/initMidi.js';
 import { drawAllADSR } from './backend/adsr.js';
 import {
   saveToFile,
@@ -50,18 +50,18 @@ export function selectSettings(li) {
  * @param {HTMLElement} <li> the device selector clicked
  */
 export function selectDevice(li) {
-  if (!li.innerHTML.includes('MIDIThing') && !li.innerHTML.includes('MidiThingyRP')) {
-    // not Midi Thing. Show a warning
-    showModal(
-      "warning",
-      "This website is designed to work with the MIDI Thing 2 \
-       device connected. If no such device is found, the data shown on the website may be erroneous."
-    );
-  } 
+  const name = li.innerHTML;
+  const isMidiThing = name.includes('MIDIThing') || name.includes('MidiThingy');
+  q(".live-button svg").style.fill = isMidiThing ? "#06b900" : "#ff0000";
   selectMIDIinput(WebMidi.inputs[li.dataset.value]);
+  // BUG ANTERIOR: al seleccionar manualmente un dispositivo, MIDIoutput nunca se
+  // actualizaba — seguía apuntando al output detectado en el arranque (que podía
+  // ser un dispositivo cacheado antiguo). Ahora se sincroniza el output con el
+  // input seleccionado.
+  selectMIDIoutput(name);
+  // activateMidiThingy must run before requestConfig to set the correct device byte
+  activateMidiThingy(name);
   requestConfig();
-  // Show the correct Main Area
-  activateMidiThingy(li.innerHTML);
 
   // Hide <ul> after click
   li.parentElement.classList.toggle('hidden', true);
@@ -75,7 +75,26 @@ export function activateMidiThingy(name = 'MidiThingyRP') {
   const main = q('#main');
   const viewPortWidth = window.innerWidth;
 
-  if (name.includes('MidiThingyRP')) { //if (true)
+  const isRP = name.includes('MidiThingy'); // MT2 uses 'MIDIThing', RP uses 'MidiThingy'
+  setModuleBase(isRP ? 0x0B : 0x09); // firmware: 0x09=MT2 (THING_mode=1), 0x0B=RP (THING_mode=3)
+
+  // CRÍTICO: el firmware descarta sysex cuyo usbDevNumber no coincide con el suyo.
+  // El firmware construye el nombre USB como "MidiThingyRP" (dev=0) o "MidiThingy<N>" (dev=N>0),
+  // por lo que podemos deducir usbDevNumber del nombre del dispositivo:
+  //   "MidiThingyRP"          → 0
+  //   "MidiThingy1/2/3..."    → N
+  //   "MIDIThing2"            → 0
+  //   "MIDIThing2_1/2/3..."   → N
+  // Código anterior: hardcode 25 (0x19) = usbDev=1. Funcionaba si el firmware tenía dev=1,
+  // pero fallaba en cualquier otro caso.
+  let devNum = 0;
+  const mRP = name.match(/MidiThingy(\d+)/);
+  const mMT2 = name.match(/MIDIThing2_(\d+)/);
+  if (mRP) devNum = parseInt(mRP[1], 10);
+  else if (mMT2) devNum = parseInt(mMT2[1], 10);
+  setTargetDevNum(devNum);
+  console.log("MIDI target dev num set to:", devNum, "from name:", name);
+  if (isRP) { //if (true)
     q('#title').innerHTML = "MIDI Thingy"
     q('#head-title').innerHTML = "Web MIDI Thingy"
     const mt2Wrap = q('.mt2-main-wrap');

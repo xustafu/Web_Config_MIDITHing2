@@ -281,6 +281,7 @@ const USB_HOST3_OPTIONS = 10;
 const USB_HOST4_OPTIONS = 11;
 const USE_MIDI_CLOCK = 12;
 const CLOCK_PERIOD = 13;
+const USB_DEV_NUMBER = 14;
 
 
 
@@ -519,7 +520,8 @@ const SYSEX_OBJ = {
     [USB_HOST3_OPTIONS]: { index: 10, type: "Uint16", length: 2 },
     [USB_HOST4_OPTIONS]: { index: 11, type: "Uint16", length: 2 },
     [USE_MIDI_CLOCK]: { index: 12, type: "Uint16", length: 2 },
-    [CLOCK_PERIOD]: { index: 13, type: "Uint16", length: 2 },
+    [CLOCK_PERIOD]: { index: 13, type: "Uint32", length: 4 },
+    [USB_DEV_NUMBER]: { index: 14, type: "Uint8", length: 1 },
   },
   [PORT]: {
     [PORTTYPE]: { index: 1, type: "Uint8", length: 1, attr: "type" },

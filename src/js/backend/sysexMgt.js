@@ -17,6 +17,16 @@ import { calculateVoiceId } from "../helpers.js";
 /************************************************/
 
 
+let _moduleBase   = 0x09; // 0x09=MT2, 0x0B=RP  (firmware: Device = (usbDevNum<<4)|moduleBase)
+let _targetDevNum = 0;    // 0-7
+
+export function setModuleBase(base)   { _moduleBase   = base & 0x0F; }
+export function setTargetDevNum(num)  { _targetDevNum = num  & 0x07; }
+
+function _deviceByte() {
+  return ((_targetDevNum & 0x07) << 4) | (_moduleBase & 0x0F);
+}
+
 export function onSysexReceive(msg) {
   if (msg.data.Length < 5) {
     console.log("Not MIDI Thing Sysex");
@@ -143,11 +153,12 @@ function _processGeneralSysex(param, data) {
       if (LogRcvdSysex) console.log("CLOCK_PERIOD " + data[0]);
       if (LogRcvdSysex) console.log(" ");
       break;
-    default: //ERROR
-      showModal(
-        "error",
-        "Error: type of GENERAL Sysex command not recognized, examples: SET_DEF_CONFIG, SAVE_CONFIG_TO_SLOT"
-      );
+    case 14: //"USB_DEV_NUMBER":
+      if (LogRcvdSysex) console.log("USB_DEV_NUMBER " + data[0]);
+      if (LogRcvdSysex) console.log(" ");
+      break;
+    default:
+      if (LogRcvdSysex) console.log("GENERAL sysex unhandled, command index: " + command);
       break;
   }
 }
@@ -218,6 +229,10 @@ function _processParamSysex(type, number, param, data) {
   //if type == 2 && number > 16 it's a voice param at midi channel (number-16)
   if ((type == MIDICH) && (number > 16)) {
     _processMIDIparam(number, param, data); 
+    return;
+  }
+  if (!SYSEX_OBJ[type] || !SYSEX_OBJ[type][param]) {
+    if (LogRcvdSysex) console.log("Unknown param", param, "for type", type, "— ignored");
     return;
   }
   const buf = data.buffer;
@@ -443,7 +458,7 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr, is_send_
 
   var send_arr = new Uint8Array(enc_data.length + 4);
 
-  send_arr[0] = 25; // Device = SINGLESYSEX + THING_mode;      ///< MT2 Single message(0x10) + module ID (7 para el MidiThing) == 23 (16+7)
+  send_arr[0] = _deviceByte(); // Device = (devNum<<5) | SINGLESYSEX(0x10) | moduleBase
   send_arr[1] = /*(is_port_funct) ? 53 : */type_and_num; // typeAndNumber=0;                        ///< Port, MIDI Channel, Voice (3 bits) and number (5 bits)
   send_arr[2] = /*(is_port_funct) ? 12 : */index; // Parameter;                              ///< Parameter Number
   send_arr[3] = enc_length; // Length;                                 ///< Parameter Length (56 Max)
