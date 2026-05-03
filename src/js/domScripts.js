@@ -49,6 +49,9 @@ export function selectSettings(li) {
   q('#settings-ul').classList.toggle('hidden', true);
 }
 
+// Switches between the ports config view and the global settings view.
+// #ports-view uses display:contents (global-settings.css) so port boxes
+// remain direct flex items of <main> and preserve their existing layout.
 function switchView(view) {
   const portsView = q('#ports-view');
   const globalView = q('#global-settings-view');

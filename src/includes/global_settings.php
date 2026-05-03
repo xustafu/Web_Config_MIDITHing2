@@ -17,6 +17,12 @@
       </thead>
       <tbody>
         <?php
+        // data-device maps to SysEx general command parameter:
+        //   0=SER_DEV_OPTIONS(6), 1=USB_DEV_OPTIONS(7),
+        //   2=USB_HOST1_OPTIONS(8), 3=USB_HOST2_OPTIONS(9),
+        //   4=USB_HOST3_OPTIONS(10), 5=USB_HOST4_OPTIONS(11)
+        // data-bit maps to bits of union MidiOption in MIDIDevice.h:
+        //   0=IN, 1=OUT, 2=THRU, 3=CLK, 4=SYX
         $gs_devices = [
           [0, 'MIDI TRS'],
           [1, 'USB Device'],
@@ -42,6 +48,8 @@
     <h2 class="gs-title">MAIN CLOCK</h2>
     <div class="gs-clock-body">
       <div class="gs-bpm-wrap">
+        <!-- SysEx: genComClockPERIOD (param 13, Uint32).
+             period_us = 60_000_000 / bpm. Sent via sendGeneralSysex() (Step 6). -->
         <input
           type="number"
           id="global-clock-bpm"
@@ -54,6 +62,7 @@
         <span class="gs-bpm-unit">bpm</span>
       </div>
       <div class="gs-clock-radios">
+        <!-- SysEx: genComUseMIDIClock (param 12, Uint8). 0=internal, 1=external MIDI clock. -->
         <label class="gs-radio-label">
           <input type="radio" name="global-clock-mode" id="global-clock-internal" class="no-trigger" value="0" checked>
           Internal
