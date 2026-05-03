@@ -47,6 +47,8 @@
   <div class="banner-settings-select input-wrap select-box" id="banner-settings-select-wrap">
     <label for="settings" class="selector-label round">Settings</label>
     <ul id="settings-ul" class="selector-options round hidden">
+      <li class="selector-item settings" data-func="view" data-view="ports">Ports</li>
+      <li class="selector-item settings" data-func="view" data-view="global">Global settings</li>
       <li>
         <a class="selector-item settings" href='#' id='save_to_file' data-func="save" style="text-decoration:none;">
           Save to file

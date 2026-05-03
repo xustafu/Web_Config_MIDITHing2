@@ -310,6 +310,14 @@ qA('.redraw_adsr').forEach(input => {
 });
 
 /**
+ * Global clock BPM — keep display at 2 decimal places
+ */
+q('#global-clock-bpm').addEventListener('blur', e => {
+  const v = parseFloat(e.target.value);
+  if (!isNaN(v)) e.target.value = v.toFixed(2);
+});
+
+/**
  * Settings - loading files
  */
 q('#file_load').addEventListener('change', e => {

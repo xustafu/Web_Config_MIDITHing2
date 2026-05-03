@@ -1,0 +1,162 @@
+/* =====================================================
+   GLOBAL SETTINGS VIEW
+   ===================================================== */
+
+/* Ports view: transparent to the parent flex layout
+   so port boxes remain direct flex items of <main>  */
+#ports-view {
+  display: contents;
+}
+
+/* Global settings view: full-width row inside <main> */
+#global-settings-view {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+/* Two-card flex row */
+.gs-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* Shared card style — matches .box visuals */
+.gs-card {
+  color: var(--off-white);
+  border: 5px solid var(--box-border);
+  border-radius: 20px;
+  padding: 2rem 2.5rem;
+  background: linear-gradient(to top, #222222 63%, black);
+  height: var(--box-height);   /* same height as a port box */
+  box-sizing: border-box;
+}
+
+.gs-title {
+  color: var(--label-title);
+  font-size: 1.2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.05em;
+}
+
+/* =====================================================
+   MIDI MATRIX
+   ===================================================== */
+
+.gs-matrix {
+  border-collapse: separate;
+  border-spacing: 1rem 0.7rem;
+}
+
+.gs-matrix th {
+  color: var(--label-title);
+  font-size: 1.1rem;
+  text-align: center;
+  padding-bottom: 0.4rem;
+}
+
+.gs-matrix-corner {
+  min-width: 9rem;
+}
+
+.gs-row-label {
+  color: var(--label-title);
+  font-size: 1.1rem;
+  white-space: nowrap;
+  text-align: right;
+  padding-right: 0.5rem;
+}
+
+.gs-matrix td {
+  text-align: center;
+}
+
+/* Circle toggles */
+.routing-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin: 0 auto;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.routing-dot.active   { background-color: var(--green); }
+.routing-dot.inactive { background-color: var(--red);   }
+
+/* =====================================================
+   MAIN CLOCK
+   ===================================================== */
+
+/* Clock card: same width as one port box */
+.gs-card-clock {
+  width: var(--box-width);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Matrix card: width of two port boxes + one gap between them */
+.gs-card-matrix {
+  width: calc(var(--box-width) * 2 + 3rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.gs-clock-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.gs-bpm-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+}
+
+.gs-bpm-input {
+  background: transparent;
+  border: none;
+  color: var(--off-white);
+  font-size: 1.4rem;
+  width: 7rem;
+  text-align: right;
+  outline: none;
+}
+
+/* Hide browser spin buttons — we'll add our own in Step 7 */
+.gs-bpm-input::-webkit-inner-spin-button,
+.gs-bpm-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.gs-bpm-unit {
+  color: var(--label-title);
+  font-size: 1.2rem;
+}
+
+.gs-clock-radios {
+  display: flex;
+  gap: 2rem;
+}
+
+.gs-radio-label {
+  color: var(--label-title);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}

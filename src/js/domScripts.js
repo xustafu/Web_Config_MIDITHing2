@@ -21,6 +21,9 @@ import {
 export function selectSettings(li) {
   const func = li.getAttribute('data-func');
   switch (func) {
+    case 'view':
+      switchView(li.dataset.view);
+      break;
     case 'save':
       saveToFile();
       break;
@@ -37,12 +40,20 @@ export function selectSettings(li) {
       setPreDefSetup(li.dataset.value);
       break;
     case 'credits':
-    default:
       credits();
+      break;
+    default:
       break;
   }
   // Hide <ul> after click
   q('#settings-ul').classList.toggle('hidden', true);
+}
+
+function switchView(view) {
+  const portsView = q('#ports-view');
+  const globalView = q('#global-settings-view');
+  if (portsView)  portsView.classList.toggle('hidden', view !== 'ports');
+  if (globalView) globalView.classList.toggle('hidden', view !== 'global');
 }
 
 /**

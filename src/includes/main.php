@@ -14,6 +14,7 @@
   <!-- EXP SELECTOR END -->
 
   <!-- BOXES START -->
+  <div id="ports-view">
   <!--HUGO: atributo data-midithing-type de inputs: los valores que se pasan al módulo por sysex pueden ser
   de tres tipos: PORT / VOICE / MIDI. Necesitamos saber cual para construir el correspondiente sysex -->
   <?php
@@ -262,7 +263,11 @@
     <!-- Box End -->
 
   <?php } ?>
-
+  </div>
   <!-- BOXES END -->
+
+  <div id="global-settings-view" class="hidden">
+    <?php include './includes/global_settings.php' ?>
+  </div>
 </main>
 <!-- MAIN AREA END -->
