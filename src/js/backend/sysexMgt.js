@@ -558,6 +558,75 @@ function _resetValues(num)
   if (index >= 0) DeviceConfig.voices[index] = new VoiceConfig();
 }
 
+// BPM <-> microsecond period conversion helpers for genComClockPERIOD (param 13).
+export function bpmToPeriod(bpm)      { return Math.round(60000000 / bpm); }
+export function periodToBpm(period_us) { return 60000000 / period_us; }
+
+/**
+ * Send a GENERAL-type SysEx command (params 0–14, see dataStructures.js).
+ * Unlike sendSysex(), this function has no port-specific logic and stores
+ * the value directly in DeviceConfig global fields.
+ * @param {number} param  - constant from dataStructures.js (e.g. USE_MIDI_CLOCK, CLOCK_PERIOD)
+ * @param {number} value  - raw value to send (for BPM use bpmToPeriod() first)
+ */
+export function sendGeneralSysex(param, value) {
+  if (MIDIoutput == null) return;
+
+  const entry = SYSEX_OBJ[GENERAL][param];
+  if (!entry) {
+    console.error('sendGeneralSysex: unknown param', param);
+    return;
+  }
+
+  value = Number(value);
+
+  // Store in DeviceConfig before encoding
+  _storeGeneralData(param, value);
+
+  // Encode raw bytes with DataView then 7-bit MIDI encoding
+  const dec_data = new Uint8Array(entry.length);
+  new DataView(dec_data.buffer)['set' + entry.type.trim()](0, value, true);
+
+  const enc_data = new Uint8Array(entry.length + 2);
+  const enc_length = _encodeSysEx(dec_data, enc_data);
+
+  // Build packet: [device, type_and_num=0, index, enc_length, ...enc_data]
+  const send_arr = new Uint8Array(enc_length + 4);
+  send_arr[0] = _deviceByte();
+  send_arr[1] = 0; // GENERAL type (0) + number (0)
+  send_arr[2] = entry.index;
+  send_arr[3] = enc_length;
+  send_arr.set(enc_data.slice(0, enc_length), 4);
+
+  MIDIoutput.sendSysex(0x7d, Array.from(send_arr));
+
+  if (LogSentSysex) {
+    const hex = Array.from(send_arr).map(x => x.toString(16).padStart(2, '0')).join(' ');
+    console.log('GENERAL SYSEX SENT: F0 7D ' + hex.toUpperCase() + ' F7');
+  }
+}
+
+// Stores a received or sent general param value in DeviceConfig.
+function _storeGeneralData(param, value) {
+  switch (param) {
+    case USE_MIDI_CLOCK:
+      DeviceConfig.global_use_midi_clock = !!value;
+      break;
+    case CLOCK_PERIOD:
+      DeviceConfig.global_clock_period = value;
+      break;
+    // params 6–11: device routing options (SER, USB_DEV, HOST1–4)
+    case SER_DEV_OPTIONS:
+    case USB_DEV_OPTIONS:
+    case USB_HOST1_OPTIONS:
+    case USB_HOST2_OPTIONS:
+    case USB_HOST3_OPTIONS:
+    case USB_HOST4_OPTIONS:
+      DeviceConfig.device_options[param - SER_DEV_OPTIONS] = value;
+      break;
+  }
+}
+
 /*! \brief Encode System Exclusive messages.
  SysEx messages are encoded to guarantee transmission of data bytes higher than
  127 without breaking the MIDI protocol. Use this static method to convert the
