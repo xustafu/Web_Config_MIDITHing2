@@ -2,7 +2,7 @@ import { q, qA } from './globals.js';
 import { getParent } from './helpers.js';
 import { setAvailableColors, changePortsColors } from './colorHandling.js';
 import { newNonVoiceFunction, newVoiceFunction, addFunctionToVoice } from './voiceHandling.js';
-import { sendParameterSysex, setModuleBase, setTargetDevNum } from './backend/sysexMgt.js';
+import { sendParameterSysex, setModuleBase, setTargetDevNum, sendIdentityRequest } from './backend/sysexMgt.js';
 import { selectMIDIinput, selectMIDIoutput } from './backend/initMidi.js';
 import { drawAllADSR } from './backend/adsr.js';
 import {
@@ -59,9 +59,13 @@ export function selectDevice(li) {
   // ser un dispositivo cacheado antiguo). Ahora se sincroniza el output con el
   // input seleccionado.
   selectMIDIoutput(name);
-  // activateMidiThingy must run before requestConfig to set the correct device byte
+  // activateMidiThingy gives an initial estimate of _targetDevNum/_moduleBase from
+  // the OS device name.  sendIdentityRequest then corrects both fields from the
+  // firmware's actual usbDevNumber before requesting config.
   activateMidiThingy(name);
-  requestConfig();
+  sendIdentityRequest(requestConfig);
+  // Fallback: if no identity reply arrives in 500 ms, request config anyway.
+  setTimeout(requestConfig, 500);
 
   // Hide <ul> after click
   li.parentElement.classList.toggle('hidden', true);

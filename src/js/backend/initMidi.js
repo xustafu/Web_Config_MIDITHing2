@@ -1,5 +1,5 @@
 import { q } from "../globals.js";
-import { onSysexReceive } from "./sysexMgt.js";
+import { onSysexReceive, sendIdentityRequest } from "./sysexMgt.js";
 import { requestConfig } from "../settingsFuncs.js";
 import { refreshWeb } from "./refreshWeb.js";
 import { selectDevice, activateMidiThingy } from "../domScripts.js";
@@ -142,13 +142,17 @@ function _initDeviceSelect() {
   }
   ul.appendChild(dFrag);
 
-  // Request config to module on connection
+  // Request config to module on connection.
+  // Identity request first: corrects _targetDevNum/_moduleBase from the firmware's
+  // actual usbDevNumber (OS name caching can give the wrong value).
   if (found) {
     q(".live-button svg").style.fill = "#06b900";
   } else {
     q(".live-button svg").style.fill = "#ff0000";
   }
-  requestConfig();
+  sendIdentityRequest(requestConfig);
+  // Fallback: if no identity reply arrives in 500 ms, request config anyway.
+  setTimeout(requestConfig, 500);
 }
 
 export function selectMIDIinput(inp) {

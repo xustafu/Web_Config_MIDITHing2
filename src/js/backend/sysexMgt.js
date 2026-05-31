@@ -27,33 +27,83 @@ function _deviceByte() {
   return ((_targetDevNum & 0x07) << 4) | (_moduleBase & 0x0F);
 }
 
+// Callback fired once when an identity reply is received (set by sendIdentityRequest).
+let _identityReplyCallback = null;
+
+/**
+ * Send a MIDI Non-Realtime broadcast identity request (F0 7E 7F 06 01 F7).
+ * The firmware responds regardless of its usbDevNumber filter, returning its
+ * actual device number in the reply.  When the reply arrives, _targetDevNum
+ * and _moduleBase are corrected and onReply() is called.
+ * @param {Function|null} onReply  called once when the identity reply arrives
+ */
+export function sendIdentityRequest(onReply = null) {
+  if (MIDIoutput == null) {
+    if (onReply) onReply(); // no MIDI output: skip straight to fallback
+    return;
+  }
+  _identityReplyCallback = onReply;
+  MIDIoutput.sendSysex(0x7e, [0x7f, 0x06, 0x01]); // F0 7E 7F 06 01 F7
+  if (LogSentSysex) console.log("IDENTITY REQUEST: F0 7E 7F 06 01 F7");
+}
+
 export function onSysexReceive(msg) {
-  if (msg.data.Length < 5) {
+  if (msg.data.length < 5) {
     console.log("Not MIDI Thing Sysex");
     return;
   }
 
-  var sysex_start = msg.data[0];
-  var edu = msg.data[1]; // educational purpose
-  //var device = msg.data[2]; // Device = SINGLESYSEX + THING_mode;
-  var type_and_num = msg.data[3]; //< Port, MIDI Channel, Voice (3 bits) and number (5 bits)
-  var parameter = msg.data[4]; // < Parameter Number
-  var length = msg.data[5];
-  var enc_data = msg.data.slice(6, 6 + length); ///< Data
-  var sysex_end = msg.data[msg.data.length - 1]; ///< End of SysEx
+  const sysex_start = msg.data[0];
+  const edu         = msg.data[1];
+  const sysex_end   = msg.data[msg.data.length - 1];
 
-  //console logging
-  if (sysex_start == 0xf0 && edu == 0x7d && sysex_end == 0xf7) {
-    if (LogRcvdSysex) console.log("SYSEX RECEIVED:");
-    var b=[];
-    msg.data.forEach((x) => {
-      b.push(x.toString(16).padStart(2,'0'));
-    });
-    if (LogRcvdSysex) console.log(b.toString().replaceAll(",", " ").toUpperCase());
-  } else {
+  if (sysex_start !== 0xf0 || sysex_end !== 0xf7) {
     if (LogRcvdSysex) console.log("Not MIDI Thing Sysex");
     return;
   }
+
+  // --- Non-Realtime identity reply: F0 7E ch 06 02 7D thingMode saveVer ... F7 ---
+  if (edu === 0x7e) {
+    if (msg.data.length >= 7 &&
+        msg.data[3] === 0x06 && msg.data[4] === 0x02 && msg.data[5] === 0x7d) {
+      const devNum    = msg.data[2]; // seChannel = usbDeviceNumber (raw byte, not packed)
+      const thingMode = msg.data[6]; // fam1 = THING_mode (1=MT2, 2=MIDITHINGY, 3=RP)
+      if (LogRcvdSysex) console.log("Identity reply: device", devNum, "THING_mode", thingMode);
+      setTargetDevNum(devNum);
+      setModuleBase(0x08 | (thingMode & 0x07)); // bit3=msgType=1, bits[2:0]=moduleID
+      const cb = _identityReplyCallback;
+      _identityReplyCallback = null;
+      if (cb) cb();
+    }
+    return;
+  }
+
+  // --- MT2-specific SysEx: F0 7D Device TypeAndNumber Parameter Length Data F7 ---
+  if (edu !== 0x7d) {
+    if (LogRcvdSysex) console.log("Not MIDI Thing Sysex");
+    return;
+  }
+
+  if (LogRcvdSysex) {
+    console.log("SYSEX RECEIVED:");
+    var b = [];
+    msg.data.forEach((x) => b.push(x.toString(16).padStart(2, '0')));
+    console.log(b.toString().replaceAll(",", " ").toUpperCase());
+  }
+
+  const device      = msg.data[2]; // Device = (usbDevNum<<4) | 0x08 | moduleID
+  const rxDevNum    = (device >> 4) & 0x07;
+  const type_and_num = msg.data[3];
+  const parameter   = msg.data[4];
+  var   length      = msg.data[5];
+  var   enc_data    = msg.data.slice(6, 6 + length);
+
+  // Filter by target USB device number (Device byte bits [6:4])
+  if (rxDevNum !== _targetDevNum) {
+    if (LogRcvdSysex) console.log("SysEx ignored: from device", rxDevNum, "(targeting", _targetDevNum, ")");
+    return;
+  }
+
   //if we receive 53 (hex 35) it's a batch sysex with all ports information in one message
   var type = (type_and_num == 53) ? BATCH_SYSEX : _extractType(type_and_num);
   var num = _extractNumber(type_and_num);
@@ -63,7 +113,7 @@ export function onSysexReceive(msg) {
   length = _decodeSysEx(enc_data, dec_data); // Decode 7 bit SysEx info from message
   dec_data = dec_data.slice(0, length);
   _processSysex(type, num, parameter, dec_data);
-  
+
   //global constant to check last sysex received and refresh web
   LastSysexRcvd = new Date();
 }
@@ -145,17 +195,26 @@ function _processGeneralSysex(param, data) {
       if (LogRcvdSysex) console.log("USB_HOST4_OPTIONS " + data[0]);
       if (LogRcvdSysex) console.log(" ");
       break;
-    case 12: //"USE_MIDI_CLOCK":
+    case 12: //"SER_DEV_OUT_OPTIONS":
+      if (LogRcvdSysex) console.log("SER_DEV_OUT_OPTIONS " + data[0]);
+      if (LogRcvdSysex) console.log(" ");
+      break;
+    case 13: //"SER_DEV_IN_OPTIONS":
+      if (LogRcvdSysex) console.log("SER_DEV_IN_OPTIONS " + data[0]);
+      if (LogRcvdSysex) console.log(" ");
+      break;
+    case 14: //"USE_MIDI_CLOCK":
       if (LogRcvdSysex) console.log("USE_MIDI_CLOCK " + data[0]);
       if (LogRcvdSysex) console.log(" ");
       break;
-    case 13: //"CLOCK_PERIOD":
+    case 15: //"CLOCK_PERIOD":
       if (LogRcvdSysex) console.log("CLOCK_PERIOD " + data[0]);
       if (LogRcvdSysex) console.log(" ");
       break;
-    case 14: //"USB_DEV_NUMBER":
+    case 16: //"USB_DEV_NUMBER":
       if (LogRcvdSysex) console.log("USB_DEV_NUMBER " + data[0]);
       if (LogRcvdSysex) console.log(" ");
+      setTargetDevNum(data[0]); // keep _targetDevNum in sync with what firmware reports
       break;
     default:
       if (LogRcvdSysex) console.log("GENERAL sysex unhandled, command index: " + command);
@@ -458,7 +517,7 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr, is_send_
 
   var send_arr = new Uint8Array(enc_data.length + 4);
 
-  send_arr[0] = _deviceByte(); // Device = (devNum<<5) | SINGLESYSEX(0x10) | moduleBase
+  send_arr[0] = _deviceByte(); // Device = (devNum<<4) | 0x08 | moduleID
   send_arr[1] = /*(is_port_funct) ? 53 : */type_and_num; // typeAndNumber=0;                        ///< Port, MIDI Channel, Voice (3 bits) and number (5 bits)
   send_arr[2] = /*(is_port_funct) ? 12 : */index; // Parameter;                              ///< Parameter Number
   send_arr[3] = enc_length; // Length;                                 ///< Parameter Length (56 Max)
