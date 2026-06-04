@@ -5,7 +5,6 @@
 import { q, qA } from "../globals.js";
 import { selectFunction } from "../domScripts.js";
 import { drawAllADSR } from "./adsr.js";
-import { periodToBpm } from "./sysexMgt.js";
 
 
 export function setDefaultConfig(num, forced=false) {
@@ -110,7 +109,7 @@ function refreshGlobalSettings() {
   // BPM input
   const bpmInput = q('#global-clock-bpm');
   if (bpmInput && DeviceConfig.global_clock_period > 0)
-    bpmInput.value = periodToBpm(DeviceConfig.global_clock_period).toFixed(2);
+    bpmInput.value = (60000000 / DeviceConfig.global_clock_period).toFixed(2);
 
   // Clock mode radios + BPM enable/disable
   const isExternal = DeviceConfig.global_use_midi_clock;
