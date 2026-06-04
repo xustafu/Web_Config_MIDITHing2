@@ -48,7 +48,6 @@ export function sendIdentityRequest(onReply = null) {
 }
 
 export function onSysexReceive(msg) {
-  console.log("RAW MIDI IN:", msg.data.length, "bytes, first:", msg.data[0]?.toString(16), msg.data[1]?.toString(16));
   if (msg.data.length < 5) {
     console.log("Not MIDI Thing Sysex");
     return;
