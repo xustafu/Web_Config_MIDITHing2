@@ -2,9 +2,10 @@
 /*       SET DEFAULT CONFIGURATION TO WEB   */
 /********************************************/
 
-import { q } from "../globals.js";
+import { q, qA } from "../globals.js";
 import { selectFunction } from "../domScripts.js";
 import { drawAllADSR } from "./adsr.js";
+import { periodToBpm } from "./sysexMgt.js";
 
 
 export function setDefaultConfig(num, forced=false) {
@@ -91,6 +92,33 @@ export function refreshWeb() {
   DeviceConfig.voices_port_free.forEach((port_num) => {
     setPort(DeviceConfig.ports[port_num]);
   });
+  refreshGlobalSettings();
+}
+
+function refreshGlobalSettings() {
+  // Routing dots: one row per device (0-5), one dot per bit (0-4)
+  DeviceConfig.device_options.forEach((mask, device) => {
+    for (let bit = 0; bit < 5; bit++) {
+      const dot = q(`.routing-dot[data-device="${device}"][data-bit="${bit}"]`);
+      if (!dot) continue;
+      const active = !!(mask & (1 << bit));
+      dot.classList.toggle('active',   active);
+      dot.classList.toggle('inactive', !active);
+    }
+  });
+
+  // BPM input
+  const bpmInput = q('#global-clock-bpm');
+  if (bpmInput && DeviceConfig.global_clock_period > 0)
+    bpmInput.value = periodToBpm(DeviceConfig.global_clock_period).toFixed(2);
+
+  // Clock mode radios + BPM enable/disable
+  const isExternal = DeviceConfig.global_use_midi_clock;
+  const internalRadio = q('#global-clock-internal');
+  const externalRadio = q('#global-clock-external');
+  if (internalRadio) internalRadio.checked = !isExternal;
+  if (externalRadio) externalRadio.checked =  isExternal;
+  if (bpmInput)      bpmInput.disabled     =  isExternal;
 }
 
 function _initVoicesUsed() {

@@ -297,12 +297,73 @@ qA('.routing-dot').forEach(dot => {
 
 ---
 
+## Step 7 — Populate Global Settings UI on config receive (`refreshWeb.js`)
+
+**File:** `src/js/backend/refreshWeb.js`
+
+`refreshWeb()` only updates port boxes. The GENERAL params (routing bitmasks, clock period,
+clock mode) are stored in `DeviceConfig` by `_storeGeneralData()` when SysEx is received,
+but nothing reads them back to update the UI. This step adds that missing link.
+
+### Import additions
+
+```js
+import { q, qA } from "../globals.js";   // add qA (was only q)
+import { periodToBpm } from "./sysexMgt.js";  // new import
+```
+
+### New function `refreshGlobalSettings()`
+
+```js
+function refreshGlobalSettings() {
+  // Routing dots: one row per device, one dot per bit
+  DeviceConfig.device_options.forEach((mask, device) => {
+    for (let bit = 0; bit < 5; bit++) {
+      const dot = q(`.routing-dot[data-device="${device}"][data-bit="${bit}"]`);
+      if (!dot) continue;
+      const active = !!(mask & (1 << bit));
+      dot.classList.toggle('active',   active);
+      dot.classList.toggle('inactive', !active);
+    }
+  });
+
+  // BPM input
+  const bpmInput = q('#global-clock-bpm');
+  if (bpmInput && DeviceConfig.global_clock_period > 0)
+    bpmInput.value = periodToBpm(DeviceConfig.global_clock_period).toFixed(2);
+
+  // Clock mode radio + BPM enable/disable
+  const isExternal = DeviceConfig.global_use_midi_clock;
+  const internalRadio = q('#global-clock-internal');
+  const externalRadio = q('#global-clock-external');
+  if (internalRadio) internalRadio.checked = !isExternal;
+  if (externalRadio) externalRadio.checked =  isExternal;
+  if (bpmInput)      bpmInput.disabled     =  isExternal;
+}
+```
+
+### Call site
+
+Add `refreshGlobalSettings()` at the end of `refreshWeb()`:
+
+```js
+export function refreshWeb() {
+  _initVoicesUsed();
+  DeviceConfig.voices_port_used.forEach(...);
+  DeviceConfig.voices_port_free.forEach(...);
+  refreshGlobalSettings();   // ← add this line
+}
+```
+
+---
+
 ## Checklist
 
-- [ ] Step 0 — `dataStructures.js`: remove SER_DEV_OUT/IN_OPTIONS, restore USE_MIDI_CLOCK=12, CLOCK_PERIOD=13, USB_DEV_NUMBER=14, fix USE_MIDI_CLOCK type to Uint8
-- [ ] Step 1 — `sysexMgt.js`: fix `_processGeneralSysex` case numbers; add `_storeGeneralData` calls for cases 12–13
-- [ ] Step 2 — `sysexMgt.js`: add `sendGeneralSysex()`, `bpmToPeriod()`, `periodToBpm()`, `_storeGeneralData()`
-- [ ] Step 3 — `dataModel.js`: add `global_use_midi_clock`, `global_clock_period`, `device_options`
-- [ ] Step 4 — New files: `global_settings.php`, `global-settings.css`
-- [ ] Step 5 — Navigation: `banner.php`, `main.php`, `domScripts.js`
-- [ ] Step 6 — `events.js`: BPM blur, clock mode radio, routing dot click handlers
+- [x] Step 0 — `dataStructures.js`: remove SER_DEV_OUT/IN_OPTIONS, restore USE_MIDI_CLOCK=12, CLOCK_PERIOD=13, USB_DEV_NUMBER=14, fix USE_MIDI_CLOCK type to Uint8
+- [x] Step 1 — `sysexMgt.js`: fix `_processGeneralSysex` case numbers; add `_storeGeneralData` calls for cases 12–13
+- [x] Step 2 — `sysexMgt.js`: add `sendGeneralSysex()`, `bpmToPeriod()`, `periodToBpm()`, `_storeGeneralData()`
+- [x] Step 3 — `dataModel.js`: add `global_use_midi_clock`, `global_clock_period`, `device_options`
+- [x] Step 4 — New files: `global_settings.php`, `global-settings.css`
+- [x] Step 5 — Navigation: `banner.php`, `main.php`, `domScripts.js`
+- [x] Step 6 — `events.js`: BPM blur, clock mode radio, routing dot click handlers
+- [ ] Step 7 — `refreshWeb.js`: add `refreshGlobalSettings()` and call from `refreshWeb()`
