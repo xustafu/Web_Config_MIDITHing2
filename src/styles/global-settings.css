@@ -132,3 +132,29 @@
   color: var(--off-white);
   cursor: pointer;
 }
+
+.gs-clock-btn {
+  padding: 0.45rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  align-self: flex-start;
+}
+
+.gs-clock-start {
+  background: #1a3a1a;
+  color: var(--green);
+  border-color: var(--green);
+}
+
+.gs-clock-start:hover { background: #1f4a1f; }
+
+.gs-clock-stop {
+  background: #3a1a1a;
+  color: var(--red);
+  border-color: var(--red);
+}
+
+.gs-clock-stop:hover { background: #4a1f1f; }

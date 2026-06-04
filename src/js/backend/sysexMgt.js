@@ -388,6 +388,26 @@ function _decodeSysEx(inSysEx, outData) {
 
 
 /************************************************/
+/*           MIDI REALTIME MESSAGES             */
+/************************************************/
+
+// MIDI Start (0xFA): arms the RP2040 internal clock timer via startFreeClock().
+// Must be sent after switching to internal clock mode or after changing BPM,
+// because genComUseMIDIClock and genComClockPERIOD SysEx handlers on RP2040
+// do not call startFreeClock() (unlike the Teensy build which auto-starts).
+export function sendMidiStart() {
+  if (MIDIoutput == null) return;
+  MIDIoutput.send([0xFA]);
+  if (LogSentSysex) console.log("MIDI START (0xFA) sent");
+}
+
+export function sendMidiStop() {
+  if (MIDIoutput == null) return;
+  MIDIoutput.send([0xFC]);
+  if (LogSentSysex) console.log("MIDI STOP (0xFC) sent");
+}
+
+/************************************************/
 /*                SEND SYSEX                    */
 /************************************************/
 /************************************************/

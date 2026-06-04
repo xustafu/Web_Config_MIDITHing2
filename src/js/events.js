@@ -13,7 +13,7 @@ import {
   dynModal,
   activateMidiThingy
 } from './domScripts.js';
-import { sendParameterSysex, sendGeneralSysex, bpmToPeriod } from './backend/sysexMgt.js';
+import { sendParameterSysex, sendGeneralSysex, bpmToPeriod, sendMidiStart, sendMidiStop } from './backend/sysexMgt.js';
 import { requestConfig, handleFiles } from './settingsFuncs.js';
 import { drawAllADSR } from './backend/adsr.js';
 
@@ -334,15 +334,38 @@ if (_bpmInput) _bpmInput.addEventListener('blur', e => {
 
 /**
  * Global clock mode — Internal (0) / External (1).
- * USE_MIDI_CLOCK (param 12)
+ * USE_MIDI_CLOCK (param 14). When switching to internal, auto-send MIDI Start
+ * to arm the RP2040 timer (startFreeClock) which SysEx alone does not trigger.
  */
 qA('input[name="global-clock-mode"]').forEach(radio => {
   radio.addEventListener('change', e => {
     const isExternal = e.target.id === 'global-clock-external';
     if (_bpmInput) _bpmInput.disabled = isExternal;
     sendGeneralSysex(USE_MIDI_CLOCK, isExternal ? 1 : 0);
+    if (!isExternal) sendMidiStart();
   });
 });
+
+/**
+ * Clock start/stop button — sends MIDI Start (0xFA) or Stop (0xFC).
+ * On RP2040, MIDI Start is required to arm startFreeClock() after SysEx config.
+ */
+const _clockBtn = q('#global-clock-startstop');
+if (_clockBtn) {
+  let _clockRunning = false;
+  _clockBtn.addEventListener('click', () => {
+    _clockRunning = !_clockRunning;
+    if (_clockRunning) {
+      sendMidiStart();
+      _clockBtn.textContent = '■ Stop';
+      _clockBtn.classList.replace('gs-clock-start', 'gs-clock-stop');
+    } else {
+      sendMidiStop();
+      _clockBtn.textContent = '▶ Start';
+      _clockBtn.classList.replace('gs-clock-stop', 'gs-clock-start');
+    }
+  });
+}
 
 /**
  * MIDI routing matrix dots — toggle active/inactive and send device options SysEx.

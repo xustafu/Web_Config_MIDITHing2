@@ -65,6 +65,7 @@
           External
         </label>
       </div>
+      <button id="global-clock-startstop" class="gs-clock-btn gs-clock-start">&#9654; Start</button>
     </div>
   </div>
 
