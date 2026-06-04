@@ -15,8 +15,8 @@ WebMidi.enable(function (err) {
   }
 
   // Viewing available inputs and outputs
-  console.log(WebMidi.inputs);
-  console.log(WebMidi.outputs);
+  console.log("MIDI INPUTS:", WebMidi.inputs.map(i => i.name + " [" + i.connection + "]"));
+  console.log("MIDI OUTPUTS:", WebMidi.outputs.map(o => o.name + " [" + o.connection + "]"));
 
   _initDeviceSelect();
   if (MIDIinput == null) selectMIDIinput(WebMidi.inputs[0]);

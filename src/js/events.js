@@ -323,7 +323,8 @@ q('#file_load').addEventListener('change', e => {
  * Global clock BPM — keep display at 2 decimal places and send SysEx on change.
  * CLOCK_PERIOD (param 13): period_us = 60_000_000 / bpm
  */
-q('#global-clock-bpm').addEventListener('blur', e => {
+const _bpmInput = q('#global-clock-bpm');
+if (_bpmInput) _bpmInput.addEventListener('blur', e => {
   const v = parseFloat(e.target.value);
   if (!isNaN(v)) {
     e.target.value = v.toFixed(2);
@@ -338,7 +339,7 @@ q('#global-clock-bpm').addEventListener('blur', e => {
 qA('input[name="global-clock-mode"]').forEach(radio => {
   radio.addEventListener('change', e => {
     const isExternal = e.target.id === 'global-clock-external';
-    q('#global-clock-bpm').disabled = isExternal;
+    if (_bpmInput) _bpmInput.disabled = isExternal;
     sendGeneralSysex(USE_MIDI_CLOCK, isExternal ? 1 : 0);
   });
 });

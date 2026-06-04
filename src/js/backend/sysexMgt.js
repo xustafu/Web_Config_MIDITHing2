@@ -144,6 +144,10 @@ function _processSysex(type, number, param, data) {
 }
 
 function _processGeneralSysex(param, data) {
+  if (!SYSEX_OBJ[0][param]) {
+    if (LogRcvdSysex) console.log("Unknown GENERAL param " + param + " — ignored");
+    return;
+  }
   var command = SYSEX_OBJ[0][param].index;
   switch (command) {
     case 0: //"SET_DEF_CONFIG":
@@ -201,17 +205,27 @@ function _processGeneralSysex(param, data) {
       if (LogRcvdSysex) console.log("USB_HOST4_OPTIONS " + data[0]);
       if (LogRcvdSysex) console.log(" ");
       break;
-    case 12: //"USE_MIDI_CLOCK":
+    case 12: //"SER_DEV_OUT_OPTIONS":
+      _storeGeneralData(SER_DEV_OUT_OPTIONS, data[0]);
+      if (LogRcvdSysex) console.log("SER_DEV_OUT_OPTIONS " + data[0]);
+      if (LogRcvdSysex) console.log(" ");
+      break;
+    case 13: //"SER_DEV_IN_OPTIONS":
+      _storeGeneralData(SER_DEV_IN_OPTIONS, data[0]);
+      if (LogRcvdSysex) console.log("SER_DEV_IN_OPTIONS " + data[0]);
+      if (LogRcvdSysex) console.log(" ");
+      break;
+    case 14: //"USE_MIDI_CLOCK":
       _storeGeneralData(USE_MIDI_CLOCK, data[0]);
       if (LogRcvdSysex) console.log("USE_MIDI_CLOCK " + data[0]);
       if (LogRcvdSysex) console.log(" ");
       break;
-    case 13: //"CLOCK_PERIOD": 4-byte Uint32
+    case 15: //"CLOCK_PERIOD": 4-byte Uint32
       _storeGeneralData(CLOCK_PERIOD, new DataView(data.buffer).getUint32(0, true));
       if (LogRcvdSysex) console.log("CLOCK_PERIOD " + new DataView(data.buffer).getUint32(0, true));
       if (LogRcvdSysex) console.log(" ");
       break;
-    case 14: //"USB_DEV_NUMBER":
+    case 16: //"USB_DEV_NUMBER":
       if (LogRcvdSysex) console.log("USB_DEV_NUMBER " + data[0]);
       if (LogRcvdSysex) console.log(" ");
       setTargetDevNum(data[0]); // keep _targetDevNum in sync with what firmware reports
@@ -421,6 +435,12 @@ function _storeGeneralData(param, value) {
     case USB_HOST3_OPTIONS:
     case USB_HOST4_OPTIONS:
       DeviceConfig.device_options[param - SER_DEV_OPTIONS] = value;
+      break;
+    case SER_DEV_OUT_OPTIONS:
+      DeviceConfig.ser_dev_out_options = value;
+      break;
+    case SER_DEV_IN_OPTIONS:
+      DeviceConfig.ser_dev_in_options = value;
       break;
     case USE_MIDI_CLOCK:
       DeviceConfig.global_use_midi_clock = !!value;

@@ -52,8 +52,10 @@ export function selectSettings(li) {
 }
 
 export function switchView(name) {
-  q('#ports-view').style.display          = (name === 'ports')  ? 'contents' : 'none';
-  q('#global-settings-view').style.display = (name === 'global') ? 'block'    : 'none';
+  const portsView  = q('#ports-view');
+  const globalView = q('#global-settings-view');
+  if (portsView)  portsView.style.display  = (name === 'ports')  ? 'contents' : 'none';
+  if (globalView) globalView.style.display = (name === 'global') ? 'block'    : 'none';
 }
 
 /**
@@ -91,7 +93,10 @@ export function activateMidiThingy(name = 'MidiThingyRP') {
   const viewPortWidth = window.innerWidth;
 
   const isRP = name.includes('MidiThingy'); // MT2 uses 'MIDIThing', RP uses 'MidiThingy'
-  setModuleBase(isRP ? 0x0B : 0x09); // firmware: 0x09=MT2 (THING_mode=1), 0x0B=RP (THING_mode=3)
+  // Default to THING_mode=4 (0x0C) for RP hardware — identity reply corrects it for other modes.
+  // 0x0C = 0x08|4 (RP2354), 0x0B = 0x08|3 (old RP2040). Using 0x0B as default caused device byte
+  // mismatch when no identity reply arrived (firmware silently discards wrong module byte).
+  setModuleBase(isRP ? 0x0C : 0x09); // 0x09=MT2 (THING_mode=1), 0x0C=RP2354 (THING_mode=4)
 
   // CRÍTICO: el firmware descarta sysex cuyo usbDevNumber no coincide con el suyo.
   // El firmware construye el nombre USB como "MidiThingyRP" (dev=0) o "MidiThingy<N>" (dev=N>0),
