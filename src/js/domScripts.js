@@ -36,6 +36,12 @@ export function selectSettings(li) {
     case 'predef':
       setPreDefSetup(li.dataset.value);
       break;
+    case 'ports':
+      switchView('ports');
+      break;
+    case 'global':
+      switchView('global');
+      break;
     case 'credits':
     default:
       credits();
@@ -43,6 +49,11 @@ export function selectSettings(li) {
   }
   // Hide <ul> after click
   q('#settings-ul').classList.toggle('hidden', true);
+}
+
+export function switchView(name) {
+  q('#ports-view').style.display          = (name === 'ports')  ? 'contents' : 'none';
+  q('#global-settings-view').style.display = (name === 'global') ? 'block'    : 'none';
 }
 
 /**

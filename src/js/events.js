@@ -13,7 +13,7 @@ import {
   dynModal,
   activateMidiThingy
 } from './domScripts.js';
-import { sendParameterSysex } from './backend/sysexMgt.js';
+import { sendParameterSysex, sendGeneralSysex, bpmToPeriod } from './backend/sysexMgt.js';
 import { requestConfig, handleFiles } from './settingsFuncs.js';
 import { drawAllADSR } from './backend/adsr.js';
 
@@ -317,6 +317,48 @@ q('#file_load').addEventListener('change', e => {
     handleFiles(e.target.files);
   }
   e.target.value=''; //reset value of input to trigger change if same file is selected
+});
+
+/**
+ * Global clock BPM — keep display at 2 decimal places and send SysEx on change.
+ * CLOCK_PERIOD (param 13): period_us = 60_000_000 / bpm
+ */
+q('#global-clock-bpm').addEventListener('blur', e => {
+  const v = parseFloat(e.target.value);
+  if (!isNaN(v)) {
+    e.target.value = v.toFixed(2);
+    sendGeneralSysex(CLOCK_PERIOD, bpmToPeriod(v));
+  }
+});
+
+/**
+ * Global clock mode — Internal (0) / External (1).
+ * USE_MIDI_CLOCK (param 12)
+ */
+qA('input[name="global-clock-mode"]').forEach(radio => {
+  radio.addEventListener('change', e => {
+    const isExternal = e.target.id === 'global-clock-external';
+    q('#global-clock-bpm').disabled = isExternal;
+    sendGeneralSysex(USE_MIDI_CLOCK, isExternal ? 1 : 0);
+  });
+});
+
+/**
+ * MIDI routing matrix dots — toggle active/inactive and send device options SysEx.
+ * data-device: 0=SER(param 6), 1=USB_DEV(param 7), 2-5=HOST1-4(params 8-11)
+ * data-bit:    0=IN, 1=OUT, 2=THRU, 3=CLK, 4=SYX  (bits of union MidiOption)
+ */
+qA('.routing-dot').forEach(dot => {
+  dot.addEventListener('click', () => {
+    dot.classList.toggle('active');
+    dot.classList.toggle('inactive');
+    const device = Number(dot.dataset.device);
+    let mask = 0;
+    qA(`.routing-dot[data-device="${device}"]`).forEach(d => {
+      if (d.classList.contains('active')) mask |= (1 << Number(d.dataset.bit));
+    });
+    sendGeneralSysex(SER_DEV_OPTIONS + device, mask);
+  });
 });
 
 /****************************************************/

@@ -16,6 +16,8 @@
   <!-- BOXES START -->
   <!--HUGO: atributo data-midithing-type de inputs: los valores que se pasan al módulo por sysex pueden ser
   de tres tipos: PORT / VOICE / MIDI. Necesitamos saber cual para construir el correspondiente sysex -->
+  <!-- display:contents keeps port boxes as direct flex children of <main> -->
+  <div id="ports-view" style="display:contents">
   <?php
   $boxnames = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
 
@@ -263,6 +265,12 @@
 
   <?php } ?>
 
+  </div><!-- #ports-view END -->
   <!-- BOXES END -->
+
+  <div id="global-settings-view" style="display:none">
+    <?php include 'global_settings.php'; ?>
+  </div>
+
 </main>
 <!-- MAIN AREA END -->

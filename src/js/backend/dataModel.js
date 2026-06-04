@@ -91,7 +91,14 @@ var DeviceConfig = {
   voices_port: [],
   voices_port_used: [],
   voices_port_free: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-  voices_assigned: ['V12','V11','V10','V9','V8','V7','V6','V5','V4','V3','V2','V1']
+  voices_assigned: ['V12','V11','V10','V9','V8','V7','V6','V5','V4','V3','V2','V1'],
+  // Global clock — USE_MIDI_CLOCK (param 12): false=internal, true=external
+  global_use_midi_clock: false,
+  // Global clock period in µs — CLOCK_PERIOD (param 13). 500000 µs = 120 BPM
+  global_clock_period: 500000,
+  // MIDI routing bitmasks, one per device — params 6–11 (SER, USB_DEV, HOST1–4).
+  // Bits: 0=IN, 1=OUT, 2=THRU, 3=CLK, 4=SYX  (union MidiOption in MIDIDevice.h)
+  device_options: [0, 0, 0, 0, 0, 0]
 };
 
 const FirmwareFunctions2Web = {

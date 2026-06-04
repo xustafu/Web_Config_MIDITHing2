@@ -76,6 +76,8 @@
           <li class="box-suboptions-item selector-item settings" data-body="7" data-value="38" data-func="predef">Blank Preset</li>
         </ul>
       </li>
+      <li class="selector-item settings" data-func="ports">Ports</li>
+      <li class="selector-item settings" data-func="global">Global settings</li>
       <li class="selector-item settings" data-func="credits">Credits</li>
     </ul>
   </div>

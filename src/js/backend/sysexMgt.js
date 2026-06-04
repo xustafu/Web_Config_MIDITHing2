@@ -172,46 +172,46 @@ function _processGeneralSysex(param, data) {
       if (LogRcvdSysex) console.log(" ");
       break;
     case 6: //"SER_DEV_OPTIONS":
+      _storeGeneralData(SER_DEV_OPTIONS, data[0]);
       if (LogRcvdSysex) console.log("SER_DEV_OPTIONS " + data[0]);
       if (LogRcvdSysex) console.log(" ");
       break;
     case 7: //"USB_DEV_OPTIONS":
+      _storeGeneralData(USB_DEV_OPTIONS, data[0]);
       if (LogRcvdSysex) console.log("USB_DEV_OPTIONS " + data[0]);
       if (LogRcvdSysex) console.log(" ");
       break;
     case 8: //"USB_HOST1_OPTIONS":
+      _storeGeneralData(USB_HOST1_OPTIONS, data[0]);
       if (LogRcvdSysex) console.log("USB_HOST1_OPTIONS " + data[0]);
       if (LogRcvdSysex) console.log(" ");
       break;
     case 9: //"USB_HOST2_OPTIONS":
+      _storeGeneralData(USB_HOST2_OPTIONS, data[0]);
       if (LogRcvdSysex) console.log("USB_HOST2_OPTIONS " + data[0]);
       if (LogRcvdSysex) console.log(" ");
       break;
     case 10: //"USB_HOST3_OPTIONS":
+      _storeGeneralData(USB_HOST3_OPTIONS, data[0]);
       if (LogRcvdSysex) console.log("USB_HOST3_OPTIONS " + data[0]);
       if (LogRcvdSysex) console.log(" ");
       break;
     case 11: //"USB_HOST4_OPTIONS":
+      _storeGeneralData(USB_HOST4_OPTIONS, data[0]);
       if (LogRcvdSysex) console.log("USB_HOST4_OPTIONS " + data[0]);
       if (LogRcvdSysex) console.log(" ");
       break;
-    case 12: //"SER_DEV_OUT_OPTIONS":
-      if (LogRcvdSysex) console.log("SER_DEV_OUT_OPTIONS " + data[0]);
-      if (LogRcvdSysex) console.log(" ");
-      break;
-    case 13: //"SER_DEV_IN_OPTIONS":
-      if (LogRcvdSysex) console.log("SER_DEV_IN_OPTIONS " + data[0]);
-      if (LogRcvdSysex) console.log(" ");
-      break;
-    case 14: //"USE_MIDI_CLOCK":
+    case 12: //"USE_MIDI_CLOCK":
+      _storeGeneralData(USE_MIDI_CLOCK, data[0]);
       if (LogRcvdSysex) console.log("USE_MIDI_CLOCK " + data[0]);
       if (LogRcvdSysex) console.log(" ");
       break;
-    case 15: //"CLOCK_PERIOD":
-      if (LogRcvdSysex) console.log("CLOCK_PERIOD " + data[0]);
+    case 13: //"CLOCK_PERIOD": 4-byte Uint32
+      _storeGeneralData(CLOCK_PERIOD, new DataView(data.buffer).getUint32(0, true));
+      if (LogRcvdSysex) console.log("CLOCK_PERIOD " + new DataView(data.buffer).getUint32(0, true));
       if (LogRcvdSysex) console.log(" ");
       break;
-    case 16: //"USB_DEV_NUMBER":
+    case 14: //"USB_DEV_NUMBER":
       if (LogRcvdSysex) console.log("USB_DEV_NUMBER " + data[0]);
       if (LogRcvdSysex) console.log(" ");
       setTargetDevNum(data[0]); // keep _targetDevNum in sync with what firmware reports
@@ -385,6 +385,51 @@ function _decodeSysEx(inSysEx, outData) {
 /************************************************/
 /*                SEND SYSEX                    */
 /************************************************/
+
+export function bpmToPeriod(bpm)       { return Math.round(60000000 / bpm); }
+export function periodToBpm(period_us) { return 60000000 / period_us; }
+
+export function sendGeneralSysex(param, value) {
+  if (MIDIoutput == null) return;
+  const entry = SYSEX_OBJ[GENERAL][param];
+  if (!entry) { console.error('sendGeneralSysex: unknown param', param); return; }
+  value = Number(value);
+  _storeGeneralData(param, value);
+  const dec_data = new Uint8Array(entry.length);
+  new DataView(dec_data.buffer)['set' + entry.type.trim()](0, value, true);
+  const enc_data = new Uint8Array(entry.length + 2);
+  const enc_length = _encodeSysEx(dec_data, enc_data);
+  const send_arr = new Uint8Array(enc_length + 4);
+  send_arr[0] = _deviceByte();
+  send_arr[1] = 0; // GENERAL type (0) + number (0)
+  send_arr[2] = entry.index;
+  send_arr[3] = enc_length;
+  send_arr.set(enc_data.slice(0, enc_length), 4);
+  MIDIoutput.sendSysex(0x7d, Array.from(send_arr));
+  if (LogSentSysex) {
+    const hex = Array.from(send_arr).map(x => x.toString(16).padStart(2, '0')).join(' ');
+    console.log('GENERAL SYSEX SENT: F0 7D ' + hex.toUpperCase() + ' F7');
+  }
+}
+
+function _storeGeneralData(param, value) {
+  switch (param) {
+    case SER_DEV_OPTIONS:
+    case USB_DEV_OPTIONS:
+    case USB_HOST1_OPTIONS:
+    case USB_HOST2_OPTIONS:
+    case USB_HOST3_OPTIONS:
+    case USB_HOST4_OPTIONS:
+      DeviceConfig.device_options[param - SER_DEV_OPTIONS] = value;
+      break;
+    case USE_MIDI_CLOCK:
+      DeviceConfig.global_use_midi_clock = !!value;
+      break;
+    case CLOCK_PERIOD:
+      DeviceConfig.global_clock_period = value;
+      break;
+  }
+}
 
 export function sendParameterSysex(element) {
   var type = element.dataset.mtType;
