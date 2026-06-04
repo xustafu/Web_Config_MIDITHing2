@@ -309,8 +309,14 @@ but nothing reads them back to update the UI. This step adds that missing link.
 
 ```js
 import { q, qA } from "../globals.js";   // add qA (was only q)
-import { periodToBpm } from "./sysexMgt.js";  // new import
 ```
+
+> **Do NOT import from `sysexMgt.js` here.** `sysexMgt.js` already imports
+> `refreshWeb` and `setDefaultConfig` from this file, so adding a reverse import
+> creates a circular dependency. ES modules resolve circular imports by providing
+> `undefined` for the imported bindings at first evaluation, which silently breaks
+> all module initialization. Use the inline formula `60000000 / period` instead of
+> importing `periodToBpm`.
 
 ### New function `refreshGlobalSettings()`
 
@@ -366,4 +372,5 @@ export function refreshWeb() {
 - [x] Step 4 — New files: `global_settings.php`, `global-settings.css`
 - [x] Step 5 — Navigation: `banner.php`, `main.php`, `domScripts.js`
 - [x] Step 6 — `events.js`: BPM blur, clock mode radio, routing dot click handlers
-- [ ] Step 7 — `refreshWeb.js`: add `refreshGlobalSettings()` and call from `refreshWeb()`
+- [x] Step 7 — `refreshWeb.js`: add `refreshGlobalSettings()` and call from `refreshWeb()`
+- [x] Step 7 fix — `refreshWeb.js`: remove `import { periodToBpm }` from `sysexMgt.js` (circular dependency — `sysexMgt.js` already imports from `refreshWeb.js`); inline `60000000 / period` instead
