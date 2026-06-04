@@ -358,6 +358,9 @@ qA('.routing-dot').forEach(dot => {
     qA(`.routing-dot[data-device="${device}"]`).forEach(d => {
       if (d.classList.contains('active')) mask |= (1 << Number(d.dataset.bit));
     });
+    // USB Device (device=1): always keep SYX bit set — disabling it would
+    // cut off SysEx communication with this web editor over USB.
+    if (device === 1) mask |= (1 << 4);
     sendGeneralSysex(SER_DEV_OPTIONS + device, mask);
   });
 });

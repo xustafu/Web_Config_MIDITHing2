@@ -1,5 +1,5 @@
 import { q } from "../globals.js";
-import { onSysexReceive, sendIdentityRequest } from "./sysexMgt.js";
+import { onSysexReceive, sendIdentityRequest, sendGeneralSysex } from "./sysexMgt.js";
 import { requestConfig } from "../settingsFuncs.js";
 import { refreshWeb } from "./refreshWeb.js";
 import { selectDevice, activateMidiThingy } from "../domScripts.js";
@@ -150,6 +150,14 @@ function _initDeviceSelect() {
   } else {
     q(".live-button svg").style.fill = "#ff0000";
   }
+  // Ensure SysEx is enabled on the USB device port before requesting config.
+  // Firmware default after EEPROM wipe has USB_DEV_OPTIONS with SYX bit off,
+  // which causes firmware to send SysEx responses via TRS only, not USB.
+  // We OR in the SYX bit (0x10) on top of whatever value DeviceConfig holds
+  // from a previous session, preserving other routing bits where possible.
+  const usbOpts = (DeviceConfig.device_options[1] || 0x0B) | 0x10;
+  sendGeneralSysex(USB_DEV_OPTIONS, usbOpts);
+
   sendIdentityRequest(requestConfig);
   // Fallback: if no identity reply arrives in 500 ms, request config anyway.
   setTimeout(requestConfig, 500);
@@ -160,4 +168,9 @@ export function selectMIDIinput(inp) {
   if (MIDIinput != null) MIDIinput.removeListener();
   MIDIinput = inp;
   MIDIinput.addListener("sysex", "all", onSysexReceive);
+  // Also listen on all other inputs: firmware may respond via a different physical
+  // port (e.g. TRS→MR18) if SysEx routing options send responses via serial.
+  WebMidi.inputs.forEach(other => {
+    if (other !== inp) other.addListener("sysex", "all", onSysexReceive);
+  });
 }
