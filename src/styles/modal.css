@@ -46,6 +46,30 @@
   bottom: 1rem;
   right: 2rem;
 }
+
+.modal-confirm-btns {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.modal-confirm-ok {
+  background: #3a0000;
+  color: #ff6060;
+  border: 1px solid #ff6060;
+  padding: 0.5rem 1.4rem;
+  cursor: pointer;
+}
+
+.modal-confirm-ok:hover { background: #4a0000; }
+
+.modal-confirm-cancel {
+  background: transparent;
+  color: var(--off-white);
+  border: 1px solid var(--border);
+  padding: 0.5rem 1.4rem;
+  cursor: pointer;
+}
 @-webkit-keyframes fromTop {
   from {
     top: -30rem;

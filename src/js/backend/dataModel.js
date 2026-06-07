@@ -96,12 +96,10 @@ var DeviceConfig = {
   global_use_midi_clock: false,
   // Global clock period in µs — CLOCK_PERIOD (param 15). 500000 µs = 120 BPM
   global_clock_period: 500000,
-  // MIDI routing bitmasks, one per device — params 6–11 (SER, USB_DEV, HOST1–4).
+  // MIDI routing bitmasks, one per device — params 6–13.
+  // Indices: 0=SER(6), 1=USB_DEV(7), 2-5=HOST1-4(8-11), 6=TRS_OUT(12), 7=TRS_IN(13)
   // Bits: 0=IN, 1=OUT, 2=THRU, 3=CLK, 4=SYX  (union MidiOption in MIDIDevice.h)
-  device_options: [0, 0, 0, 0, 0, 0],
-  // Serial port IN/OUT routing — SER_DEV_OUT_OPTIONS (param 12), SER_DEV_IN_OPTIONS (param 13)
-  ser_dev_out_options: 0,
-  ser_dev_in_options: 0
+  device_options: [0, 0, 0, 0, 0, 0, 0, 0]
 };
 
 const FirmwareFunctions2Web = {

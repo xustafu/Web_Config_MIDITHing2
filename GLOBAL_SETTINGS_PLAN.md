@@ -363,6 +363,84 @@ export function refreshWeb() {
 
 ---
 
+---
+
+## Step 8 — Clock mode side-effects: PORT params + auto-play
+
+**File:** `src/js/events.js`
+
+When the user switches clock mode, the web must explicitly configure the MIDICLOCK output
+ports and keep the start/stop button state in sync.
+
+### Import update (add `sendSysex`, `sendMidiStart`, `sendMidiStop`)
+
+```js
+import { sendParameterSysex, sendGeneralSysex, sendSysex,
+         bpmToPeriod, sendMidiStart, sendMidiStop } from './backend/sysexMgt.js';
+```
+
+### Shared clock play state (hoist before radio handler)
+
+```js
+const _clockBtn = q('#global-clock-startstop');
+let _clockRunning = false;
+
+function _setClockPlaying(running) {
+  _clockRunning = running;
+  if (!_clockBtn) return;
+  if (running) {
+    _clockBtn.textContent = '■ Stop';
+    _clockBtn.classList.replace('gs-clock-start', 'gs-clock-stop');
+  } else {
+    _clockBtn.textContent = '▶ Start';
+    _clockBtn.classList.replace('gs-clock-stop', 'gs-clock-start');
+  }
+}
+```
+
+### Updated clock mode radio handler
+
+```js
+qA('input[name="global-clock-mode"]').forEach(radio => {
+  radio.addEventListener('change', e => {
+    const isExternal = e.target.id === 'global-clock-external';
+    if (_bpmInput) _bpmInput.disabled = isExternal;
+    sendGeneralSysex(USE_MIDI_CLOCK, isExternal ? 1 : 0);
+    // For each MIDICLOCK port: always enable ST/SP; on internal also clear PORTUseMIDIClock
+    // so the port uses the internal BPM generator and responds to 0xFA.
+    DeviceConfig.ports.forEach((port, i) => {
+      if (port.funct === MIDICLOCK) {
+        if (!isExternal) sendSysex("PORT", i, "PORTUseMIDIClock", 0);
+        sendSysex("PORT", i, "PORTSTStCLOCK", 1);
+      }
+    });
+    if (!isExternal) {
+      sendMidiStart();          // arm startFreeClock() on RP2354
+      _setClockPlaying(true);  // auto-start play button
+    }
+  });
+});
+```
+
+**Behaviour summary:**
+- **→ Internal**: `PORTUseMIDIClock=0` + `PORTSTStCLOCK=1` per MIDICLOCK port, send `0xFA`, set play button ON
+- **→ External**: `PORTSTStCLOCK=1` per MIDICLOCK port (ports respond to incoming MIDI Start)
+
+### Updated start/stop button handler
+
+```js
+if (_clockBtn) {
+  _clockBtn.addEventListener('click', () => {
+    const nowRunning = !_clockRunning;
+    _setClockPlaying(nowRunning);
+    if (nowRunning) sendMidiStart();
+    else sendMidiStop();
+  });
+}
+```
+
+---
+
 ## Checklist
 
 - [x] Step 0 — `dataStructures.js`: remove SER_DEV_OUT/IN_OPTIONS, restore USE_MIDI_CLOCK=12, CLOCK_PERIOD=13, USB_DEV_NUMBER=14, fix USE_MIDI_CLOCK type to Uint8
@@ -374,3 +452,56 @@ export function refreshWeb() {
 - [x] Step 6 — `events.js`: BPM blur, clock mode radio, routing dot click handlers
 - [x] Step 7 — `refreshWeb.js`: add `refreshGlobalSettings()` and call from `refreshWeb()`
 - [x] Step 7 fix — `refreshWeb.js`: remove `import { periodToBpm }` from `sysexMgt.js` (circular dependency — `sysexMgt.js` already imports from `refreshWeb.js`); inline `60000000 / period` instead
+- [x] Step 8 — `events.js`: PORT clock params on mode switch + auto-play on internal + ST/SP on external
+
+---
+
+## Step 9 — Add TRS Out / TRS In rows to routing matrix
+
+**Params:** `SER_DEV_OUT_OPTIONS` (12) and `SER_DEV_IN_OPTIONS` (13). Uint8, same bit layout as the others.
+
+**Firmware defaults:** TrsO = IN+OUT (0x03), TrsI = IN+CLK (0x09).
+
+### `global_settings.php`
+Add two rows at the end of `$gs_devices`:
+```php
+[6, 'TRS Out'],   // SER_DEV_OUT_OPTIONS (param 12)
+[7, 'TRS In'],    // SER_DEV_IN_OPTIONS  (param 13)
+```
+
+The routing dot click handler `sendGeneralSysex(SER_DEV_OPTIONS + device, mask)` already maps device=6→param12, device=7→param13 correctly.
+
+### `dataModel.js`
+Expand `device_options` from 6 to 8 entries; remove the now-redundant separate fields:
+```js
+// Before: device_options: [0,0,0,0,0,0], ser_dev_out_options: 0, ser_dev_in_options: 0
+// After:
+device_options: [0, 0, 0, 0, 0, 0, 0, 0]
+// index 6 = TRS Out (param 12), index 7 = TRS In (param 13)
+```
+
+### `sysexMgt.js` — `_storeGeneralData`
+Fold both new params into the existing case group (index arithmetic `param - SER_DEV_OPTIONS` already works for 12→[6] and 13→[7]):
+```js
+case SER_DEV_OUT_OPTIONS:
+case SER_DEV_IN_OPTIONS:
+  // added to group — no separate cases needed
+```
+
+`refreshGlobalSettings` in `refreshWeb.js` needs no change — its `device_options.forEach` loop already handles any length array.
+
+---
+
+## Checklist
+
+- [x] Step 0 — `dataStructures.js`: remove SER_DEV_OUT/IN_OPTIONS, restore USE_MIDI_CLOCK=12, CLOCK_PERIOD=13, USB_DEV_NUMBER=14, fix USE_MIDI_CLOCK type to Uint8
+- [x] Step 1 — `sysexMgt.js`: fix `_processGeneralSysex` case numbers; add `_storeGeneralData` calls for cases 12–13
+- [x] Step 2 — `sysexMgt.js`: add `sendGeneralSysex()`, `bpmToPeriod()`, `periodToBpm()`, `_storeGeneralData()`
+- [x] Step 3 — `dataModel.js`: add `global_use_midi_clock`, `global_clock_period`, `device_options`
+- [x] Step 4 — New files: `global_settings.php`, `global-settings.css`
+- [x] Step 5 — Navigation: `banner.php`, `main.php`, `domScripts.js`
+- [x] Step 6 — `events.js`: BPM blur, clock mode radio, routing dot click handlers
+- [x] Step 7 — `refreshWeb.js`: add `refreshGlobalSettings()` and call from `refreshWeb()`
+- [x] Step 7 fix — `refreshWeb.js`: remove `import { periodToBpm }` from `sysexMgt.js` (circular dependency — `sysexMgt.js` already imports from `refreshWeb.js`); inline `60000000 / period` instead
+- [x] Step 8 — `events.js`: PORT clock params on mode switch + auto-play on internal + ST/SP on external
+- [x] Step 9 — Matrix: add TRS Out (device 6) and TRS In (device 7) rows; fold into `device_options[6/7]`

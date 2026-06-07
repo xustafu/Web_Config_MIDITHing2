@@ -158,3 +158,49 @@
 }
 
 .gs-clock-stop:hover { background: #4a1f1f; }
+
+/* ---- Right column (clock + wipe stacked) ---- */
+
+.gs-col-right {
+  flex: 0 1 22rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* clock card no longer needs its own flex sizing — column handles it */
+.gs-card-clock {
+  flex: none;
+}
+
+/* ---- Wipe saves card ---- */
+
+.gs-card-wipe {
+  flex: none;
+}
+
+.gs-wipe-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.gs-wipe-desc {
+  font-size: 0.85rem;
+  color: var(--grey3);
+  margin: 0;
+}
+
+.gs-wipe-btn {
+  align-self: flex-start;
+  padding: 0.45rem 1.1rem;
+  background: #3a2000;
+  color: #e08020;
+  border: 1px solid #e08020;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.gs-wipe-btn:hover { background: #4a2800; }

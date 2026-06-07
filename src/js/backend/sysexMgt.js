@@ -454,13 +454,9 @@ function _storeGeneralData(param, value) {
     case USB_HOST2_OPTIONS:
     case USB_HOST3_OPTIONS:
     case USB_HOST4_OPTIONS:
-      DeviceConfig.device_options[param - SER_DEV_OPTIONS] = value;
-      break;
     case SER_DEV_OUT_OPTIONS:
-      DeviceConfig.ser_dev_out_options = value;
-      break;
     case SER_DEV_IN_OPTIONS:
-      DeviceConfig.ser_dev_in_options = value;
+      DeviceConfig.device_options[param - SER_DEV_OPTIONS] = value;
       break;
     case USE_MIDI_CLOCK:
       DeviceConfig.global_use_midi_clock = !!value;

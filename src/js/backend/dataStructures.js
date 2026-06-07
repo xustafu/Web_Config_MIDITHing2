@@ -272,6 +272,7 @@ const REQ_CONFIG = 1;
 const SAVE_CONFIG_TO_SLOT = 2;
 const LOAD_CONFIG_FROM_SLOT = 3;
 const SET_LEARN_MODE = 4;
+const WIPE_SAVES = 17; // TODO: confirm firmware command index
 const MIDI_MERGE = 5;
 const SER_DEV_OPTIONS = 6;
 const USB_DEV_OPTIONS = 7;
@@ -525,7 +526,8 @@ const SYSEX_OBJ = {
     [SER_DEV_IN_OPTIONS]:  { index: 13, type: "Uint8", length: 1 },
     [USE_MIDI_CLOCK]:      { index: 14, type: "Uint8", length: 1 },
     [CLOCK_PERIOD]:        { index: 15, type: "Uint32", length: 4 },
-    [USB_DEV_NUMBER]:      { index: 16, type: "Uint8", length: 1 },
+    [USB_DEV_NUMBER]:      { index: 16, type: "Uint8",  length: 1 },
+    [WIPE_SAVES]:          { index: 17, type: "Uint16", length: 2 }, // TODO: confirm index
   },
   [PORT]: {
     [PORTTYPE]: { index: 1, type: "Uint8", length: 1, attr: "type" },

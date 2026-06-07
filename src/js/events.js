@@ -11,9 +11,10 @@ import {
   selectParameter,
   setLFOGraph,
   dynModal,
-  activateMidiThingy
+  activateMidiThingy,
+  showConfirmModal
 } from './domScripts.js';
-import { sendParameterSysex, sendGeneralSysex, bpmToPeriod, sendMidiStart, sendMidiStop } from './backend/sysexMgt.js';
+import { sendParameterSysex, sendGeneralSysex, sendSysex, bpmToPeriod, sendMidiStart, sendMidiStop } from './backend/sysexMgt.js';
 import { requestConfig, handleFiles } from './settingsFuncs.js';
 import { drawAllADSR } from './backend/adsr.js';
 
@@ -332,38 +333,60 @@ if (_bpmInput) _bpmInput.addEventListener('blur', e => {
   }
 });
 
+const _clockBtn = q('#global-clock-startstop');
+let _clockRunning = false;
+
+function _setClockPlaying(running) {
+  _clockRunning = running;
+  if (!_clockBtn) return;
+  if (running) {
+    _clockBtn.textContent = '■ Stop';
+    _clockBtn.classList.replace('gs-clock-start', 'gs-clock-stop');
+  } else {
+    _clockBtn.textContent = '▶ Start';
+    _clockBtn.classList.replace('gs-clock-stop', 'gs-clock-start');
+  }
+}
+
 /**
  * Global clock mode — Internal (0) / External (1).
- * USE_MIDI_CLOCK (param 14). When switching to internal, auto-send MIDI Start
- * to arm the RP2040 timer (startFreeClock) which SysEx alone does not trigger.
+ * On internal: configure MIDICLOCK ports (PORTUseMIDIClock=0, PORTSTStCLOCK=1),
+ * send 0xFA to arm startFreeClock(), and auto-start play button.
+ * On external: set PORTSTStCLOCK=1 so ports respond to incoming MIDI Start.
  */
 qA('input[name="global-clock-mode"]').forEach(radio => {
   radio.addEventListener('change', e => {
     const isExternal = e.target.id === 'global-clock-external';
     if (_bpmInput) _bpmInput.disabled = isExternal;
     sendGeneralSysex(USE_MIDI_CLOCK, isExternal ? 1 : 0);
-    if (!isExternal) sendMidiStart();
+    DeviceConfig.ports.forEach((port, i) => {
+      if (port.funct === MIDICLOCK) {
+        if (!isExternal) {
+          sendSysex("PORT", i, "PORTUseMIDIClock", 0);
+          const bpmRadio = q("#clock-com-bpm-" + port.id);
+          if (bpmRadio) bpmRadio.checked = true;
+        }
+        sendSysex("PORT", i, "PORTSTStCLOCK", 1);
+        const stSpToggle = q("#clock-stop-input-" + port.id);
+        if (stSpToggle) stSpToggle.checked = true;
+      }
+    });
+    if (!isExternal) {
+      sendMidiStart();
+      _setClockPlaying(true);
+    }
   });
 });
 
 /**
  * Clock start/stop button — sends MIDI Start (0xFA) or Stop (0xFC).
- * On RP2040, MIDI Start is required to arm startFreeClock() after SysEx config.
  */
-const _clockBtn = q('#global-clock-startstop');
 if (_clockBtn) {
-  let _clockRunning = false;
   _clockBtn.addEventListener('click', () => {
-    _clockRunning = !_clockRunning;
-    if (_clockRunning) {
-      sendMidiStart();
-      _clockBtn.textContent = '■ Stop';
-      _clockBtn.classList.replace('gs-clock-start', 'gs-clock-stop');
-    } else {
-      sendMidiStop();
-      _clockBtn.textContent = '▶ Start';
-      _clockBtn.classList.replace('gs-clock-stop', 'gs-clock-start');
-    }
+    const nowRunning = !_clockRunning;
+    _setClockPlaying(nowRunning);
+    if (nowRunning) sendMidiStart();
+    else sendMidiStop();
   });
 }
 
@@ -384,9 +407,30 @@ qA('.routing-dot').forEach(dot => {
     // USB Device (device=1): always keep SYX bit set — disabling it would
     // cut off SysEx communication with this web editor over USB.
     if (device === 1) mask |= (1 << 4);
+    // TRS_IN (device=7): firmware uses bit7=IN, bit6=CLK instead of standard bits 0-4.
+    if (device === 7) {
+      const displayMask = mask;
+      mask = 0;
+      if (displayMask & (1 << 0)) mask |= 0x80; // IN  (col 0) → bit7
+      if (displayMask & (1 << 3)) mask |= 0x40; // CLK (col 3) → bit6
+    }
     sendGeneralSysex(SER_DEV_OPTIONS + device, mask);
   });
 });
+
+/**
+ * Wipe saves button — shows a confirmation modal before sending the wipe command.
+ */
+const _wipeBtn = q('#global-wipe-saves');
+if (_wipeBtn) {
+  _wipeBtn.addEventListener('click', () => {
+    showConfirmModal(
+      'Wipe all saves',
+      'This will permanently erase all saved configurations from the module. This cannot be undone.',
+      () => sendGeneralSysex(WIPE_SAVES, 0)
+    );
+  });
+}
 
 /****************************************************/
 /****************************************************/

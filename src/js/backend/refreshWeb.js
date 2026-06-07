@@ -95,12 +95,19 @@ export function refreshWeb() {
 }
 
 function refreshGlobalSettings() {
-  // Routing dots: one row per device (0-5), one dot per bit (0-4)
+  // Routing dots: device_options indices 0-7 → data-device 0-7 (SER, USB_DEV, HOST1-4, TRS_OUT, TRS_IN)
+  // TRS_IN (device 7 / SER_DEV_IN_OPTIONS) uses non-standard bit layout: bit7=IN, bit6=CLK.
   DeviceConfig.device_options.forEach((mask, device) => {
+    let displayMask = mask;
+    if (device === 7) {
+      displayMask = 0;
+      if (mask & 0x80) displayMask |= (1 << 0); // bit7 → IN  (col 0)
+      if (mask & 0x40) displayMask |= (1 << 3); // bit6 → CLK (col 3)
+    }
     for (let bit = 0; bit < 5; bit++) {
       const dot = q(`.routing-dot[data-device="${device}"][data-bit="${bit}"]`);
       if (!dot) continue;
-      const active = !!(mask & (1 << bit));
+      const active = !!(displayMask & (1 << bit));
       dot.classList.toggle('active',   active);
       dot.classList.toggle('inactive', !active);
     }
@@ -111,13 +118,11 @@ function refreshGlobalSettings() {
   if (bpmInput && DeviceConfig.global_clock_period > 0)
     bpmInput.value = (60000000 / DeviceConfig.global_clock_period).toFixed(2);
 
-  // Clock mode radios + BPM enable/disable
+  // Clock mode radios are user-controlled (radio change handler in events.js owns them).
+  // Only sync BPM disabled state, not the radio selection itself — firmware echoes
+  // USE_MIDI_CLOCK=0 in config responses and would otherwise revert user's choice.
   const isExternal = DeviceConfig.global_use_midi_clock;
-  const internalRadio = q('#global-clock-internal');
-  const externalRadio = q('#global-clock-external');
-  if (internalRadio) internalRadio.checked = !isExternal;
-  if (externalRadio) externalRadio.checked =  isExternal;
-  if (bpmInput)      bpmInput.disabled     =  isExternal;
+  if (bpmInput) bpmInput.disabled = isExternal;
 }
 
 function _initVoicesUsed() {

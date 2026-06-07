@@ -739,6 +739,57 @@ export function showModal(type, msg) {
 }
 
 /**
+ * Shows a confirmation modal with Confirm + Cancel buttons.
+ * @param {string} title
+ * @param {string} message
+ * @param {Function} onConfirm  called when user clicks Confirm
+ */
+export function showConfirmModal(title, message, onConfirm) {
+  q('body').dispatchEvent(new Event('click'));
+  q('#modal-body').innerHTML = '';
+
+  const frag = document.createDocumentFragment();
+
+  const h1 = document.createElement('h1');
+  h1.classList = 'modal-heading';
+  h1.textContent = title;
+
+  const p = document.createElement('p');
+  p.classList = 'modal-par';
+  p.textContent = message;
+
+  const btnWrap = document.createElement('div');
+  btnWrap.classList = 'modal-confirm-btns';
+
+  const confirmBtn = document.createElement('button');
+  confirmBtn.classList = 'round-l modal-confirm-ok';
+  confirmBtn.textContent = 'Confirm';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.classList = 'round-l modal-confirm-cancel';
+  cancelBtn.textContent = 'Cancel';
+
+  confirmBtn.addEventListener('click', () => {
+    q('#modal-wrap').classList.toggle('hidden', true);
+    onConfirm();
+  });
+  cancelBtn.addEventListener('click', () => {
+    q('#modal-wrap').classList.toggle('hidden', true);
+  });
+
+  btnWrap.appendChild(confirmBtn);
+  btnWrap.appendChild(cancelBtn);
+  frag.appendChild(h1);
+  frag.appendChild(p);
+  frag.appendChild(btnWrap);
+
+  q('#modal-body').appendChild(frag);
+  q('#modal-wrap').classList.toggle('hidden', false);
+  q('#modal-wrap').style.top = `${window.scrollY}px`;
+  window.addEventListener('scroll', dynModal, true);
+}
+
+/**
  * Dynamically places the modal top to whatever scroll position we're in
  */
 export function dynModal() {
