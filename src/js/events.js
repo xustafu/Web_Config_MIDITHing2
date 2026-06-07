@@ -407,13 +407,6 @@ qA('.routing-dot').forEach(dot => {
     // USB Device (device=1): always keep SYX bit set — disabling it would
     // cut off SysEx communication with this web editor over USB.
     if (device === 1) mask |= (1 << 4);
-    // TRS_IN (device=7): firmware uses bit7=IN, bit6=CLK instead of standard bits 0-4.
-    if (device === 7) {
-      const displayMask = mask;
-      mask = 0;
-      if (displayMask & (1 << 0)) mask |= 0x80; // IN  (col 0) → bit7
-      if (displayMask & (1 << 3)) mask |= 0x40; // CLK (col 3) → bit6
-    }
     sendGeneralSysex(SER_DEV_OPTIONS + device, mask);
   });
 });

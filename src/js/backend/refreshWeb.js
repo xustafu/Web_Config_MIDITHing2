@@ -96,18 +96,11 @@ export function refreshWeb() {
 
 function refreshGlobalSettings() {
   // Routing dots: device_options indices 0-7 → data-device 0-7 (SER, USB_DEV, HOST1-4, TRS_OUT, TRS_IN)
-  // TRS_IN (device 7 / SER_DEV_IN_OPTIONS) uses non-standard bit layout: bit7=IN, bit6=CLK.
   DeviceConfig.device_options.forEach((mask, device) => {
-    let displayMask = mask;
-    if (device === 7) {
-      displayMask = 0;
-      if (mask & 0x80) displayMask |= (1 << 0); // bit7 → IN  (col 0)
-      if (mask & 0x40) displayMask |= (1 << 3); // bit6 → CLK (col 3)
-    }
     for (let bit = 0; bit < 5; bit++) {
       const dot = q(`.routing-dot[data-device="${device}"][data-bit="${bit}"]`);
       if (!dot) continue;
-      const active = !!(displayMask & (1 << bit));
+      const active = !!(mask & (1 << bit));
       dot.classList.toggle('active',   active);
       dot.classList.toggle('inactive', !active);
     }
