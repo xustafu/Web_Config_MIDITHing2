@@ -407,6 +407,31 @@ export function sendMidiStop() {
   if (LogSentSysex) console.log("MIDI STOP (0xFC) sent");
 }
 
+// Sends genComWipeSaves (param 17, value=1) to a specific USB device number.
+// Device byte = (devNum << 4) | _moduleBase  e.g. devNum=0 → 0x0C for RP2354.
+// This intentionally bypasses _targetDevNum so the command can target any
+// device on the bus regardless of which one the editor is currently connected to.
+export function sendWipeSaves(devNum) {
+  if (MIDIoutput == null) return;
+  const entry = SYSEX_OBJ[GENERAL][WIPE_SAVES];
+  if (!entry) { console.error('sendWipeSaves: WIPE_SAVES missing from SYSEX_OBJ'); return; }
+  const dec_data = new Uint8Array(entry.length);
+  new DataView(dec_data.buffer)['set' + entry.type.trim()](0, 1, true); // value 1 = execute
+  const enc_data = new Uint8Array(entry.length + 2);
+  const enc_length = _encodeSysEx(dec_data, enc_data);
+  const send_arr = new Uint8Array(enc_length + 4);
+  send_arr[0] = ((devNum & 0x07) << 4) | _moduleBase; // custom device byte
+  send_arr[1] = 0;              // GENERAL type (0) + number (0)
+  send_arr[2] = entry.index;   // genComWipeSaves = 17 (0x11)
+  send_arr[3] = enc_length;
+  send_arr.set(enc_data.slice(0, enc_length), 4);
+  MIDIoutput.sendSysex(0x7d, Array.from(send_arr));
+  if (LogSentSysex) {
+    const hex = Array.from(send_arr).map(x => x.toString(16).padStart(2,'0')).join(' ');
+    console.log('WIPE SAVES device ' + devNum + ': F0 7D ' + hex.toUpperCase() + ' F7');
+  }
+}
+
 /************************************************/
 /*                SEND SYSEX                    */
 /************************************************/

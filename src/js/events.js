@@ -14,7 +14,7 @@ import {
   activateMidiThingy,
   showConfirmModal
 } from './domScripts.js';
-import { sendParameterSysex, sendGeneralSysex, sendSysex, bpmToPeriod, sendMidiStart, sendMidiStop } from './backend/sysexMgt.js';
+import { sendParameterSysex, sendGeneralSysex, sendSysex, sendWipeSaves, bpmToPeriod, sendMidiStart, sendMidiStop } from './backend/sysexMgt.js';
 import { requestConfig, handleFiles } from './settingsFuncs.js';
 import { drawAllADSR } from './backend/adsr.js';
 
@@ -417,10 +417,11 @@ qA('.routing-dot').forEach(dot => {
 const _wipeBtn = q('#global-wipe-saves');
 if (_wipeBtn) {
   _wipeBtn.addEventListener('click', () => {
+    const devNum = Number(q('#global-wipe-device')?.value ?? 0);
     showConfirmModal(
-      'Wipe all saves',
-      'This will permanently erase all saved configurations from the module. This cannot be undone.',
-      () => sendGeneralSysex(WIPE_SAVES, 0)
+      'Wipe all saves — Device ' + devNum,
+      'This will permanently erase all saved configurations from USB device ' + devNum + '. This cannot be undone.',
+      () => sendWipeSaves(devNum)
     );
   });
 }

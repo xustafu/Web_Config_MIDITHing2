@@ -191,6 +191,28 @@
   margin: 0;
 }
 
+.gs-wipe-device-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.gs-wipe-label {
+  font-size: 0.85rem;
+  color: var(--grey3);
+  white-space: nowrap;
+}
+
+.gs-wipe-select {
+  background: var(--dark-grey);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--off-white);
+  font-size: 0.85rem;
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+}
+
 .gs-wipe-btn {
   align-self: flex-start;
   padding: 0.45rem 1.1rem;
