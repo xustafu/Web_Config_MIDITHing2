@@ -505,3 +505,7 @@ case SER_DEV_IN_OPTIONS:
 - [x] Step 7 fix — `refreshWeb.js`: remove `import { periodToBpm }` from `sysexMgt.js` (circular dependency — `sysexMgt.js` already imports from `refreshWeb.js`); inline `60000000 / period` instead
 - [x] Step 8 — `events.js`: PORT clock params on mode switch + auto-play on internal + ST/SP on external
 - [x] Step 9 — Matrix: add TRS Out (device 6) and TRS In (device 7) rows; fold into `device_options[6/7]`
+- [x] Step 9 note — TrsI uses standard MidiOption bits (0-4) confirmed by testing. An earlier session
+  observed firmware sending `0xC0` (bits 6+7) for SER_DEV_IN_OPTIONS; a temporary bit-translation
+  workaround was added then reverted. Live testing confirms firmware defaults are IN+OUT (TrsO=0x03)
+  and IN+CLK (TrsI=0x09) in standard bit layout — no special handling needed in the web.
