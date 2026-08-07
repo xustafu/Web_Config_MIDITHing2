@@ -274,6 +274,36 @@ export function selectFunction(li, is_automatic = false) {
   _handleMainFunction(li, is_automatic)
 }
 
+// CC/RPN/NRPN carry a distinct resource number (CC#, RPN#, NRPN#) that collides with
+// another port left on the same default (0) if not checked first.
+const _PARAM_COLLISION_FUNCTS = [MIDIMODECC, MIDIMODERPN, MIDIMODENRPN];
+
+/**
+ * Picks a param value for a newly-assigned CC/RPN/NRPN port that isn't already used
+ * by another port with the same function, starting from the function's own default
+ * and counting up. Falls back to the default if every value up to the function's max
+ * is already taken.
+ * @param {Number} port_num the port being (re)assigned
+ * @param {Number} funct the function being assigned (MIDIMODECC, MIDIMODERPN, MIDIMODENRPN, ...)
+ * @param {Number} default_param the function's default param (DEF_FUNCT_VALUES[funct].param)
+ */
+function _pickAvailableParam(port_num, funct, default_param) {
+  if (!_PARAM_COLLISION_FUNCTS.includes(funct)) return default_param;
+
+  const used = new Set(
+    DeviceConfig.ports
+      .filter((p, i) => i !== port_num && p.funct === funct)
+      .map(p => Number(p.param))
+  );
+  if (!used.has(default_param)) return default_param;
+
+  const max = funct === MIDIMODECC ? 127 : 16383;
+  for (let candidate = default_param; candidate <= max; candidate++) {
+    if (!used.has(candidate)) return candidate;
+  }
+  return default_param; // every value taken — fall back to the collision
+}
+
 function _handleMainFunction(li, is_automatic, voice=-1) {
   const port_num = Number(getLiPortNumber(li));
   const port_id = BoxNames[port_num];
@@ -315,7 +345,7 @@ function _handleMainFunction(li, is_automatic, voice=-1) {
     DeviceConfig.ports[port_num].max = def_funct.max;
     DeviceConfig.ports[port_num].clip_max = def_funct.max;
     if (funct == 0 || funct > 7) {
-      DeviceConfig.ports[port_num].param = def_funct.param;
+      DeviceConfig.ports[port_num].param = _pickAvailableParam(port_num, funct, def_funct.param);
     }
   }
 
