@@ -1,4 +1,4 @@
-import { refreshWeb, setDefaultConfig} from "./refreshWeb.js";
+import { refreshWeb, setDefaultConfig, refreshGlobalSettings } from "./refreshWeb.js";
 import { MIDIoutput } from "./initMidi.js";
 import { showModal } from "../domScripts.js";
 import { calculateVoiceId } from "../helpers.js";
@@ -219,11 +219,13 @@ function _processGeneralSysex(param, data) {
       _storeGeneralData(USE_MIDI_CLOCK, data[0]);
       if (LogRcvdSysex) console.log("USE_MIDI_CLOCK " + data[0]);
       if (LogRcvdSysex) console.log(" ");
+      refreshGlobalSettings();
       break;
     case 15: //"CLOCK_PERIOD": 4-byte Uint32
       _storeGeneralData(CLOCK_PERIOD, new DataView(data.buffer).getUint32(0, true));
       if (LogRcvdSysex) console.log("CLOCK_PERIOD " + new DataView(data.buffer).getUint32(0, true));
       if (LogRcvdSysex) console.log(" ");
+      refreshGlobalSettings();
       break;
     case 16: //"USB_DEV_NUMBER":
       if (LogRcvdSysex) console.log("USB_DEV_NUMBER " + data[0]);
@@ -276,8 +278,8 @@ function _processPortFunctionSysex(port_num, data, is_batch) {
   //save port object
   DeviceConfig.ports[port_num] = port;
   if (funct_name == "gate"){
-    DeviceConfig.voices_port[port.port_num - 1].vo_min_note = 0;
-    DeviceConfig.voices_port[port.port_num - 1].vo_max_note = 120;
+    DeviceConfig.voices_port[port.voice].vo_min_note = 0;
+    DeviceConfig.voices_port[port.voice].vo_max_note = 120;
   }
   return;
 }

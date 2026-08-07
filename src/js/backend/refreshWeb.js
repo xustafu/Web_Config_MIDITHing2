@@ -57,13 +57,22 @@ function _setInitialFunctions() {
 }
 
 
+// Firmware never sends MIDIDRUMTRIG — a drum voice is reported as MIDIVOICEGATE with
+// its note range collapsed to a single note (vo_min_note == vo_max_note), same as the OLED.
+function _resolveFunctName(port) {
+  var funct_name = FirmwareFunctions2Web[port.funct];
+  if (funct_name == "gate") {
+    var voice_port = DeviceConfig.voices_port[port.voice];
+    if (voice_port.vo_min_note == voice_port.vo_max_note)
+      funct_name = "drum";
+  }
+  return funct_name;
+}
+
 function _selectWebFunction(port) {
   // this function is a wrapper for Yago's domScripts.js function "selectFunction"
   // which clicks a li to select a function, without triggering the input.change behaviour
-  var funct_name = FirmwareFunctions2Web[port.funct];
-  var voice_port = DeviceConfig.voices_port[port.port_num-1];
-  if (funct_name == "gate" && (voice_port.vo_min_note == voice_port.vo_max_note)) 
-    funct_name = "drum";
+  var funct_name = _resolveFunctName(port);
   var isVoiceFunction = port.funct >= 1 && port.funct <= 7;
   var voice_str = isVoiceFunction ? (port.isNewVoice ? ".new_voice" : ".add_to_voice") : "";
   var li = q("#func-selector-wrap-box-" + port.id + " li" + voice_str + '[data-body="' + funct_name + '"]');
@@ -94,7 +103,7 @@ export function refreshWeb() {
   refreshGlobalSettings();
 }
 
-function refreshGlobalSettings() {
+export function refreshGlobalSettings() {
   // Routing dots: device_options indices 0-7 → data-device 0-7 (SER, USB_DEV, HOST1-4, TRS_OUT, TRS_IN)
   DeviceConfig.device_options.forEach((mask, device) => {
     for (let bit = 0; bit < 5; bit++) {
@@ -111,10 +120,9 @@ function refreshGlobalSettings() {
   if (bpmInput && DeviceConfig.global_clock_period > 0)
     bpmInput.value = (60000000 / DeviceConfig.global_clock_period).toFixed(2);
 
-  // Clock mode radios are user-controlled (radio change handler in events.js owns them).
-  // Only sync BPM disabled state, not the radio selection itself — firmware echoes
-  // USE_MIDI_CLOCK=0 in config responses and would otherwise revert user's choice.
   const isExternal = DeviceConfig.global_use_midi_clock;
+  const radio = q(isExternal ? '#global-clock-external' : '#global-clock-internal');
+  if (radio) radio.checked = true;
   if (bpmInput) bpmInput.disabled = isExternal;
 }
 
@@ -155,7 +163,7 @@ function _setHeaderParams(port) {
 
 function _setBodyParams(port) {
   const midi_ch = DeviceConfig.midi_channels[port.midi_ch-1];
-  const funct_name = FirmwareFunctions2Web[port.funct];
+  const funct_name = _resolveFunctName(port);
   let voice = (port.voice >= 0 && port.voice <= 12) ? DeviceConfig.voices_port[port.voice] : new VoiceConfig();
   const is_global_adsr = (((funct_name == "velocity") || (funct_name == "adsr")) && !voice.use_local_config_adsr);
   if (is_global_adsr)
