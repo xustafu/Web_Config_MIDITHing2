@@ -67,7 +67,7 @@ export function onSysexReceive(msg) {
     if (msg.data.length >= 7 &&
         msg.data[3] === 0x06 && msg.data[4] === 0x02 && msg.data[5] === 0x7d) {
       const devNum    = msg.data[2]; // seChannel = usbDeviceNumber (raw byte, not packed)
-      const thingMode = msg.data[6]; // fam1 = THING_mode (1=MT2, 2=MIDITHINGY, 3=RP)
+      const thingMode = msg.data[6]; // fam1 = THING_mode (firmware compile-time constant, varies per build)
       if (LogRcvdSysex) console.log("Identity reply: device", devNum, "THING_mode", thingMode);
       setTargetDevNum(devNum);
       setModuleBase(0x08 | (thingMode & 0x07)); // bit3=msgType=1, bits[2:0]=moduleID

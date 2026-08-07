@@ -165,7 +165,10 @@ function _initDeviceSelect() {
 
 export function selectMIDIinput(inp) {
   if (inp == null) return;
-  if (MIDIinput != null) MIDIinput.removeListener();
+  // Clear listeners from every input first, not just the previous MIDIinput — otherwise
+  // switching devices repeatedly stacks duplicate "sysex" listeners on the other inputs
+  // below, and onSysexReceive fires multiple times per message.
+  WebMidi.inputs.forEach(other => other.removeListener());
   MIDIinput = inp;
   MIDIinput.addListener("sysex", "all", onSysexReceive);
   // Also listen on all other inputs: firmware may respond via a different physical

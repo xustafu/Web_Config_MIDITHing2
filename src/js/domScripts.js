@@ -143,6 +143,18 @@ export function activateMidiThingy(name = 'MidiThingyRP') {
       main.classList = viewPortWidth <= 821 ? 'main mt' : 'main mt2';
   }
     }
+  else {
+    // Switching (back) to a MIDIThing2: undo the RP-only title/wrap/class changes above.
+    q('#title').innerHTML = "MIDI Thing 2 FW V1.2"
+    q('#head-title').innerHTML = "Web MIDI Thing 2"
+    const mt2Wrap = q('.mt2-main-wrap');
+    if (mt2Wrap) {
+      const parent = mt2Wrap.parentElement;
+      parent.removeChild(mt2Wrap);
+      q('header.banner').insertAdjacentElement('afterend', main);
+    }
+    main.classList = 'main mt';
+  }
 
   q('#MIDIInputSelectLabel').innerHTML = name;
 }
