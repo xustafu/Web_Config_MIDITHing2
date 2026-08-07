@@ -9,6 +9,38 @@ main.main {
   margin-inline: auto;
 }
 
+/* View switcher (Ports / Global settings) */
+#view-switcher {
+  width: fit-content;
+  margin: 1.5rem auto 0;
+}
+
+#view-switcher ul {
+  display: flex;
+  gap: 0.5rem;
+}
+
+#view-switcher li {
+  padding: 0.4rem 1.2rem;
+  border: 1px solid var(--border);
+  border-bottom: 2px solid transparent;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  color: var(--label-title);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+#view-switcher li:hover {
+  color: white;
+}
+
+#view-switcher li.active {
+  border-bottom-color: var(--green);
+  color: white;
+  font-weight: bold;
+}
+
 /* mt2 wrapper */
 .mt2-main-wrap {
   overflow-x: scroll;

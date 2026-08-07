@@ -74,28 +74,6 @@
       </div>
     </div>
 
-    <!-- WIPE SAVES CARD -->
-    <div class="gs-card gs-card-wipe">
-      <h2 class="gs-title">STORAGE</h2>
-      <div class="gs-wipe-body">
-        <p class="gs-wipe-desc">Erase all saved configurations from the module.</p>
-        <div class="gs-wipe-device-wrap">
-          <label class="gs-wipe-label" for="global-wipe-device">USB Device</label>
-          <select id="global-wipe-device" class="gs-wipe-select no-trigger">
-            <option value="0" selected>Device 0 (default)</option>
-            <option value="1">Device 1</option>
-            <option value="2">Device 2</option>
-            <option value="3">Device 3</option>
-            <option value="4">Device 4</option>
-            <option value="5">Device 5</option>
-            <option value="6">Device 6</option>
-            <option value="7">Device 7</option>
-          </select>
-        </div>
-        <button id="global-wipe-saves" class="gs-wipe-btn">&#128465; Wipe saves</button>
-      </div>
-    </div>
-
   </div>
 
 </div>

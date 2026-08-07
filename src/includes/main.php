@@ -1,3 +1,12 @@
+<!-- VIEW SWITCHER -->
+<nav id="view-switcher">
+  <ul>
+    <li class="view-switcher-item active" data-func="ports">Ports</li>
+    <li class="view-switcher-item" data-func="global">Global</li>
+  </ul>
+</nav>
+<!-- VIEW SWITCHER END -->
+
 <!-- MAIN AREA -->
 <main class="main mt" id="main">
 

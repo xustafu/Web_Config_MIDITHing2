@@ -12,9 +12,9 @@ import {
   setLFOGraph,
   dynModal,
   activateMidiThingy,
-  showConfirmModal
+  switchView
 } from './domScripts.js';
-import { sendParameterSysex, sendGeneralSysex, sendSysex, sendWipeSaves, bpmToPeriod, sendMidiStart, sendMidiStop } from './backend/sysexMgt.js';
+import { sendParameterSysex, sendGeneralSysex, sendSysex, bpmToPeriod, sendMidiStart, sendMidiStop } from './backend/sysexMgt.js';
 import { requestConfig, handleFiles } from './settingsFuncs.js';
 import { drawAllADSR } from './backend/adsr.js';
 
@@ -37,8 +37,9 @@ window.addEventListener('resize', () => {
 q(`body`).addEventListener('click', e => {
   const nodeType = e.target.nodeName;
   if (!['UL', 'LABEL', 'LI', 'H3', 'IMG', 'H1', 'SPAN'].includes(nodeType)) {
-    // Go through all <ul>s and hide them
-    qA(`ul`).forEach(ul => ul.classList.toggle('hidden', true));
+    // Go through all dropdown <ul>s and hide them (#view-switcher is a persistent
+    // nav, not a dropdown, so it's excluded)
+    qA(`ul`).forEach(ul => { if (!ul.closest('#view-switcher')) ul.classList.toggle('hidden', true); });
     qA(`label.box-selector-label`).forEach(label => label.classList.remove('active'));
     window.removeEventListener('scroll', dynModal);
   }
@@ -76,6 +77,7 @@ qA('li.has-submenu').forEach(li => {
 });
 
 qA('ul').forEach(ul => {
+  if (ul.closest('#view-switcher')) return; // persistent nav, not a dropdown
   ul.addEventListener("mouseleave", (e) => {
     _hideList(e.target);
   });
@@ -124,6 +126,13 @@ qA('li.menu-option').forEach(li => {
   li.addEventListener('click', e => {
     selectFunction(e.target);
   });
+});
+
+/**
+ * View switcher (Ports / Global settings) > on click
+ */
+qA('#view-switcher .view-switcher-item').forEach(li => {
+  li.addEventListener('click', () => switchView(li.dataset.func));
 });
 
 /**
@@ -411,20 +420,6 @@ qA('.routing-dot').forEach(dot => {
   });
 });
 
-/**
- * Wipe saves button — shows a confirmation modal before sending the wipe command.
- */
-const _wipeBtn = q('#global-wipe-saves');
-if (_wipeBtn) {
-  _wipeBtn.addEventListener('click', () => {
-    const devNum = Number(q('#global-wipe-device')?.value ?? 0);
-    showConfirmModal(
-      'Wipe all saves — Device ' + devNum,
-      'This will permanently erase all saved configurations from USB device ' + devNum + '. This cannot be undone.',
-      () => sendWipeSaves(devNum)
-    );
-  });
-}
 
 /****************************************************/
 /****************************************************/

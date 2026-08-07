@@ -36,12 +36,6 @@ export function selectSettings(li) {
     case 'predef':
       setPreDefSetup(li.dataset.value);
       break;
-    case 'ports':
-      switchView('ports');
-      break;
-    case 'global':
-      switchView('global');
-      break;
     case 'credits':
     default:
       credits();
@@ -56,6 +50,10 @@ export function switchView(name) {
   const globalView = q('#global-settings-view');
   if (portsView)  portsView.style.display  = (name === 'ports')  ? 'contents' : 'none';
   if (globalView) globalView.style.display = (name === 'global') ? 'block'    : 'none';
+
+  qA('#view-switcher .view-switcher-item').forEach(li => {
+    li.classList.toggle('active', li.dataset.func === name);
+  });
 }
 
 /**
@@ -130,14 +128,14 @@ export function activateMidiThingy(name = 'MidiThingyRP') {
       const mainWrap = document.createElement('div');
       mainWrap.classList = 'mt2-main-wrap';
       mainWrap.appendChild(main);
-      q('header.banner').insertAdjacentElement('afterend', mainWrap);
+      q('#view-switcher').insertAdjacentElement('afterend', mainWrap);
 
       // remove the mt2 wrapper when moving away from those sizes
     } else if (mt2Wrap) {
       main.classList = viewPortWidth <= 821 ? 'main mt' : 'main mt2';
       const parent = mt2Wrap.parentElement;
       parent.removeChild(mt2Wrap);
-      q('header.banner').insertAdjacentElement('afterend', main);
+      q('#view-switcher').insertAdjacentElement('afterend', main);
     } else {
       // viewport >= 1532 or <= 821 with no wrapper: still apply the correct class
       main.classList = viewPortWidth <= 821 ? 'main mt' : 'main mt2';
@@ -151,7 +149,7 @@ export function activateMidiThingy(name = 'MidiThingyRP') {
     if (mt2Wrap) {
       const parent = mt2Wrap.parentElement;
       parent.removeChild(mt2Wrap);
-      q('header.banner').insertAdjacentElement('afterend', main);
+      q('#view-switcher').insertAdjacentElement('afterend', main);
     }
     main.classList = 'main mt';
   }
