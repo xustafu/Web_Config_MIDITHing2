@@ -1,0 +1,174 @@
+/* Mappings view */
+
+.map-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.map-card {
+  background: var(--box-bg);
+  border: 1px solid var(--box-border);
+  border-radius: 6px;
+  padding: 1.6rem 2rem;
+  color: var(--off-white);
+  flex: 1 1 30rem;
+}
+
+.map-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--label-title);
+  margin-bottom: 1.2rem;
+}
+
+.map-count {
+  font-size: 0.85rem;
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--grey3);
+}
+
+/* ---- Mapping list ---- */
+
+#map-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.map-list-row {
+  padding: 0.6rem 0.8rem;
+  background: var(--dark-grey);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: var(--off-white);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.map-list-row:hover { background: #333; }
+
+.map-list-empty {
+  font-size: 0.85rem;
+  color: var(--grey3);
+  font-style: italic;
+}
+
+.map-add-btn {
+  padding: 0.45rem 1.1rem;
+  border: 1px solid var(--green);
+  border-radius: 4px;
+  background: #1a3a1a;
+  color: var(--green);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.map-add-btn:hover { background: #1f4a1f; }
+
+.map-status {
+  display: block;
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--grey3);
+  min-height: 1.2em;
+}
+
+.map-status.fail { color: var(--red); }
+
+/* ---- Editor ---- */
+
+.map-card-editor.hidden { display: none; }
+
+.map-enabled-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--off-white);
+  cursor: pointer;
+  margin-bottom: 1.2rem;
+}
+
+.map-fieldset {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1rem 1.2rem 1.2rem;
+  margin-bottom: 1.2rem;
+}
+
+.map-fieldset legend {
+  padding: 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--label-title);
+}
+
+.map-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.7rem;
+}
+
+.map-row:last-child { margin-bottom: 0; }
+
+.map-row label {
+  flex: 0 0 11rem;
+  font-size: 0.85rem;
+  color: var(--grey3);
+}
+
+.map-row select,
+.map-row input[type="number"] {
+  flex: 1 1 auto;
+  padding: 0.4rem 0.6rem;
+  background: var(--dark-grey);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--off-white);
+  font-size: 0.9rem;
+}
+
+.map-range-input { max-width: 7rem; }
+
+.map-editor-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.map-delete-btn {
+  padding: 0.45rem 1.1rem;
+  border: 1px solid var(--red);
+  border-radius: 4px;
+  background: #3a1a1a;
+  color: var(--red);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.map-delete-btn:hover { background: #4a1f1f; }
+
+.map-done-btn {
+  padding: 0.45rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--dark-grey);
+  color: var(--off-white);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.map-done-btn:hover { background: #333; }

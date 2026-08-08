@@ -20,10 +20,12 @@
   <script type="text/javascript" src="./js/vendor/webmidi.js"></script>
   <script type="text/javascript" src="./js/vendor/flotr.js"></script>
   <script type="text/javascript" src="./js/backend/dataStructures.js"></script>
+  <script type="text/javascript" src="./js/backend/mappingTargets.js"></script>
   <script type="text/javascript" src="./js/backend/dataModel.js"></script>
   <script type="module" src="./js/backend/initMidi.js"></script>
   <script type="module" src="./js/settingsFuncs.js"></script>
   <script type="module" src="./js/events.js"></script>
   <script type="module" src="./js/backend/adsr.js"></script>
+  <script type="module" src="./js/mappingsUI.js"></script>
 </body>
 </html>

@@ -179,8 +179,8 @@ const PORTPERIOD=12; //, "PERIOD", u32T, 1136, 40, 1000000}, // 440 Hz default, 
 const PORTCLKDIV=13; //, "CLK DIVISOR", u16T, 24, 1, 48},     // MIDI Clock Divider (how many msgs per pulse)
 const PORTCLKPULSEWIDTH=14; //, "CLK WIDTH", u8T, 10, 1, 99}, // MIDI Clock Pulse Width in ms
 const PORTCLKMULT=15; //, "CLK MULTI", u8T, 1, 1, 50},        // MIDI Clock Multi (how many msgs per pulse)
-const PORTCALMIN=22; //, "CALMIN", i16T, 0, -999, 999},  // Cents to adjust calibration at minimum calibration point (2V)
-const PORTCALMAX=23; //, "CALMAX", i16T, 0, -999, 999},   // Cents to adjust calibration at maximum calibration point (8V)
+const PORTCALMIN=24; //, "CALMIN", i16T, 0, -999, 999},  // Cents to adjust calibration at minimum calibration point (2V)
+const PORTCALMAX=25; //, "CALMAX", i16T, 0, -999, 999},   // Cents to adjust calibration at maximum calibration point (8V)
 const PORTSTStCLOCK=100; //, "Start/Stop Clock", boolT, 1, 0, 1},
 const PORTUseMIDIClock=101; //, "Use MIDI Clock", boolT, 1, 0, 1},
 const PORTGATEPULSE=102; //, "Gate Pulse", boolT, 0, 0, 1}
@@ -255,10 +255,10 @@ const ADSRRetrigNames = {
 
 /* DEFINITION OF MIDI VALUES AT FIRMWARE (SERGIO) */
 
-const MIDICHPRIORITY=17; // , "PRIORITY", u8T, PR_LASTNOTE, PR_NOSTEALING, PR_HIGHNOTE}, // Note priority algorithm
-const MIDICHVOICESEL=18; // , "VOICE SEL", u8T, VS_LOW, VS_LOW, VS_ROUNDROBIN}, // Voice selection algorithm
-const MIDICHBENDSPAN=19; // , "BEND SPAN", u8T, 2, 0, 48}, // Pitch Bend affects voices in the channel +/- number of semitones
-const MIDICHMERGEMIDI=20; // , "MIDI MERGE", u8T, 1, 0, 1}
+const MIDICHPRIORITY=19; // , "PRIORITY", u8T, PR_LASTNOTE, PR_NOSTEALING, PR_HIGHNOTE}, // Note priority algorithm
+const MIDICHVOICESEL=20; // , "VOICE SEL", u8T, VS_LOW, VS_LOW, VS_ROUNDROBIN}, // Voice selection algorithm
+const MIDICHBENDSPAN=21; // , "BEND SPAN", u8T, 2, 0, 48}, // Pitch Bend affects voices in the channel +/- number of semitones
+const MIDICHMERGEMIDI=22; // , "MIDI MERGE", u8T, 1, 0, 1}
 
 const AssignNames = ["Low", "Round Robin"];
 const PriorityNames = ["No Steal", "First", "Last", "Low", "High"];
@@ -286,8 +286,47 @@ const USE_MIDI_CLOCK = 14;
 const CLOCK_PERIOD = 15;
 const USB_DEV_NUMBER = 16;
 const REQ_SLOT_STATUS = 18; // genComReqSlotStatus: 2-byte reply, bitmask of which save slots (0-9) hold data
+const MAPPING_SINGLE_PAR = 20; // genComMappingSinglePar: set/reply one mapping slot field. See MAPPING PARAMETERS below.
 
 
+/************************************************/
+/*            MAPPING PARAMETERS                */
+/************************************************/
+// MIDI-message-to-config-parameter mapping (Config_MapID_t, MIDIMapCfg.h).
+// Sent via genComMappingSinglePar (above), NOT its own SysEx Type — TypeAndNumber is an
+// unencoded wire byte and (4<<5) would set bit 7, an illegal MIDI data byte. See
+// SysEx Details.md §5.
+const MAPPING = 5; // SYSEX_OBJ bucket key only — never a wire TypeAndNumber value.
+                    // BATCH_SYSEX already = 4 (and is used, unlike the reference tool
+                    // where it's inert) — 5 avoids that collision too.
+const MAXMIDIMAPS = 32;
+
+const MAP_ENABLED = 1;      // bool — slot in-use flag
+const MAP_SRC_MSGTYPE = 2;  // u8 — MIDI status byte: 0x80 Note Off/0x90 Note On/0xA0 Poly Aftertouch/0xB0 CC/0xC0 Program Change/0xD0 Channel Pressure/0xE0 Pitch Bend
+const MAP_SRC_CHANNEL = 3;  // u8 — 0=any channel, 1-16=specific
+const MAP_SRC_NUMBER = 4;   // u8 — CC#/note#; ignored for Program Change/Channel Pressure/Pitch Bend
+const MAP_SRC_MIN = 5;      // u16 — input range min (0-127 typical, 0-16383 for pitch bend)
+const MAP_SRC_MAX = 6;      // u16 — input range max
+const MAP_CURVE_TYPE = 7;   // u8 — 0=Linear, 1=Exponential, 2=Logarithmic (3/4 exist on the wire but are not production-ready — not offered in the UI)
+const MAP_TGT_TYPE = 8;     // u8 — reuses GENERAL/PORT/MIDICH/VOICE (0-3) directly
+const MAP_TGT_NUMBER = 9;   // u8 — target port/channel/voice number; ignored for General
+const MAP_TGT_PARAM = 10;   // u16 — target's own cfgId within its config
+const MAP_OUT_MIN = 11;     // i32 — output range min, in the target parameter's own units
+const MAP_OUT_MAX = 12;     // i32 — output range max
+
+const MAP_MSGTYPE_NAMES = {
+  [NOTE_OFF]: "Note Off",
+  [NOTE_ON]: "Note On",
+  [POLY_KEY_PRESSURE]: "Poly Aftertouch",
+  [CONTROL_CHANGE]: "CC",
+  [PROGRAM_CHANGE]: "Program Change",
+  [CHANNEL_PRESSURE]: "Channel Pressure",
+  [PITCH_BEND_CHANGE]: "Pitch Bend",
+};
+
+// Only the 3 fully-implemented ccTypeConv values are offered — CCINCLIN/CCINCEXP
+// (ids 3/4) are flagged upstream (VoiceCfg.h) as partially implemented.
+const MAP_CURVE_NAMES = { 0: "Linear", 1: "Exponential", 2: "Logarithmic" };
 
 
 /************************************************/
@@ -530,6 +569,10 @@ const SYSEX_OBJ = {
     [USB_DEV_NUMBER]:      { index: 16, type: "Uint8",  length: 1 },
     [WIPE_SAVES]:          { index: 17, type: "Uint16", length: 2 }, // TODO: confirm index
     [REQ_SLOT_STATUS]:     { index: 18, type: "Uint16", length: 2 },
+    // Present so _processGeneralSysex's "known param" guard doesn't reject mapping
+    // replies — the actual [slot, fieldId, value...] decode is manual, not driven by
+    // this entry's type/length (see sysexMgt.js case MAPPING_SINGLE_PAR).
+    [MAPPING_SINGLE_PAR]:  { index: 20, type: "Uint16", length: 2 },
   },
   [PORT]: {
     [PORTTYPE]: { index: 1, type: "Uint8", length: 1, attr: "type" },
@@ -547,17 +590,17 @@ const SYSEX_OBJ = {
     [PORTCLKDIV]: { index: 13, type: "Uint16", length: 2, attr: "clk_div" },
     [PORTCLKPULSEWIDTH]: { index: 14, type: "Uint8", length: 1, attr: "clk_pulse_width" },
     [PORTCLKMULT]: { index: 15, type: "Uint8", length: 1, attr: "clk_mult" },
-    [PORTCALMIN]: { index: 22, type: "Int16", length: 2, attr: "cal_min" },
-    [PORTCALMAX]: { index: 23, type: "Int16", length: 2, attr: "cal_max" },
+    [PORTCALMIN]: { index: 24, type: "Int16", length: 2, attr: "cal_min" },
+    [PORTCALMAX]: { index: 25, type: "Int16", length: 2, attr: "cal_max" },
     [PORTSTStCLOCK]: { index: 100, type: "Uint8", length: 1, attr: "start_stop_clock" },
     [PORTUseMIDIClock]: { index: 101, type: "Uint8", length: 1, attr: "use_midi_clock" },
     [PORTGATEPULSE]: { index: 102, type: "Uint8", length: 1, attr: "gate_pulse" },
   },
   [MIDICH]: {
-    [MIDICHPRIORITY]: { index: 17, type: "Uint8", length: 1, attr: "priority" },
-    [MIDICHVOICESEL]: { index: 18, type: "Uint8", length: 1, attr: "voice_sel" },
-    [MIDICHBENDSPAN]: { index: 19, type: "Uint8", length: 1, attr: "bend_span" },
-    [MIDICHMERGEMIDI]: { index: 20, type: "Uint8", length: 1, attr: "merge_midi" },
+    [MIDICHPRIORITY]: { index: 19, type: "Uint8", length: 1, attr: "priority" },
+    [MIDICHVOICESEL]: { index: 20, type: "Uint8", length: 1, attr: "voice_sel" },
+    [MIDICHBENDSPAN]: { index: 21, type: "Uint8", length: 1, attr: "bend_span" },
+    [MIDICHMERGEMIDI]: { index: 22, type: "Uint8", length: 1, attr: "merge_midi" },
   },
   [VOICE]: {
     [ADSRTPredelay]: { index: 1, type: "Uint32 ", length: 4, attr: "adsr_tpredelay" },
@@ -594,5 +637,23 @@ const SYSEX_OBJ = {
     [LFOUseMIDIClock]: { index: 106, type: "Uint8", length: 1, attr: "lfo_use_midi_clock" },
     [LFOSingleCycle]: { index: 107, type: "Uint8", length: 1, attr: "lfo_single_cycle" },
     [LFOUseNoteOff]: { index: 108, type: "Uint8", length: 1, attr: "lfo_stop" },
+  },
+  [MAPPING]: {
+    // "index" here is the Config_MapID_t field id sent inside genComMappingSinglePar's
+    // payload ([slot, fieldId, value...]) — not a distinct wire Parameter, which is
+    // always fixed at MAPPING_SINGLE_PAR (20). Shape reused from PORT/VOICE/MIDICH for
+    // consistency, meaning here differs — see sysexMgt.js sendMappingParam/case 20.
+    [MAP_ENABLED]:     { index: 1,  type: "Uint8",  length: 1, attr: "enabled" },
+    [MAP_SRC_MSGTYPE]: { index: 2,  type: "Uint8",  length: 1, attr: "src_msgtype" },
+    [MAP_SRC_CHANNEL]: { index: 3,  type: "Uint8",  length: 1, attr: "src_channel" },
+    [MAP_SRC_NUMBER]:  { index: 4,  type: "Uint8",  length: 1, attr: "src_number" },
+    [MAP_SRC_MIN]:     { index: 5,  type: "Uint16", length: 2, attr: "src_min" },
+    [MAP_SRC_MAX]:     { index: 6,  type: "Uint16", length: 2, attr: "src_max" },
+    [MAP_CURVE_TYPE]:  { index: 7,  type: "Uint8",  length: 1, attr: "curve_type" },
+    [MAP_TGT_TYPE]:    { index: 8,  type: "Uint8",  length: 1, attr: "tgt_type" },
+    [MAP_TGT_NUMBER]:  { index: 9,  type: "Uint8",  length: 1, attr: "tgt_number" },
+    [MAP_TGT_PARAM]:   { index: 10, type: "Uint16", length: 2, attr: "tgt_param" },
+    [MAP_OUT_MIN]:     { index: 11, type: "Int32",  length: 4, attr: "out_min" },
+    [MAP_OUT_MAX]:     { index: 12, type: "Int32",  length: 4, attr: "out_max" },
   },
 };

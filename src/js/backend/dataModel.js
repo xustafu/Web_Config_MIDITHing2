@@ -83,6 +83,24 @@ class MidiChannelConfig {
   }
 }
 
+class MappingConfig {
+  constructor(slot = 0) {
+    this.slot = slot;
+    this.enabled = false;
+    this.src_msgtype = NOTE_ON;
+    this.src_channel = 0;
+    this.src_number = 0;
+    this.src_min = 0;
+    this.src_max = 127;
+    this.curve_type = 0; // Linear
+    this.tgt_type = PORT;
+    this.tgt_number = 0;
+    this.tgt_param = 0;
+    this.out_min = 0;
+    this.out_max = 127;
+  }
+}
+
 var DeviceConfig = {
   ports: [],
   midi_channels: [],
@@ -99,7 +117,10 @@ var DeviceConfig = {
   // MIDI routing bitmasks, one per device — params 6–13.
   // Indices: 0=SER(6), 1=USB_DEV(7), 2-5=HOST1-4(8-11), 6=TRS_OUT(12), 7=TRS_IN(13)
   // Bits: 0=IN, 1=OUT, 2=THRU, 3=CLK, 4=SYX  (union MidiOption in MIDIDevice.h)
-  device_options: [0, 0, 0, 0, 0, 0, 0, 0]
+  device_options: [0, 0, 0, 0, 0, 0, 0, 0],
+  // MIDI mapping slots (0-31), sparse — populated as genComMappingSinglePar replies
+  // arrive (see sysexMgt.js requestMappingSlot/_storeMappingData).
+  mappings: []
 };
 
 const FirmwareFunctions2Web = {

@@ -5,6 +5,7 @@ import { newNonVoiceFunction, newVoiceFunction, addFunctionToVoice } from './voi
 import { sendParameterSysex, setModuleBase, setTargetDevNum, sendIdentityRequest, sendGeneralSysex } from './backend/sysexMgt.js';
 import { selectMIDIinput, selectMIDIoutput } from './backend/initMidi.js';
 import { drawAllADSR } from './backend/adsr.js';
+import { syncAllMappingSlots } from './mappingsUI.js';
 import {
   saveToFile,
   loadFromFile,
@@ -46,10 +47,12 @@ export function selectSettings(li) {
 }
 
 export function switchView(name) {
-  const portsView  = q('#ports-view');
-  const globalView = q('#global-settings-view');
-  if (portsView)  portsView.style.display  = (name === 'ports')  ? 'contents' : 'none';
-  if (globalView) globalView.style.display = (name === 'global') ? 'block'    : 'none';
+  const portsView    = q('#ports-view');
+  const globalView   = q('#global-settings-view');
+  const mappingsView = q('#mappings-view');
+  if (portsView)    portsView.style.display    = (name === 'ports')    ? 'contents' : 'none';
+  if (globalView)   globalView.style.display   = (name === 'global')   ? 'block'    : 'none';
+  if (mappingsView) mappingsView.style.display = (name === 'mappings') ? 'block'    : 'none';
 
   qA('#view-switcher .view-switcher-item').forEach(li => {
     li.classList.toggle('active', li.dataset.func === name);
@@ -58,6 +61,8 @@ export function switchView(name) {
   // Refresh the Load-slot dropdown each time Global settings is opened, in case
   // slots changed since the last check (device menu, another tool, etc.)
   if (name === 'global') sendGeneralSysex(REQ_SLOT_STATUS, 0);
+  // Re-sync all 32 mapping slots each time the Mappings tab is opened.
+  if (name === 'mappings') syncAllMappingSlots();
 }
 
 /**

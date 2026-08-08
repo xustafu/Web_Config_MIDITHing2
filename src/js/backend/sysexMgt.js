@@ -2,6 +2,7 @@ import { refreshWeb, setDefaultConfig, refreshGlobalSettings, showSlotResult, sh
 import { MIDIoutput } from "./initMidi.js";
 import { showModal } from "../domScripts.js";
 import { calculateVoiceId } from "../helpers.js";
+import { onMappingSlotUpdated } from "../mappingsUI.js";
 
 /************************************************/
 /*              RECEIVE SYSEX                   */
@@ -252,6 +253,22 @@ function _processGeneralSysex(param, data) {
       if (LogRcvdSysex) console.log("Slot status mask: " + usedMask.toString(2).padStart(10, '0'));
       if (LogRcvdSysex) console.log(" ");
       showSlotStatus(usedMask);
+      break;
+    }
+    case 20: { //"MAPPING_SINGLE_PAR" (genComMappingSinglePar) reply: data = [slot, fieldId, value...]
+      const slot = data[0];
+      const fieldId = data[1];
+      const entry = SYSEX_OBJ[MAPPING][fieldId];
+      if (!entry) {
+        if (LogRcvdSysex) console.log("Unknown MAPPING field id " + fieldId + " — ignored");
+        break;
+      }
+      const valueBytes = data.slice(2);
+      const value = new DataView(valueBytes.buffer, valueBytes.byteOffset)["get" + entry.type](0, true);
+      if (LogRcvdSysex) console.log("MAPPING slot " + slot + " " + entry.attr + "=" + value);
+      if (LogRcvdSysex) console.log(" ");
+      _storeMappingData(slot, fieldId, value);
+      onMappingSlotUpdated(slot);
       break;
     }
     default:
@@ -514,6 +531,53 @@ function _storeGeneralData(param, value) {
       DeviceConfig.global_clock_period = value;
       break;
   }
+}
+
+// Sends one field of a mapping slot (genComMappingSinglePar). Doesn't fit
+// sendGeneralSysex (single value at a fixed Parameter=index) or sendSysex (port/voice/
+// channel-number-in-TypeAndNumber) — mapping's [slot, fieldId, value...] all ride
+// together in the 7-bit-encoded payload, with Parameter fixed at MAPPING_SINGLE_PAR.
+export function sendMappingParam(slot, fieldId, value) {
+  if (MIDIoutput == null) return;
+  const entry = SYSEX_OBJ[MAPPING][fieldId];
+  if (!entry) { console.error('sendMappingParam: unknown field', fieldId); return; }
+  value = Number(value);
+
+  const dec_data = new Uint8Array(2 + entry.length);
+  dec_data[0] = slot & 0xff;
+  dec_data[1] = fieldId & 0xff;
+  new DataView(dec_data.buffer, 2)['set' + entry.type](0, value, true);
+
+  const enc_data = new Uint8Array(dec_data.length + 2);
+  const enc_length = _encodeSysEx(dec_data, enc_data);
+  const send_arr = new Uint8Array(enc_length + 4);
+  send_arr[0] = _deviceByte();
+  send_arr[1] = 0;                  // TypeAndNumber = GENERAL(0), number 0
+  send_arr[2] = MAPPING_SINGLE_PAR; // Parameter = 20
+  send_arr[3] = enc_length;
+  send_arr.set(enc_data.slice(0, enc_length), 4);
+  MIDIoutput.sendSysex(0x7d, Array.from(send_arr));
+
+  _storeMappingData(slot, fieldId, value);
+
+  if (LogSentSysex) {
+    const hex = Array.from(send_arr).map(x => x.toString(16).padStart(2, '0')).join(' ');
+    console.log('MAPPING SYSEX SENT: F0 7D ' + hex.toUpperCase() + ' F7');
+  }
+}
+
+// Requests one mapping slot's full config. Reuses the existing genComReqConfig
+// machinery (ttt=4 selects "mapping" as the request type, nnnnn=slot number) —
+// sendGeneralSysex already encodes REQ_CONFIG's Uint16 payload correctly for this.
+export function requestMappingSlot(slot) {
+  sendGeneralSysex(REQ_CONFIG, (4 << 5) | (slot & 0x1f));
+}
+
+function _storeMappingData(slot, fieldId, value) {
+  const attr = SYSEX_OBJ[MAPPING][fieldId]?.attr;
+  if (!attr) return;
+  if (!DeviceConfig.mappings[slot]) DeviceConfig.mappings[slot] = new MappingConfig(slot);
+  DeviceConfig.mappings[slot][attr] = value;
 }
 
 export function sendParameterSysex(element) {

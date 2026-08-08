@@ -3,6 +3,7 @@
   <ul>
     <li class="view-switcher-item active" data-func="ports">Ports</li>
     <li class="view-switcher-item" data-func="global">Global</li>
+    <li class="view-switcher-item" data-func="mappings">Mappings</li>
   </ul>
 </nav>
 <!-- VIEW SWITCHER END -->
@@ -279,6 +280,10 @@
 
   <div id="global-settings-view" style="display:none">
     <?php include 'global_settings.php'; ?>
+  </div>
+
+  <div id="mappings-view" style="display:none">
+    <?php include 'mappings.php'; ?>
   </div>
 
 </main>
