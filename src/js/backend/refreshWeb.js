@@ -126,6 +126,48 @@ export function refreshGlobalSettings() {
   if (bpmInput) bpmInput.disabled = isExternal;
 }
 
+// Shows the device's echoed result for a save/load-to-slot request.
+// kind: 'save' | 'load'. free: memory blocks left (EEPROMManager::countSlotsFree(),
+// same figure shown on the device's own screen during Save/Load).
+export function showSlotResult(kind, ok, free) {
+  const el = q(kind === 'save' ? '#global-save-slot-status' : '#global-load-slot-status');
+  if (!el) return;
+  const text = kind === 'save'
+    ? (ok ? `Saved — ${free} blocks free` : `Save failed — slot full? (${free} blocks free)`)
+    : (ok ? `Loaded — ${free} blocks free` : `Load failed — slot empty? (${free} blocks free)`);
+  el.textContent = text;
+  el.classList.toggle('ok', ok);
+  el.classList.toggle('fail', !ok);
+}
+
+// Rebuilds the Load-slot dropdown from the device's slot status bitmask
+// (genComReqSlotStatus reply): bit i (0-9) = 1 if firmware slot i holds data.
+// The dropdown is 1-based (Slot 1-10) to match the rest of the save/load UI.
+export function showSlotStatus(usedMask) {
+  const select = q('#global-load-slot');
+  if (!select) return;
+  const prevValue = select.value;
+  select.innerHTML = '';
+  let any = false;
+  for (let i = 0; i < 10; i++) {
+    if (usedMask & (1 << i)) {
+      any = true;
+      const opt = document.createElement('option');
+      opt.value = i + 1;
+      opt.textContent = 'Slot ' + (i + 1);
+      select.appendChild(opt);
+    }
+  }
+  if (!any) {
+    const opt = document.createElement('option');
+    opt.value = '';
+    opt.textContent = '— none saved —';
+    select.appendChild(opt);
+  } else if ([...select.options].some(o => o.value === prevValue)) {
+    select.value = prevValue; // keep selection across a refresh if it's still valid
+  }
+}
+
 function _initVoicesUsed() {
   DeviceConfig.voices_port_used = [];
   DeviceConfig.voices_port_free = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];

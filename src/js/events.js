@@ -420,6 +420,55 @@ qA('.routing-dot').forEach(dot => {
   });
 });
 
+/**
+ * Save/Load to slot — result and free memory blocks come back async via the
+ * device's echo, handled in sysexMgt.js (_processGeneralSysex, case 2/3).
+ * UI is 1-based (Slot 1-10) since that's what users expect; firmware slots are
+ * 0-based (0-9), so we subtract 1 right before sending.
+ */
+// Out-of-range values are rejected, not auto-corrected — the click handlers
+// below just refuse to send and leave the "Slot must be 1–10" message up
+// until the user fixes the input themselves.
+const _saveSlotBtn = q('#global-save-slot-btn');
+if (_saveSlotBtn) {
+  _saveSlotBtn.addEventListener('click', () => {
+    const input = q('#global-save-slot');
+    const status = q('#global-save-slot-status');
+    const raw = Number(input.value);
+    if (!Number.isInteger(raw) || raw < 1 || raw > 10) {
+      status.textContent = 'Slot must be 1–10';
+      status.className = 'gs-slot-status fail';
+      return;
+    }
+    status.textContent = 'Saving…';
+    status.className = 'gs-slot-status';
+    sendGeneralSysex(SAVE_CONFIG_TO_SLOT, raw - 1);
+  });
+}
+// Load slot is a dropdown populated from the device's actual slot status
+// (sysexMgt.js case 18 → refreshWeb.js showSlotStatus), not a free-typed number,
+// so there's no out-of-range case here — only "nothing to pick".
+const _loadSlotBtn = q('#global-load-slot-btn');
+if (_loadSlotBtn) {
+  _loadSlotBtn.addEventListener('click', () => {
+    const select = q('#global-load-slot');
+    const status = q('#global-load-slot-status');
+    const raw = Number(select.value);
+    if (!select.value || !Number.isInteger(raw) || raw < 1 || raw > 10) {
+      status.textContent = 'No saved slots to load';
+      status.className = 'gs-slot-status fail';
+      return;
+    }
+    status.textContent = 'Loading…';
+    status.className = 'gs-slot-status';
+    sendGeneralSysex(LOAD_CONFIG_FROM_SLOT, raw - 1);
+  });
+}
+const _loadSlotRefreshBtn = q('#global-load-slot-refresh');
+if (_loadSlotRefreshBtn) {
+  _loadSlotRefreshBtn.addEventListener('click', () => sendGeneralSysex(REQ_SLOT_STATUS, 0));
+}
+
 
 /****************************************************/
 /****************************************************/

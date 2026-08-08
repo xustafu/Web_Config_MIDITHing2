@@ -285,6 +285,7 @@ const SER_DEV_IN_OPTIONS = 13;
 const USE_MIDI_CLOCK = 14;
 const CLOCK_PERIOD = 15;
 const USB_DEV_NUMBER = 16;
+const REQ_SLOT_STATUS = 18; // genComReqSlotStatus: 2-byte reply, bitmask of which save slots (0-9) hold data
 
 
 
@@ -528,6 +529,7 @@ const SYSEX_OBJ = {
     [CLOCK_PERIOD]:        { index: 15, type: "Uint32", length: 4 },
     [USB_DEV_NUMBER]:      { index: 16, type: "Uint8",  length: 1 },
     [WIPE_SAVES]:          { index: 17, type: "Uint16", length: 2 }, // TODO: confirm index
+    [REQ_SLOT_STATUS]:     { index: 18, type: "Uint16", length: 2 },
   },
   [PORT]: {
     [PORTTYPE]: { index: 1, type: "Uint8", length: 1, attr: "type" },

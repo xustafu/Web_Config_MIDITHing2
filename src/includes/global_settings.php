@@ -41,7 +41,7 @@
     </table>
   </div>
 
-  <!-- RIGHT COLUMN: clock + wipe -->
+  <!-- RIGHT COLUMN: clock + save/load slot -->
   <div class="gs-col-right">
 
     <!-- MAIN CLOCK CARD -->
@@ -71,6 +71,29 @@
           </label>
         </div>
         <button id="global-clock-startstop" class="gs-clock-btn gs-clock-start">&#9654; Start</button>
+      </div>
+    </div>
+
+    <!-- SAVE / LOAD SLOT CARD -->
+    <div class="gs-card gs-card-slots">
+      <h2 class="gs-title">Save / Load Slot</h2>
+      <div class="gs-slots-body">
+        <div class="gs-slot-row">
+          <label class="gs-slot-label" for="global-save-slot">Slot</label>
+          <input type="number" id="global-save-slot" class="gs-slot-input no-trigger" value="1" min="1" max="10">
+          <button id="global-save-slot-btn" class="gs-slot-btn">Save</button>
+        </div>
+        <span id="global-save-slot-status" class="gs-slot-status"></span>
+
+        <div class="gs-slot-row">
+          <label class="gs-slot-label" for="global-load-slot">Slot</label>
+          <select id="global-load-slot" class="gs-slot-input gs-slot-select no-trigger">
+            <option value="">— checking… —</option>
+          </select>
+          <button id="global-load-slot-refresh" class="gs-slot-btn gs-slot-refresh" title="Re-check saved slots">&#8635;</button>
+          <button id="global-load-slot-btn" class="gs-slot-btn">Load</button>
+        </div>
+        <span id="global-load-slot-status" class="gs-slot-status"></span>
       </div>
     </div>
 

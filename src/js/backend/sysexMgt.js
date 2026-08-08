@@ -1,4 +1,4 @@
-import { refreshWeb, setDefaultConfig, refreshGlobalSettings } from "./refreshWeb.js";
+import { refreshWeb, setDefaultConfig, refreshGlobalSettings, showSlotResult, showSlotStatus } from "./refreshWeb.js";
 import { MIDIoutput } from "./initMidi.js";
 import { showModal } from "../domScripts.js";
 import { calculateVoiceId } from "../helpers.js";
@@ -159,14 +159,29 @@ function _processGeneralSysex(param, data) {
       if (LogRcvdSysex) console.log("Request Config " + data[0]);
       if (LogRcvdSysex) console.log(" ");
       break;
-    case 2: //"SAVE_CONFIG_TO_SLOT":
-      if (LogRcvdSysex) console.log("Save Config to Slot " + data[0]);
+    case 2: { //"SAVE_CONFIG_TO_SLOT": device echoes [result, blocksFree]
+      const ok = data[0] === 1;
+      const free = data[1];
+      if (LogRcvdSysex) console.log("Save to slot " + (ok ? "OK" : "FAILED") + ", " + free + " blocks free");
       if (LogRcvdSysex) console.log(" ");
+      showSlotResult('save', ok, free);
+      // A save may have just occupied a previously-free slot — refresh the Load list.
+      if (ok) sendGeneralSysex(REQ_SLOT_STATUS, 0);
       break;
-    case 3: //"LOAD_CONFIG_FROM_SLOT":
-      if (LogRcvdSysex) console.log("Load Config from Slot " + data[0]);
+    }
+    case 3: { //"LOAD_CONFIG_FROM_SLOT": device echoes [result, blocksFree]
+      const ok = data[0] === 1;
+      const free = data[1];
+      if (LogRcvdSysex) console.log("Load from slot " + (ok ? "OK" : "FAILED") + ", " + free + " blocks free");
       if (LogRcvdSysex) console.log(" ");
+      showSlotResult('load', ok, free);
+      // A successful load replaces the device's entire live config — pull it fresh.
+      if (ok) {
+        sendSysex("GENERAL", 0, "REQ_CONFIG", 0);
+        refreshWeb();
+      }
       break;
+    }
     case 4: //"SET_LEARN_MODE":
       if (LogRcvdSysex) console.log("Set Learn Mode " + data[0]);
       if (LogRcvdSysex) console.log(" ");
@@ -232,6 +247,13 @@ function _processGeneralSysex(param, data) {
       if (LogRcvdSysex) console.log(" ");
       setTargetDevNum(data[0]); // keep _targetDevNum in sync with what firmware reports
       break;
+    case 18: { //"REQ_SLOT_STATUS": device echoes [maskLow, maskHigh] — bit i = save slot i holds data
+      const usedMask = data[0] | (data[1] << 8);
+      if (LogRcvdSysex) console.log("Slot status mask: " + usedMask.toString(2).padStart(10, '0'));
+      if (LogRcvdSysex) console.log(" ");
+      showSlotStatus(usedMask);
+      break;
+    }
     default:
       if (LogRcvdSysex) console.log("GENERAL sysex unhandled, command index: " + command);
       break;

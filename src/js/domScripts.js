@@ -2,7 +2,7 @@ import { q, qA } from './globals.js';
 import { getParent } from './helpers.js';
 import { setAvailableColors, changePortsColors } from './colorHandling.js';
 import { newNonVoiceFunction, newVoiceFunction, addFunctionToVoice } from './voiceHandling.js';
-import { sendParameterSysex, setModuleBase, setTargetDevNum, sendIdentityRequest } from './backend/sysexMgt.js';
+import { sendParameterSysex, setModuleBase, setTargetDevNum, sendIdentityRequest, sendGeneralSysex } from './backend/sysexMgt.js';
 import { selectMIDIinput, selectMIDIoutput } from './backend/initMidi.js';
 import { drawAllADSR } from './backend/adsr.js';
 import {
@@ -54,6 +54,10 @@ export function switchView(name) {
   qA('#view-switcher .view-switcher-item').forEach(li => {
     li.classList.toggle('active', li.dataset.func === name);
   });
+
+  // Refresh the Load-slot dropdown each time Global settings is opened, in case
+  // slots changed since the last check (device menu, another tool, etc.)
+  if (name === 'global') sendGeneralSysex(REQ_SLOT_STATUS, 0);
 }
 
 /**

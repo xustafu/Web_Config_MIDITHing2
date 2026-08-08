@@ -159,12 +159,14 @@
 
 .gs-clock-stop:hover { background: #4a1f1f; }
 
-/* ---- Right column (clock + wipe stacked) ---- */
+/* ---- Right column (clock + save/load slot side by side) ---- */
 
 .gs-col-right {
-  flex: 0 1 22rem;
+  flex: 0 1 46rem;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
   gap: 2rem;
 }
 
@@ -172,3 +174,71 @@
 .gs-card-clock {
   flex: none;
 }
+
+/* ---- Save/Load slot card ---- */
+
+.gs-card-slots {
+  flex: none;
+}
+
+.gs-slots-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.gs-slot-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.gs-slot-label {
+  font-size: 0.85rem;
+  color: var(--grey3);
+}
+
+.gs-slot-input {
+  width: 5rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--dark-grey);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--off-white);
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+.gs-slot-btn {
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--dark-grey);
+  color: var(--off-white);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.gs-slot-btn:hover { background: #333; }
+
+.gs-slot-select {
+  width: 10rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.gs-slot-refresh {
+  padding: 0.4rem 0.7rem;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.gs-slot-status {
+  font-size: 0.8rem;
+  color: var(--grey3);
+  min-height: 1.2em;
+}
+
+.gs-slot-status.ok { color: var(--green); }
+.gs-slot-status.fail { color: var(--red); }
