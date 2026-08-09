@@ -187,3 +187,55 @@ far less confusing and non-destructive.
 negative channel appears, to see the raw `SYSEX RECEIVED` bytes immediately before it
 and confirm whether it's the same byte-desync mechanism as the earlier truncated-batch
 bug or something new.
+
+---
+
+## Bug 5 (2026-08-09, same day) — "Add to Voice" resent its command N times, corrupting the voice's other ports (FIXED)
+
+**Symptom:** "while creating a voice port 1 and 2 became no function" — reported while
+using the function selector's "Add to Voice" flow (adding e.g. an OSC or DRUM element
+to an already-existing voice), not while touching ports 1/2 directly.
+
+**File:** `src/js/domScripts.js` — `showModal('add_to_voice', ...)`
+
+**Root cause:** `#add2voice_submit` is a **persistent** button in the modal markup —
+it is not recreated each time the modal opens. But the `case 'add_to_voice':` branch
+of `showModal()` called `button.addEventListener('click', ...)` every time the modal
+was shown, and never removed the previous listener. Each additional "Add to Voice" use
+in the same session stacked one more listener onto the same button, with no cleanup.
+
+Confirmed live via console log: the 2nd "Add to Voice" of the session (adding OSC to
+port 8) sent its `Set FUNCT osc at port 8` command **twice**, back-to-back, byte-for-
+byte identical. The 3rd use (adding DRUM to port 9) sent `Set FUNCT drum at port 9`
+plus its two follow-up `vo_min_note`/`vo_max_note` sends **three times** each.
+
+"Add to Voice" is a structural change — like the MIDI-channel bundle from Bug 1-4
+above, it makes firmware tear down and rebuild the entire voice (`setupPortElement()`
+in `MtCV2SysEx.cpp`'s `processPortFunction()`). Re-sending that same structural command
+2-3 times in immediate succession, while the previous send's rebuild was still
+settling, corrupted the target voice's bookkeeping on the firmware side — collateral
+damage landed on the voice's *other* member ports (V1's NOTE/GATE anchors at ports 1
+and 2), which is what showed up as those specific ports losing their function, even
+though neither port was the one actually being edited.
+
+**Fix:** guard the listener registration with a one-time flag
+(`button.dataset.listenerAttached`) so it's bound exactly once regardless of how many
+times the "Add to Voice" modal is opened in a session:
+
+```js
+if (!button.dataset.listenerAttached) {
+  button.dataset.listenerAttached = "true";
+  button.addEventListener('click', e => { /* ...unchanged... */ });
+}
+```
+
+**Not related to** the `_pendingFunctPorts` fix (Bug 1-4 above) or the Chrome/Web MIDI
+flakiness suspected in the "Open issue" section — this was a plain duplicate-DOM-
+listener bug, purely web-side, and fully explains the specific "port 1/2 lost their
+function while creating a voice" symptom on its own.
+
+**If this class of bug regresses again:** any other `showModal(...)` case (or similar
+code that re-attaches listeners to a persistent element on repeated calls) is worth
+auditing the same way — search for `addEventListener` calls inside functions that can
+run more than once per page load without a matching `removeEventListener` or a
+one-time guard.

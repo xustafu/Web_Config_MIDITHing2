@@ -763,22 +763,34 @@ export function showModal(type, msg) {
       voice_select_div.insertBefore(select, button);
       voice_select_div.classList.toggle('hidden', false);
 
-      button.addEventListener('click', e => {
-        const port_num = button.dataset.port;
-        const port_id = BoxNames[Number(port_num)];
-        const funct = button.dataset.funct;
-        const v = Number(q('#select-voice').value);
+      // #add2voice_submit is a persistent element (not recreated per modal-open), but
+      // this whole case block used to run on every single "Add to Voice" invocation and
+      // call addEventListener() again each time — stacking one more listener per use,
+      // never removed. On the Nth "Add to Voice" of a session, clicking submit fired N
+      // accumulated listeners, sending the same "add member to voice" command N times
+      // back-to-back. That command makes firmware tear down/rebuild the whole voice
+      // (setupPortElement); re-firing it while the previous one is still settling
+      // corrupted the voice's other member ports (observed: the voice's NOTE/GATE
+      // anchor ports flipping to "no function"). Guard so the listener is bound once.
+      if (!button.dataset.listenerAttached) {
+        button.dataset.listenerAttached = "true";
+        button.addEventListener('click', e => {
+          const port_num = button.dataset.port;
+          const port_id = BoxNames[Number(port_num)];
+          const funct = button.dataset.funct;
+          const v = Number(q('#select-voice').value);
 
-        DeviceConfig.ports[Number(port_num)].voice = v;
-        const li = q('#func-selector-wrap-box-' + port_id + ' li.add_to_voice[data-body="' + funct + '"]');
-        q('#modal-wrap').classList.toggle('hidden', true);
-        TriggerInputChange = true;
-        _handleMainFunction(li, false, v)
-        //addFunctionToVoice(port_num, li, true, v);
-        const input = q('#main-func-box-' + port_id);
-        sendParameterSysex(input);
-        requestConfig();
-      });
+          DeviceConfig.ports[Number(port_num)].voice = v;
+          const li = q('#func-selector-wrap-box-' + port_id + ' li.add_to_voice[data-body="' + funct + '"]');
+          q('#modal-wrap').classList.toggle('hidden', true);
+          TriggerInputChange = true;
+          _handleMainFunction(li, false, v)
+          //addFunctionToVoice(port_num, li, true, v);
+          const input = q('#main-func-box-' + port_id);
+          sendParameterSysex(input);
+          requestConfig();
+        });
+      }
   }
 
   q(`#modal-body`).appendChild(frag);
