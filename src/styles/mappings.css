@@ -84,7 +84,10 @@
   min-height: 1.2em;
 }
 
+.map-status.ok { color: var(--green); }
 .map-status.fail { color: var(--red); }
+
+.map-card-quick .map-row label { flex: 0 0 9rem; }
 
 /* ---- Editor ---- */
 

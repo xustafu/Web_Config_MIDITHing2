@@ -4,6 +4,29 @@
      user — see mappingsUI.js. -->
 <div class="map-wrap">
 
+  <div class="map-card map-card-quick">
+    <h2 class="map-title">Quick: CC → ADSR Parameter</h2>
+    <div class="map-row">
+      <label for="quick-voice">Voice</label>
+      <select id="quick-voice" class="no-trigger"></select>
+    </div>
+    <div class="map-row">
+      <label for="quick-param">ADSR Parameter</label>
+      <select id="quick-param" class="no-trigger"></select>
+    </div>
+    <div class="map-row">
+      <label for="quick-cc">CC Number</label>
+      <input type="number" id="quick-cc" class="no-trigger" min="0" max="127" value="1" />
+    </div>
+    <div class="map-row">
+      <label for="quick-out-min">Output Range</label>
+      <input type="number" id="quick-out-min" class="no-trigger map-range-input" />
+      <input type="number" id="quick-out-max" class="no-trigger map-range-input" />
+    </div>
+    <button id="quick-set-btn" class="map-add-btn">Set mapping</button>
+    <span id="quick-status" class="map-status"></span>
+  </div>
+
   <div class="map-card map-card-list">
     <h2 class="map-title">Mappings <span id="map-count" class="map-count"></span></h2>
     <div id="map-list"></div>
