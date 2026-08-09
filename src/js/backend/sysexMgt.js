@@ -30,15 +30,50 @@ function _deviceByte() {
 
 // Callback fired once when an identity reply is received (set by sendIdentityRequest).
 let _identityReplyCallback = null;
+// Fallback timer for when no identity reply arrives — owned here (not by callers) so
+// it can be cancelled the moment a real reply lands, guaranteeing onReply fires
+// exactly once. Callers used to run their own independent `setTimeout(cb, 500)`
+// alongside this — harmless if the reply was slow, but if the reply arrived quickly
+// (the common case) that second timer fired anyway 500ms later with no idea the first
+// had already happened, sending a second, fully redundant REQ_CONFIG. Two overlapping
+// full 12-port config requests can come back with a truncated/garbled batch reply —
+// confirmed live: a second reply visibly shorter than the first, chopped into 6-byte
+// port records regardless, producing a port read as "no function" with a garbage
+// param and crashing refreshWeb(). See caller sites in initMidi.js/domScripts.js.
+let _identityFallbackTimer = null;
+
+// Ports with a "function special case" bundle send (funct+midich+param, see sendSysex's
+// is_port_midich/is_port_funct/is_port_param branch) in flight. Firmware treats that
+// bundle as a port teardown+rebuild (MtCV2SysEx.cpp processPortFunction's "add to
+// existing voice" path calls setupPortElement), and its *individual* (non-batch) reply
+// can arrive mid-rebuild reporting a transient funct=0/NO-FUNC state before the real
+// function is reapplied. Applying that straight into DeviceConfig.ports[].funct was
+// harmless as a one-off display blink, but if the arrow was clicked again before the
+// port settled, the next bundle send read the corrupted funct=0 back out and re-sent
+// it — which firmware applied for real, permanently clearing the port's function.
+// Only the batch REQ_CONFIG reply (always triggered ~200ms later via
+// requestConfigDebounced) is trusted to clear a port from this map; a fallback timeout
+// guards against a port getting stuck ignoring reports forever if that reply never
+// comes (e.g. RequestConfig disabled, or a send path with no follow-up refresh).
+let _pendingFunctPorts = new Map(); // port_num (0-indexed) -> fallback timeout id
+
+function _markFunctPending(port_num) {
+  if (_pendingFunctPorts.has(port_num)) clearTimeout(_pendingFunctPorts.get(port_num));
+  const timer = setTimeout(() => _pendingFunctPorts.delete(port_num), 3000);
+  _pendingFunctPorts.set(port_num, timer);
+}
 
 /**
  * Send a MIDI Non-Realtime broadcast identity request (F0 7E 7F 06 01 F7).
  * The firmware responds regardless of its usbDevNumber filter, returning its
  * actual device number in the reply.  When the reply arrives, _targetDevNum
- * and _moduleBase are corrected and onReply() is called.
- * @param {Function|null} onReply  called once when the identity reply arrives
+ * and _moduleBase are corrected and onReply() is called — exactly once, either
+ * from the reply or (if none arrives) the fallbackDelay timeout, never both.
+ * @param {Function|null} onReply  called once when the identity reply arrives (or fallback fires)
+ * @param {Number} fallbackDelay  ms to wait for a reply before calling onReply anyway
  */
-export function sendIdentityRequest(onReply = null) {
+export function sendIdentityRequest(onReply = null, fallbackDelay = 500) {
+  if (_identityFallbackTimer) { clearTimeout(_identityFallbackTimer); _identityFallbackTimer = null; }
   if (MIDIoutput == null) {
     if (onReply) onReply(); // no MIDI output: skip straight to fallback
     return;
@@ -46,6 +81,12 @@ export function sendIdentityRequest(onReply = null) {
   _identityReplyCallback = onReply;
   MIDIoutput.sendSysex(0x7e, [0x7f, 0x06, 0x01]); // F0 7E 7F 06 01 F7
   if (LogSentSysex) console.log("IDENTITY REQUEST: F0 7E 7F 06 01 F7");
+  _identityFallbackTimer = setTimeout(() => {
+    _identityFallbackTimer = null;
+    const cb = _identityReplyCallback;
+    _identityReplyCallback = null;
+    if (cb) cb();
+  }, fallbackDelay);
 }
 
 export function onSysexReceive(msg) {
@@ -72,6 +113,7 @@ export function onSysexReceive(msg) {
       if (LogRcvdSysex) console.log("Identity reply: device", devNum, "THING_mode", thingMode);
       setTargetDevNum(devNum);
       setModuleBase(0x08 | (thingMode & 0x07)); // bit3=msgType=1, bits[2:0]=moduleID
+      if (_identityFallbackTimer) { clearTimeout(_identityFallbackTimer); _identityFallbackTimer = null; }
       const cb = _identityReplyCallback;
       _identityReplyCallback = null;
       if (cb) cb();
@@ -278,6 +320,17 @@ function _processGeneralSysex(param, data) {
 }
 
 function _processPortFunctionSysex(port_num, data, is_batch) {
+  if (is_batch) {
+    if (_pendingFunctPorts.has(port_num)) {
+      clearTimeout(_pendingFunctPorts.get(port_num));
+      _pendingFunctPorts.delete(port_num);
+    }
+  } else if (_pendingFunctPorts.has(port_num)) {
+    // Transient mid-rebuild echo for a port we're still waiting to settle — ignore it,
+    // the pending batch reply is what gets trusted. See _pendingFunctPorts above.
+    if (LogRcvdSysex) console.log("Ignored transient port function reply for port "+(port_num+1)+" (settling)");
+    return;
+  }
   //function number
   const funct = data[0];
   var port = DeviceConfig.ports[port_num];
@@ -286,8 +339,12 @@ function _processPortFunctionSysex(port_num, data, is_batch) {
   port.midi_ch = (data[1] == "0") ? 1 : data[1];
   var value = 0;
   if (is_batch) {
-    value = parseInt(data[2]) + parseInt(data[3])*16;
-    value += parseInt(data[3])*16*3 + parseInt(data[4])*16*3;
+    // 4-byte little-endian param (matches the non-batch getUint32(true) below) — data
+    // here is a plain Array (built in _processBatchSysex), not a Uint8Array, so no
+    // .buffer/DataView available; >>>0 keeps it unsigned since data[5]<<24 can set the
+    // sign bit for values >=128 (uncommon for real param values, but this is otherwise
+    // silently wrong for them, same class of bug as the old double-counted formula).
+    value = (data[2] | (data[3] << 8) | (data[4] << 16) | (data[5] << 24)) >>> 0;
   } else {
     //decode param data
     var buf = data.slice(2).buffer;
@@ -699,6 +756,7 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr, is_send_
     var funct_arr = _createParamArray(param);
     dec_data.set(funct_arr, 2);
     index = PORTFUNCTION;
+    _markFunctPending(number);
   } else {
     var buf = dec_data.buffer;
     var view = new DataView(buf, 0);

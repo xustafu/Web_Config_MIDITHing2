@@ -15,7 +15,7 @@ import {
   switchView
 } from './domScripts.js';
 import { sendParameterSysex, sendGeneralSysex, sendSysex, bpmToPeriod, sendMidiStart, sendMidiStop } from './backend/sysexMgt.js';
-import { requestConfig, handleFiles } from './settingsFuncs.js';
+import { requestConfig, requestConfigDebounced, handleFiles } from './settingsFuncs.js';
 import { drawAllADSR } from './backend/adsr.js';
 
 /**
@@ -293,7 +293,7 @@ qA('.toggle-wrap').forEach(box => {
     checkBox(input);
     if (TriggerInputChange) {
       sendParameterSysex(input);
-      setTimeout(requestConfig, 200);
+      requestConfigDebounced();
     }
   });
 });
@@ -481,7 +481,7 @@ qA('input:not([type=checkbox]):not(.no-trigger)').forEach(input => {
   input.addEventListener('change', e => {
     if (TriggerInputChange) {
       sendParameterSysex(e.target);
-      setTimeout(requestConfig, 200);
+      requestConfigDebounced();
     }
   });
 });

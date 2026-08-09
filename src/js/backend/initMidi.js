@@ -158,9 +158,11 @@ function _initDeviceSelect() {
   const usbOpts = (DeviceConfig.device_options[1] || 0x0B) | 0x10;
   sendGeneralSysex(USB_DEV_OPTIONS, usbOpts);
 
+  // sendIdentityRequest owns its own 500ms fallback timer internally and guarantees
+  // requestConfig fires exactly once — a separate setTimeout(requestConfig, 500) used
+  // to run alongside this unconditionally, firing a second time even when the identity
+  // reply arrived quickly, which raced two overlapping full config requests.
   sendIdentityRequest(requestConfig);
-  // Fallback: if no identity reply arrives in 500 ms, request config anyway.
-  setTimeout(requestConfig, 500);
 }
 
 export function selectMIDIinput(inp) {

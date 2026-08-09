@@ -11,6 +11,7 @@ import {
   loadFromFile,
   sendToModule,
   requestConfig,
+  requestConfigDebounced,
   credits,
   setPreDefSetup
 } from './settingsFuncs.js';
@@ -83,9 +84,9 @@ export function selectDevice(li) {
   // the OS device name.  sendIdentityRequest then corrects both fields from the
   // firmware's actual usbDevNumber before requesting config.
   activateMidiThingy(name);
+  // sendIdentityRequest owns its own 500ms fallback timer internally and guarantees
+  // requestConfig fires exactly once — see sysexMgt.js.
   sendIdentityRequest(requestConfig);
-  // Fallback: if no identity reply arrives in 500 ms, request config anyway.
-  setTimeout(requestConfig, 500);
 
   // Hide <ul> after click
   li.parentElement.classList.toggle('hidden', true);
@@ -483,7 +484,7 @@ export function arrowsFunc(arrow, is_from_arrows=true, is_float=false) {
     const port_id = BoxNames[port_num];
     drawAllADSR(port_id);
   }
-  requestConfig();
+  requestConfigDebounced();
 }
 
 function _calculate_msb_lsb_nrpn_values(input) {

@@ -92,6 +92,25 @@ export function requestConfig() {
   }
 }
 
+let _requestConfigTimer = null;
+
+// Debounced requestConfig() for rapid-fire UI interactions (arrow clicks, checkbox
+// toggles, typed field changes): coalesces N interactions within `delay` ms into one
+// REQ_CONFIG, instead of one full 12-port config request per interaction with no
+// coalescing. Without this, e.g. clicking a MIDI channel's up-arrow several times
+// fired a full config request per click (arrowsFunc had none at all — no delay,
+// no debounce), racing with the "set channel" commands still in flight and with each
+// other's replies. Symptom: the displayed value flickers to a stale/wrong value
+// before correcting, and in the worst case a whole port record gets misread (e.g.
+// shows "no function") if two replies' bytes land close enough to desync parsing.
+export function requestConfigDebounced(delay = 200) {
+  if (_requestConfigTimer) clearTimeout(_requestConfigTimer);
+  _requestConfigTimer = setTimeout(() => {
+    _requestConfigTimer = null;
+    requestConfig();
+  }, delay);
+}
+
 export function setPreDefSetup(num) {
   // set predef config
   num = Number(num);
