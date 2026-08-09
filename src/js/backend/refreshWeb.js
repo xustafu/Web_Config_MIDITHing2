@@ -142,14 +142,16 @@ export function showSlotResult(kind, ok, free) {
 
 // Rebuilds the Load-slot dropdown from the device's slot status bitmask
 // (genComReqSlotStatus reply): bit i (0-9) = 1 if firmware slot i holds data.
-// The dropdown is 1-based (Slot 1-10) to match the rest of the save/load UI.
+// The dropdown is 1-based (Slot 1-9) to match the rest of the save/load UI.
+// Firmware slot 9 (the 10th) is reserved for autosave, so it's excluded here
+// even if its bit is set — never offered as a manual load target.
 export function showSlotStatus(usedMask) {
   const select = q('#global-load-slot');
   if (!select) return;
   const prevValue = select.value;
   select.innerHTML = '';
   let any = false;
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 9; i++) {
     if (usedMask & (1 << i)) {
       any = true;
       const opt = document.createElement('option');

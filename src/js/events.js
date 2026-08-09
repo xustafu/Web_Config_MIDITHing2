@@ -423,11 +423,12 @@ qA('.routing-dot').forEach(dot => {
 /**
  * Save/Load to slot — result and free memory blocks come back async via the
  * device's echo, handled in sysexMgt.js (_processGeneralSysex, case 2/3).
- * UI is 1-based (Slot 1-10) since that's what users expect; firmware slots are
- * 0-based (0-9), so we subtract 1 right before sending.
+ * UI is 1-based (Slot 1-9) since that's what users expect; firmware slots are
+ * 0-based (0-8), so we subtract 1 right before sending. Firmware slot 9 (the
+ * 10th) is reserved for autosave and never offered here.
  */
 // Out-of-range values are rejected, not auto-corrected — the click handlers
-// below just refuse to send and leave the "Slot must be 1–10" message up
+// below just refuse to send and leave the "Slot must be 1–9" message up
 // until the user fixes the input themselves.
 const _saveSlotBtn = q('#global-save-slot-btn');
 if (_saveSlotBtn) {
@@ -435,8 +436,8 @@ if (_saveSlotBtn) {
     const input = q('#global-save-slot');
     const status = q('#global-save-slot-status');
     const raw = Number(input.value);
-    if (!Number.isInteger(raw) || raw < 1 || raw > 10) {
-      status.textContent = 'Slot must be 1–10';
+    if (!Number.isInteger(raw) || raw < 1 || raw > 9) {
+      status.textContent = 'Slot must be 1–9';
       status.className = 'gs-slot-status fail';
       return;
     }
@@ -454,7 +455,7 @@ if (_loadSlotBtn) {
     const select = q('#global-load-slot');
     const status = q('#global-load-slot-status');
     const raw = Number(select.value);
-    if (!select.value || !Number.isInteger(raw) || raw < 1 || raw > 10) {
+    if (!select.value || !Number.isInteger(raw) || raw < 1 || raw > 9) {
       status.textContent = 'No saved slots to load';
       status.className = 'gs-slot-status fail';
       return;

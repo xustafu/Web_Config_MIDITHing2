@@ -80,7 +80,7 @@
       <div class="gs-slots-body">
         <div class="gs-slot-row">
           <label class="gs-slot-label" for="global-save-slot">Slot</label>
-          <input type="number" id="global-save-slot" class="gs-slot-input no-trigger" value="1" min="1" max="10">
+          <input type="number" id="global-save-slot" class="gs-slot-input no-trigger" value="1" min="1" max="9">
           <button id="global-save-slot-btn" class="gs-slot-btn">Save</button>
         </div>
         <span id="global-save-slot-status" class="gs-slot-status"></span>
