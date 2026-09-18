@@ -76,6 +76,21 @@ function _selectWebFunction(port) {
   var isVoiceFunction = port.funct >= 1 && port.funct <= 7;
   var voice_str = isVoiceFunction ? (port.isNewVoice ? ".new_voice" : ".add_to_voice") : "";
   var li = q("#func-selector-wrap-box-" + port.id + " li" + voice_str + '[data-body="' + funct_name + '"]');
+  if (!li) {
+    // No menu entry matches this function, so there is nothing to select. Bail out
+    // instead of calling selectFunction(null): that path ends in getParent(), which
+    // walks el.parentElement upwards and throws "Cannot read properties of null" on
+    // the first step. Because refreshWeb() calls this inside a forEach, that
+    // exception aborted the *entire* refresh, leaving every later port stale - a far
+    // worse symptom than one port not updating.
+    // Usual cause is firmware/editor version skew: _resolveFunctName() returns
+    // undefined for a function id this build doesn't know, so the selector looks for
+    // [data-body="undefined"] and matches nothing.
+    console.warn("No menu entry for port " + port.id + " function '" + funct_name +
+                 "' (firmware id " + port.funct + ") - leaving this port's function " +
+                 "selector unchanged. This editor build may be older than the module.");
+    return;
+  }
   TriggerInputChange = false;
   selectFunction(li, true);
   TriggerInputChange = true;

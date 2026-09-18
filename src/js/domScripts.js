@@ -901,6 +901,14 @@ export function setLabelWidths() {
  */
 export function getLiPortNumber(li) {
   const parent = getParent(li, true, 'box-func-select-list');
+  if (!parent) {
+    // getParent() now returns null rather than throwing when there is no matching
+    // ancestor (see helpers.js). Report it and return undefined so the caller gets a
+    // NaN port number it can notice, instead of an exception unwinding through
+    // refreshWeb() and killing the rest of the refresh.
+    console.warn("getLiPortNumber: no '.box-func-select-list' ancestor for", li);
+    return undefined;
+  }
   return parent.dataset.mtPort;
 }
 

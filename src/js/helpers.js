@@ -11,7 +11,13 @@
 export function getParent(el, isClass, string) {
   let checker;
   do {
-    el = el.parentElement;
+    // Stop at the top of the document instead of throwing. Previously, a null or
+    // detached starting element (or simply no matching ancestor) walked off the end
+    // and threw "Cannot read properties of null (reading 'parentElement')" from
+    // inside this loop, which is opaque at the call site - and when that happened
+    // during refreshWeb()'s port loop it aborted the whole UI refresh.
+    el = el && el.parentElement;
+    if (!el) return null;
     checker = isClass ? el.classList.value.includes(string) : el.id && el.id.includes(string);
   } while (!checker);
 
