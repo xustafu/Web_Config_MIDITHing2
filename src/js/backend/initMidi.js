@@ -1,5 +1,5 @@
 import { q } from "../globals.js";
-import { onSysexReceive, sendIdentityRequest, sendGeneralSysex } from "./sysexMgt.js";
+import { onSysexReceive, sendIdentityRequest } from "./sysexMgt.js";
 import { requestConfig } from "../settingsFuncs.js";
 import { refreshWeb } from "./refreshWeb.js";
 import { selectDevice, activateMidiThingy } from "../domScripts.js";
@@ -150,13 +150,19 @@ function _initDeviceSelect() {
   } else {
     q(".live-button svg").style.fill = "#ff0000";
   }
-  // Ensure SysEx is enabled on the USB device port before requesting config.
-  // Firmware default after EEPROM wipe has USB_DEV_OPTIONS with SYX bit off,
-  // which causes firmware to send SysEx responses via TRS only, not USB.
-  // We OR in the SYX bit (0x10) on top of whatever value DeviceConfig holds
-  // from a previous session, preserving other routing bits where possible.
-  const usbOpts = (DeviceConfig.device_options[1] || 0x0B) | 0x10;
-  sendGeneralSysex(USB_DEV_OPTIONS, usbOpts);
+  // NOTE: this used to blind-write USB_DEV_OPTIONS here, before reading anything:
+  //   const usbOpts = (DeviceConfig.device_options[1] || 0x0B) | 0x10;
+  //   sendGeneralSysex(USB_DEV_OPTIONS, usbOpts);
+  // It claimed to preserve the user's other routing bits "from a previous session",
+  // but DeviceConfig.device_options is re-initialised to all zeros on every page load
+  // (dataModel.js) and is only populated later, from the config reply
+  // (_storeGeneralData in sysexMgt.js). So device_options[1] was always 0 here, the
+  // `|| 0x0B` fallback always won, and every connect silently overwrote the module's
+  // USB routing with a hardcoded 0x1B (27) - discarding whatever the user had set.
+  // The user then read back 27 and it looked like their change never took.
+  // Repair is now done the other way round: read the real mask first, and correct it
+  // only if the SysEx bit is actually missing (see sysexMgt.js _storeGeneralData).
+  // See USB_DEV_OPTIONS_CLOBBER_NOTES.md.
 
   // sendIdentityRequest owns its own 500ms fallback timer internally and guarantees
   // requestConfig fires exactly once — a separate setTimeout(requestConfig, 500) used

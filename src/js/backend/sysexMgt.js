@@ -360,12 +360,12 @@ function _processPortFunctionSysex(port_num, data, is_batch) {
   port.voice = (isVoiceFunction ? port.param : 100);
   port.voice_rep = calculateVoiceId(port.voice);
   //console log
-  var funct_name = FirmwareFunctions2Web[funct];
+  var funct_name = FirmwareFunctions2Web[funct] || "unknown(" + funct + ")";
   if (LogRcvdSysex && port.isVoiceFunction) console.log("Set port function "+funct_name.toUpperCase()+" at port "+port.port_num+" and voice "+port.voice_rep);
   if (LogRcvdSysex && !port.isVoiceFunction) console.log("Set port function "+funct_name.toUpperCase()+" at port "+port.port_num+" and param "+port.param);
   if (LogRcvdSysex) console.log(" ");
   //set default values
-  var def_funct = DEF_FUNCT_VALUES[funct];
+  var def_funct = DEF_FUNCT_VALUES[funct] || DEF_FUNCT_VALUES[MIDINOFUNCTION];
   port.volts = def_funct.volts;
   port.min = def_funct.min;
   port.clip_min = def_funct.min;
@@ -569,6 +569,14 @@ export function sendGeneralSysex(param, value) {
   }
 }
 
+// MidiOption bit layout, mirroring the firmware's union MidiOption (MIDIDevice.h):
+// bit0 In, bit1 Out, bit2 Thru, bit3 Clock, bit4 SysEx.
+const DEV_OPT_SYSEX_BIT = 0x10;
+
+// One-shot guard: only ever attempt the SysEx-routing repair below once per session,
+// so a module that ignores or rejects the write can't put us in a send/reply loop.
+let _usbSysExRepairTried = false;
+
 function _storeGeneralData(param, value) {
   switch (param) {
     case SER_DEV_OPTIONS:
@@ -580,6 +588,20 @@ function _storeGeneralData(param, value) {
     case SER_DEV_OUT_OPTIONS:
     case SER_DEV_IN_OPTIONS:
       DeviceConfig.device_options[param - SER_DEV_OPTIONS] = value;
+      // If SysEx output is disabled on the USB device port, the firmware answers
+      // SysEx over TRS only and this editor goes deaf over USB. Repair it by OR-ing
+      // the bit into the value we just *read*, so the user's other routing bits
+      // survive. initMidi.js used to write a hardcoded mask here instead, before
+      // reading anything, which clobbered them - see
+      // USB_DEV_OPTIONS_CLOBBER_NOTES.md. Reaching this at all requires the reply to
+      // have arrived some other way (the connect handler listens on every input,
+      // including TRS, for exactly this case).
+      if (param === USB_DEV_OPTIONS && !(value & DEV_OPT_SYSEX_BIT) && !_usbSysExRepairTried) {
+        _usbSysExRepairTried = true;
+        console.warn("USB device port has SysEx output disabled (0x" + value.toString(16) +
+                     "); re-enabling it without touching the other routing bits.");
+        sendGeneralSysex(USB_DEV_OPTIONS, value | DEV_OPT_SYSEX_BIT);
+      }
       break;
     case USE_MIDI_CLOCK:
       DeviceConfig.global_use_midi_clock = !!value;
