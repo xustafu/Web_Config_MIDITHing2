@@ -359,6 +359,21 @@ function _processPortFunctionSysex(port_num, data, is_batch) {
   port.isAddToVoice = isVoiceFunction && port.port_num-1 != port.param;
   port.voice = (isVoiceFunction ? port.param : 100);
   port.voice_rep = calculateVoiceId(port.voice);
+  // Unknown function id = firmware/editor version skew: the module supports a port
+  // function this build doesn't know about. The two `||` fallbacks below keep that from
+  // throwing (FirmwareFunctions2Web[funct] would be undefined -> .toUpperCase() throws;
+  // DEF_FUNCT_VALUES[funct] would be undefined -> .volts throws, and that one is not
+  // gated by LogRcvdSysex, so it would kill the whole config parse). Warn unconditionally
+  // so the skew is visible: the fallback silently substitutes MIDINOFUNCTION defaults, so
+  // without this the only symptom is a port showing plausible-but-wrong settings.
+  const _knownFunct = (FirmwareFunctions2Web[funct] !== undefined) &&
+                      (DEF_FUNCT_VALUES[funct] !== undefined);
+  if (!_knownFunct) {
+    console.warn("Unknown port function id " + funct + " from firmware at port " +
+                 port.port_num + " - this editor build may be older than the module. " +
+                 "Falling back to MIDINOFUNCTION defaults; displayed values for this " +
+                 "port will not reflect the module.");
+  }
   //console log
   var funct_name = FirmwareFunctions2Web[funct] || "unknown(" + funct + ")";
   if (LogRcvdSysex && port.isVoiceFunction) console.log("Set port function "+funct_name.toUpperCase()+" at port "+port.port_num+" and voice "+port.voice_rep);
