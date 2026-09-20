@@ -149,14 +149,51 @@ a power cycle - which says nothing about what was clicked and everything about
 whether the data survived. Written up under "A UI-independent integrity check"
 in `planes/EEPROMbug-branch-status.md` in the firmware repo.
 
-## Also outstanding: the editor repeats commands
+## The editor repeats commands - port-function half fixed 2026-09-20
 
 While debugging the firmware side, a single UI interaction was measured sending
 the **same port-function command seven times**, plus repeated full config
-requests (10 `REQ_CONFIG` in one short session). That is worth investigating
-here: it inflates every config dump, and on the firmware side it multiplies
-EEPROM save churn - which is currently implicated in save-area corruption (see
-`planes/port-function-autosave-findings.md` in the firmware repo).
+requests (10 `REQ_CONFIG` in one short session).
 
-Some call sites already use `requestConfigDebounced()` and others call
-`requestConfig()` directly; that asymmetry is the obvious place to start.
+### Root cause of the seven-times part
+
+Not a duplicated call site, which is where we expected to find it.
+`PORTFUNCPARAMETER` (the CC/RPN/NRPN number) and `PORTMIDICHAN` are not sent as
+themselves: `sendSysex()` routes all three of funct, midi channel and param into
+one **`PORTFUNCTION` bundle** carrying the full triple. So every arrow click on
+a CC number emits a complete port-function command.
+
+That matters more than it sounds, because the firmware treats that bundle as a
+**port teardown+rebuild** - `processPortFunction()`'s add-to-existing-voice path
+calls `setupPortElement()`. This file's own `_pendingFunctPorts` comment already
+described the rebuild; what was missed is that a *parameter* edit triggers one.
+
+So arrow-clicking a CC number from 0 to 45 is not seven messages, it is seven
+port rebuilds. That accounts for the reported symptoms exactly: the page stalls,
+the module's activity LED sits on, and - before the firmware-side autosave
+coalescing landed - each rebuild drove a complete EEPROM save-chain rewrite.
+
+### Fix
+
+The bundle is now coalesced per port (`_scheduleFunctBundle`, 120 ms, chosen to
+sit inside `requestConfigDebounced`'s 200 ms so the bundle always lands first).
+It is rebuilt from `DeviceConfig` when the timer fires rather than captured when
+scheduled, so the send that goes out carries the value the user settled on -
+deferring is *more* correct here, not less.
+
+Only the rapid-fire cases are coalesced. A function change is a single discrete
+click, the drum special case has ordering requirements against the `VOICE`
+messages that follow it, and the bulk `sendToModule()` path requests config
+immediately afterwards - all three still send synchronously. `flushFunctBundles()`
+is called before save-to-slot and load-from-slot, so a pending bundle can neither
+be lost from a save nor land on top of a freshly loaded config.
+
+**Not yet verified on hardware.** Expected: one port-function command per settled
+edit instead of one per click, and no stall while setting a CC number.
+
+### Still open: the repeated `REQ_CONFIG`
+
+Unrelated to the above and untouched. Some call sites use
+`requestConfigDebounced()` and others call `requestConfig()` directly - the
+add-to-voice modal in `domScripts.js` is one - and that asymmetry is the place
+to start.

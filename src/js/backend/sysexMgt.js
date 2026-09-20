@@ -68,6 +68,98 @@ function _markFunctPending(port_num) {
   _pendingFunctPorts.set(port_num, timer);
 }
 
+// Coalescing for the function bundle described above. Because PORTFUNCPARAMETER and
+// PORTMIDICHAN are both sent *as* a PORTFUNCTION bundle, a rapid-fire interaction -
+// arrow-clicking a CC number from 0 to 45, say - sends one full bundle per click, and
+// the firmware treats every one of them as a port teardown+rebuild. That is the
+// measured "same port-function command seven times" for a single interaction: the page
+// stalls, the module's activity LED sits on, and (before the firmware-side autosave
+// coalescing) each rebuild drove a complete EEPROM save-chain rewrite.
+//
+// Deferring is safe, and is in fact more correct than sending immediately: _storeWebData()
+// has already updated DeviceConfig synchronously by this point, and the bundle is rebuilt
+// from DeviceConfig when the timer fires - so the send that actually goes out carries the
+// value the user settled on, not an intermediate one.
+//
+// Only the rapid-fire cases are coalesced. A function change (is_port_funct) is a single
+// discrete click, the drum special case has ordering requirements against the VOICE
+// messages that follow it, and the bulk sendToModule() path calls requestConfig()
+// immediately afterwards - all three still send synchronously.
+const FUNCT_BUNDLE_COALESCE_MS = 120; // < requestConfigDebounced's 200ms, so the bundle
+                                      // always lands before the config request it races
+let _pendingFunctBundles = new Map(); // port_num (0-indexed) -> {timer, type_and_num, is_port_midich}
+
+function _scheduleFunctBundle(number, type_and_num, is_port_midich) {
+  const existing = _pendingFunctBundles.get(number);
+  if (existing) clearTimeout(existing.timer);
+  const timer = setTimeout(() => {
+    _pendingFunctBundles.delete(number);
+    _sendFunctBundle(number, type_and_num, is_port_midich, false);
+  }, FUNCT_BUNDLE_COALESCE_MS);
+  _pendingFunctBundles.set(number, { timer, type_and_num, is_port_midich });
+}
+
+// Send any coalesced bundles immediately. Call before anything that depends on the
+// module already having the current config (a save-to-slot, or a full config request
+// that is not the debounced one).
+export function flushFunctBundles() {
+  if (_pendingFunctBundles.size === 0) return;
+  const pending = Array.from(_pendingFunctBundles.entries());
+  _pendingFunctBundles.clear();
+  pending.forEach(([number, info]) => {
+    clearTimeout(info.timer);
+    _sendFunctBundle(number, info.type_and_num, info.is_port_midich, false);
+  });
+}
+
+// Build and send the funct+midich+param bundle for one port, reading DeviceConfig at
+// call time so a deferred send carries the latest values.
+function _sendFunctBundle(number, type_and_num, is_port_midich, is_send_to_module) {
+  const port = DeviceConfig.ports[number];
+  if (!port) return;
+  var param = port.param;
+  if (is_port_midich || (!is_send_to_module && port.isAddToVoice)) {
+    for (var i = 0; i < DeviceConfig.ports.length; i++) {
+      let p = DeviceConfig.ports[i];
+      if (p.voice == param && i != port.port_num - 1) {
+        param = p.port_num - 1;
+        break;
+      }
+    }
+  }
+  var dec_data = new Uint8Array(6);
+  dec_data[0] = port.funct;
+  dec_data[1] = port.midi_ch;
+  dec_data.set(_createParamArray(param), 2);
+  _markFunctPending(number);
+  _encodeAndSendPacket(type_and_num, PORTFUNCTION, dec_data);
+}
+
+// Shared tail of every send: 7-bit encode, wrap in the packet header, transmit, log.
+function _encodeAndSendPacket(type_and_num, index, dec_data) {
+  var enc_data = new Uint8Array(12);
+  var enc_length = _encodeSysEx(dec_data, enc_data); // Decode 7 bit SysEx info from message
+  enc_data = enc_data.slice(0, enc_length);
+
+  var send_arr = new Uint8Array(enc_data.length + 4);
+  send_arr[0] = _deviceByte(); // Device = (devNum<<4) | 0x08 | moduleID
+  send_arr[1] = type_and_num;  // typeAndNumber - Port, MIDI Channel, Voice (3 bits) and number (5 bits)
+  send_arr[2] = index;         // Parameter Number
+  send_arr[3] = enc_length;    // Parameter Length (56 Max)
+  send_arr.set(enc_data, 4);
+
+  MIDIoutput.sendSysex(0x7d, Array.from(send_arr));
+
+  //console log
+  var b = [];
+  Array.from(send_arr).forEach((x) => {
+    b.push(x.toString(16).padStart(2, "0"));
+  });
+  var console_text = "F0 7D " + b.toString().replaceAll(",", " ").toUpperCase();
+  if (LogSentSysex) console.log(console_text + " F7");
+  if (LogSentSysex) console.log(" ");
+}
+
 /**
  * Send a MIDI Non-Realtime broadcast identity request (F0 7E 7F 06 01 F7).
  * The firmware responds regardless of its usbDevNumber filter, returning its
@@ -771,34 +863,29 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr, is_send_
   _storeWebData(type, number, attr, value, is_global_adsr);
 
   var dec_data = new Uint8Array(10);
-  var enc_data = new Uint8Array(12);
   var send_drum_funct = (type == PORT && param == PORTFUNCTION && value == MIDIDRUMTRIG);
   var is_port_midich = (type == PORT && param == PORTMIDICHAN);
   var is_port_funct = (type == PORT && param == PORTFUNCTION);
   var is_port_param = (type == PORT && param == PORTFUNCPARAMETER);
   if (is_global_adsr && type == VOICE && number >= 18)
     number = number - 18
-  var port = DeviceConfig.ports[number];
-  var param = port.param;
-  if (is_port_midich || (!is_send_to_module && port.isAddToVoice)) { 
-    for (var i = 0; i < DeviceConfig.ports.length; i++) {
-      let p = DeviceConfig.ports[i];
-      if (p.voice == param && i != port.port_num - 1) {
-        param = p.port_num - 1;
-        break;
-      }
-    }
-  } 
 
+  // The bundle's payload (funct/midich/param, including the add-to-voice param
+  // resolution that used to live here) is now built inside _sendFunctBundle, so that a
+  // coalesced send reads DeviceConfig at transmit time rather than at schedule time.
   if (is_port_param || is_port_funct || is_port_midich) {
-    // function special case
-    dec_data = new Uint8Array(6);
-    dec_data[0] = port.funct;
-    dec_data[1] = port.midi_ch;
-    var funct_arr = _createParamArray(param);
-    dec_data.set(funct_arr, 2);
-    index = PORTFUNCTION;
-    _markFunctPending(number);
+    // function special case - funct+midich+param always travel together as one
+    // PORTFUNCTION bundle, which firmware treats as a port teardown+rebuild.
+    // Coalesce the rapid-fire cases (CC/RPN/NRPN number and MIDI channel arrows);
+    // send the discrete ones synchronously. See _scheduleFunctBundle above.
+    const coalesce = !is_send_to_module && !send_drum_funct && !is_port_funct;
+    if (coalesce) {
+      _scheduleFunctBundle(number, type_and_num, is_port_midich);
+      return;
+    }
+    _sendFunctBundle(number, type_and_num, is_port_midich, is_send_to_module);
+    if (send_drum_funct) _sendDrumVoiceNotes(number);
+    return;
   } else {
     var buf = dec_data.buffer;
     var view = new DataView(buf, 0);
@@ -806,41 +893,23 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr, is_send_
     dec_data = dec_data.slice(0, length);
   }
 
-  var enc_length = _encodeSysEx(dec_data, enc_data); // Decode 7 bit SysEx info from message
-  enc_data = enc_data.slice(0, enc_length);
+  _encodeAndSendPacket(type_and_num, index, dec_data);
+}
 
-  var send_arr = new Uint8Array(enc_data.length + 4);
-
-  send_arr[0] = _deviceByte(); // Device = (devNum<<4) | 0x08 | moduleID
-  send_arr[1] = /*(is_port_funct) ? 53 : */type_and_num; // typeAndNumber=0;                        ///< Port, MIDI Channel, Voice (3 bits) and number (5 bits)
-  send_arr[2] = /*(is_port_funct) ? 12 : */index; // Parameter;                              ///< Parameter Number
-  send_arr[3] = enc_length; // Length;                                 ///< Parameter Length (56 Max)
-  send_arr.set(enc_data, 4); // pData[SysExpacketDataLength + 1] = {0}; ///< Data
-
-  MIDIoutput.sendSysex(0x7d, Array.from(send_arr));
-  
-  //console log
-  var b=[];
-  Array.from(send_arr).forEach((x) => {
-    b.push(x.toString(16).padStart(2, "0"));
-  });
-  var console_text = "F0 7D "+b.toString().replaceAll(",", " ").toUpperCase();
-  if (LogSentSysex) console.log(console_text+" F7");
-  if (LogSentSysex) console.log(" ");
-
-  if (send_drum_funct) {
-    // special case for using drum function
-    // convert gate to drum by sending vo min note == vo max note
-    const v = DeviceConfig.ports[number].voice; // from used voices at port we get which one is the used one Ex: voice number at port 8 can be voice 2. Convert voice_port to voice_num.
-    index = DeviceConfig.voices_port_free.indexOf(v);
-    if (index >= 0) {
-      DeviceConfig.voices_port_used.push(v);
-      DeviceConfig.voices_port_free.splice(index, 1);
-    }
-    number = DeviceConfig.voices_port_used.indexOf(v);
-    sendSysex("VOICE", number, "VO_MinNote", 60);
-    sendSysex("VOICE", number, "VO_MaxNote", 60);
+// Drum special case: convert gate to drum by sending vo min note == vo max note.
+// Split out of sendSysex so it can follow the bundle send in the correct order.
+function _sendDrumVoiceNotes(number) {
+  // from used voices at port we get which one is the used one. Ex: voice number at
+  // port 8 can be voice 2. Convert voice_port to voice_num.
+  const v = DeviceConfig.ports[number].voice;
+  const free_index = DeviceConfig.voices_port_free.indexOf(v);
+  if (free_index >= 0) {
+    DeviceConfig.voices_port_used.push(v);
+    DeviceConfig.voices_port_free.splice(free_index, 1);
   }
+  const voice_num = DeviceConfig.voices_port_used.indexOf(v);
+  sendSysex("VOICE", voice_num, "VO_MinNote", 60);
+  sendSysex("VOICE", voice_num, "VO_MaxNote", 60);
 }
 
 function _createParamArray(param)

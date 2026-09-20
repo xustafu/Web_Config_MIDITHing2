@@ -14,7 +14,7 @@ import {
   activateMidiThingy,
   switchView
 } from './domScripts.js';
-import { sendParameterSysex, sendGeneralSysex, sendSysex, bpmToPeriod, sendMidiStart, sendMidiStop, sendWipeSaves, getTargetDevNum } from './backend/sysexMgt.js';
+import { sendParameterSysex, sendGeneralSysex, sendSysex, bpmToPeriod, sendMidiStart, sendMidiStop, sendWipeSaves, getTargetDevNum, flushFunctBundles } from './backend/sysexMgt.js';
 import { requestConfig, requestConfigDebounced, handleFiles } from './settingsFuncs.js';
 import { drawAllADSR } from './backend/adsr.js';
 
@@ -443,6 +443,9 @@ if (_saveSlotBtn) {
     }
     status.textContent = 'Saving…';
     status.className = 'gs-slot-status';
+    // A coalesced function bundle may still be waiting; send it first or the slot
+    // would be written without the edit the user just made.
+    flushFunctBundles();
     sendGeneralSysex(SAVE_CONFIG_TO_SLOT, raw - 1);
   });
 }
@@ -462,6 +465,9 @@ if (_loadSlotBtn) {
     }
     status.textContent = 'Loading…';
     status.className = 'gs-slot-status';
+    // Flush first so a pending bundle cannot land *after* the load and re-apply a
+    // port change on top of the config just loaded.
+    flushFunctBundles();
     sendGeneralSysex(LOAD_CONFIG_FROM_SLOT, raw - 1);
   });
 }
