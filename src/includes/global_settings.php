@@ -94,6 +94,17 @@
           <button id="global-load-slot-btn" class="gs-slot-btn">Load</button>
         </div>
         <span id="global-load-slot-status" class="gs-slot-status"></span>
+
+        <!-- WIPE SAVES -->
+        <!-- Sends genComWipeSaves (GENERAL param 17), which runs EEPROMManager::reset(true)
+             on the module: a full memset reinit of the slot tables rather than a chain
+             walk, so it also recovers a save area whose chain has been corrupted. The
+             click handler in events.js confirms first - this is not undoable. -->
+        <div class="gs-slot-row">
+          <label class="gs-slot-label">Wipe</label>
+          <button id="global-wipe-saves-btn" class="gs-slot-btn" title="Erase every saved slot on the module. Cannot be undone.">Wipe all saves</button>
+        </div>
+        <span id="global-wipe-saves-status" class="gs-slot-status"></span>
       </div>
     </div>
 

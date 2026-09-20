@@ -14,7 +14,7 @@ import {
   activateMidiThingy,
   switchView
 } from './domScripts.js';
-import { sendParameterSysex, sendGeneralSysex, sendSysex, bpmToPeriod, sendMidiStart, sendMidiStop } from './backend/sysexMgt.js';
+import { sendParameterSysex, sendGeneralSysex, sendSysex, bpmToPeriod, sendMidiStart, sendMidiStop, sendWipeSaves, getTargetDevNum } from './backend/sysexMgt.js';
 import { requestConfig, requestConfigDebounced, handleFiles } from './settingsFuncs.js';
 import { drawAllADSR } from './backend/adsr.js';
 
@@ -463,6 +463,30 @@ if (_loadSlotBtn) {
     status.textContent = 'Loading…';
     status.className = 'gs-slot-status';
     sendGeneralSysex(LOAD_CONFIG_FROM_SLOT, raw - 1);
+  });
+}
+// Wipe all saves. sendWipeSaves() takes an explicit device number rather than using
+// _targetDevNum implicitly, so pass the device the editor is actually connected to -
+// hardcoding 0 would wipe the wrong module whenever more than one is on the bus.
+// Confirmed first: this erases every slot on the module and cannot be undone.
+const _wipeSavesBtn = q('#global-wipe-saves-btn');
+if (_wipeSavesBtn) {
+  _wipeSavesBtn.addEventListener('click', () => {
+    const status = q('#global-wipe-saves-status');
+    const dev = getTargetDevNum();
+    if (!confirm('Erase ALL saved slots on device ' + dev + '?\n\nThis cannot be undone.')) {
+      return;
+    }
+    status.textContent = 'Wiping…';
+    status.className = 'gs-slot-status';
+    sendWipeSaves(dev);
+    // The module sends no acknowledgement for this command, so re-read slot status to
+    // show the result: the Load dropdown should come back empty.
+    setTimeout(() => {
+      sendGeneralSysex(REQ_SLOT_STATUS, 0);
+      status.textContent = 'Wiped - slots re-checked';
+      status.className = 'gs-slot-status';
+    }, 300);
   });
 }
 const _loadSlotRefreshBtn = q('#global-load-slot-refresh');

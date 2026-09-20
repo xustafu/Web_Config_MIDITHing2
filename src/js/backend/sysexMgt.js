@@ -23,6 +23,11 @@ let _targetDevNum = 0;    // 0-7
 
 export function setModuleBase(base)   { _moduleBase   = base & 0x0F; }
 export function setTargetDevNum(num)  { _targetDevNum = num  & 0x07; }
+// Read back which device the editor is currently talking to. Needed by callers that
+// take an explicit device number rather than using _targetDevNum implicitly -
+// sendWipeSaves() in particular, so the UI can wipe the connected module instead of
+// assuming device 0.
+export function getTargetDevNum()     { return _targetDevNum; }
 
 function _deviceByte() {
   return ((_targetDevNum & 0x07) << 4) | (_moduleBase & 0x0F);
