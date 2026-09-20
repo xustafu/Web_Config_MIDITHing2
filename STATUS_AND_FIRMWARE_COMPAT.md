@@ -125,6 +125,30 @@ Candidates, roughly in order:
 
 Not yet investigated.
 
+## To investigate: menus disappear on hover, and it undermines testing
+
+Reported 2026-09-20. Setting a port is sometimes difficult because menus vanish
+on hover, so an intended change may never be sent at all.
+
+The UI annoyance is the smaller half of this. The real cost is to **test
+validity**: if you cannot be sure what you set, then "the change did not
+persist" and "the change was never sent" are indistinguishable from the web
+side. Every persistence test run through this editor inherits that doubt, and
+the firmware currently has an open question - whether the EEPROM save area still
+corrupts - that is being investigated using exactly such tests.
+
+This is the second way the editor can manufacture a symptom that reads as a
+firmware fault; the render-defaults race above is the first. Both are worth
+fixing partly for their own sake and partly because they are contaminating
+firmware diagnosis.
+
+Workaround in the meantime, and the recommended shape for firmware-side soaks:
+verify persistence from the module's own log rather than from the UI. Compare
+the last save against the next boot's load - same slots, same byte count, across
+a power cycle - which says nothing about what was clicked and everything about
+whether the data survived. Written up under "A UI-independent integrity check"
+in `planes/EEPROMbug-branch-status.md` in the firmware repo.
+
 ## Also outstanding: the editor repeats commands
 
 While debugging the firmware side, a single UI interaction was measured sending
