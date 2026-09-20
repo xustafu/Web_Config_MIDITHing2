@@ -162,30 +162,30 @@ will not know to hard-refresh. Worth considering cache-busting query strings or
 versioned filenames on the module imports.
 
 
-## To investigate: menus disappear on hover, and it undermines testing
+## Resolved 2026-09-20: the disappearing menus
 
-Reported 2026-09-20. Setting a port is sometimes difficult because menus vanish
-on hover, so an intended change may never be sent at all.
+Originally reported as menus vanishing on hover, making it hard to be sure what
+had been set - which mattered less as a UI annoyance than as a **test-validity**
+problem, since "the change did not persist" and "the change was never sent"
+become indistinguishable from the web side.
 
-The UI annoyance is the smaller half of this. The real cost is to **test
-validity**: if you cannot be sure what you set, then "the change did not
-persist" and "the change was never sent" are indistinguishable from the web
-side. Every persistence test run through this editor inherits that doubt, and
-the firmware currently has an open question - whether the EEPROM save area still
-corrupts - that is being investigated using exactly such tests.
+Re-tested after the message-storm fixes landed (`cab987f` port-function
+coalescing, `8682521` duplicate add-member send) and judged acceptable: what
+remains is ordinary hover-out behaviour when the pointer leaves a submenu, which
+is expected.
 
-This is the second way the editor can manufacture a symptom that reads as a
-firmware fault; the render-defaults race above is the first. Both are worth
-fixing partly for their own sake and partly because they are contaminating
-firmware diagnosis.
+No CSS change was made. The likely explanation is that the page was stalling under
+its own outbound traffic - one full port rebuild per arrow click, plus a doubled
+add-member command - and menus that are hard to hit are a normal consequence of a
+stalling page. Removing the traffic removed the symptom.
 
-Workaround in the meantime, and the recommended shape for firmware-side soaks:
-verify persistence from the module's own log rather than from the UI. Compare
-the last save against the next boot's load - same slots, same byte count, across
-a power cycle - which says nothing about what was clicked and everything about
-whether the data survived. Written up under "A UI-independent integrity check"
-in `planes/EEPROMbug-branch-status.md` in the firmware repo.
+If it ever needs to be more forgiving, the knob is `_hideList()` in `events.js`:
+it already waits 100 ms and cancels on re-entry, so raising that timeout widens
+the grace period. Worth knowing, but not currently warranted.
 
+**Consequence for the firmware investigation:** this confounder is gone. Of the
+two ways this editor could fake a firmware persistence fault, only the
+render-defaults race remains.
 ## The editor repeats commands - port-function half fixed 2026-09-20
 
 While debugging the firmware side, a single UI interaction was measured sending
