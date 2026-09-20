@@ -133,6 +133,30 @@ Candidates, roughly in order:
 
 Not yet investigated.
 
+### Confirmed instance 2026-09-20: a stale cached module
+
+After uploading the `8682521` files the page showed defaults on every reload, and
+a hard refresh (Ctrl+Shift+R) fixed it. Cause: `settingsFuncs.js` gained an import
+of `flushFunctBundles`, an export added to `sysexMgt.js` one commit earlier. The
+browser served a cached `sysexMgt.js` from before that export existed, so the
+import failed - and an ES module import failure is fatal and cascades.
+`domScripts.js` and `events.js` both import from `settingsFuncs.js`, so every
+event handler and the whole config-apply path died with it. The page rendered its
+`dataModel.js` defaults and nothing ever replaced them.
+
+This confirms the shape the section above only guessed at: **anything that throws
+before the dump is applied leaves the defaults on screen, silently as far as the UI
+is concerned.** It does not prove the earlier sightings had this cause - those
+predate any import change - but it does mean "stuck on defaults" should always be
+checked against the console's *first* error before being read as a firmware or
+persistence fault.
+
+Practical consequence for deploys: whenever a change adds or renames an export,
+uploaded files can be mismatched against cached ones in exactly this way. Users
+will not know to hard-refresh. Worth considering cache-busting query strings or
+versioned filenames on the module imports.
+
+
 ## To investigate: menus disappear on hover, and it undermines testing
 
 Reported 2026-09-20. Setting a port is sometimes difficult because menus vanish
