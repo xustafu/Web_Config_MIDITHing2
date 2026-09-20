@@ -286,7 +286,10 @@ const USE_MIDI_CLOCK = 14;
 const CLOCK_PERIOD = 15;
 const USB_DEV_NUMBER = 16;
 const REQ_SLOT_STATUS = 18; // genComReqSlotStatus: 2-byte reply, bitmask of which save slots (0-9) hold data
-const MAPPING_SINGLE_PAR = 20; // genComMappingSinglePar: set/reply one mapping slot field. See MAPPING PARAMETERS below.
+const MAPPING_DEFAULT_SINGLE_PAR = 21; // genComMappingDefaultSinglePar: set/reply one mapping
+// slot field. See MAPPING PARAMETERS below. Was genComMappingSinglePar(=20) until the user
+// mapping bank was retired firmware-side; 20 is no longer handled at all, so sends to it were
+// silently dropped and replies on 21 were discarded as an unknown param.
 
 
 /************************************************/
@@ -571,8 +574,8 @@ const SYSEX_OBJ = {
     [REQ_SLOT_STATUS]:     { index: 18, type: "Uint16", length: 2 },
     // Present so _processGeneralSysex's "known param" guard doesn't reject mapping
     // replies — the actual [slot, fieldId, value...] decode is manual, not driven by
-    // this entry's type/length (see sysexMgt.js case MAPPING_SINGLE_PAR).
-    [MAPPING_SINGLE_PAR]:  { index: 20, type: "Uint16", length: 2 },
+    // this entry's type/length (see sysexMgt.js case MAPPING_DEFAULT_SINGLE_PAR).
+    [MAPPING_DEFAULT_SINGLE_PAR]:  { index: 21, type: "Uint16", length: 2 },
   },
   [PORT]: {
     [PORTTYPE]: { index: 1, type: "Uint8", length: 1, attr: "type" },
@@ -641,7 +644,7 @@ const SYSEX_OBJ = {
   [MAPPING]: {
     // "index" here is the Config_MapID_t field id sent inside genComMappingSinglePar's
     // payload ([slot, fieldId, value...]) — not a distinct wire Parameter, which is
-    // always fixed at MAPPING_SINGLE_PAR (20). Shape reused from PORT/VOICE/MIDICH for
+    // always fixed at MAPPING_DEFAULT_SINGLE_PAR (21). Shape reused from PORT/VOICE/MIDICH for
     // consistency, meaning here differs — see sysexMgt.js sendMappingParam/case 20.
     [MAP_ENABLED]:     { index: 1,  type: "Uint8",  length: 1, attr: "enabled" },
     [MAP_SRC_MSGTYPE]: { index: 2,  type: "Uint8",  length: 1, attr: "src_msgtype" },

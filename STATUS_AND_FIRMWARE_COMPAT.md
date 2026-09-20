@@ -69,31 +69,38 @@ exactly this pattern. It was deliberately not implemented because the case has
 not been observed on current firmware - but it is the known answer if it shows
 up.
 
-## Known outstanding issue: GENERAL param 21 is not implemented
+## Fixed 2026-09-20: the mapping bank was talking to a retired parameter
 
 The firmware sends mapping-slot data as GENERAL parameter **21**
-(`genComMappingDefaultSinglePar`). This editor does not handle that parameter,
-so every such message is logged and discarded:
+(`genComMappingDefaultSinglePar`). This editor still used **20**
+(`genComMappingSinglePar`), which the firmware retired along with the user
+mapping bank - see `planes/user-mapping-bank-retirement-proposal.md` and the
+note at `SysExDef.h:99` in the firmware repo. 20 is not handled there at all
+any more.
 
-```
-Unknown GENERAL param 21 — ignored
-```
+That broke the mapping bank in **both** directions, and only one direction was
+visible:
 
-Two consequences, one cosmetic and one not:
+- **Receive** - every reply on 21 hit the unknown-param branch and was discarded
+  (`Unknown GENERAL param 21 - ignored`). 32 slots x ~6 fields per dump, so a few
+  hundred console lines per reconnect, and the editor never read mapping state.
+- **Send** - the worse half, and silent. `sendMappingParam()` wrote to parameter
+  20, which the firmware ignores, while `_storeMappingData()` still updated the
+  local model - so the Mappings tab and the Quick CC -> ADSR panel looked like
+  they worked while **nothing reached the module**. Same shape as the EEPROM
+  `put()` no-op on the firmware side: a write that returns normally and does
+  nothing.
 
-- 32 mapping slots per full config dump, several messages each, twice per
-  reconnect - hundreds of console lines, which makes debugging painful and the
-  page feel sluggish.
-- More importantly the data is **thrown away**, so the editor never reads
-  mapping-slot state at all.
+Fix: `MAPPING_SINGLE_PAR = 20` becomes `MAPPING_DEFAULT_SINGLE_PAR = 21`, applied
+to the `SYSEX_OBJ[0]` entry, the receive case, and the send. No protocol or
+payload change - the `[slot, fieldId, value...]` shape was already correct, and
+the whole 12-field `SYSEX_OBJ[MAPPING]` table was already in place. Only the
+command number was wrong.
 
-The firmware pins that value deliberately (`genComMappingDefaultSinglePar = 21`,
-after `genComMappingSinglePar` at 20 was retired - see
-`planes/user-mapping-bank-retirement-proposal.md` in the firmware repo), so the
-fix belongs here: implement param 21, do not renumber the firmware.
-
-**This is the next task.** It was agreed as the follow-up to the current round
-and is not started.
+**Not yet verified on hardware.** Expected: the `Unknown GENERAL param 21` flood
+gone, mapping slots populating from the module, and mapping edits actually
+landing. The send half is the one worth testing deliberately, since it has
+apparently never worked and so has never been seen to work.
 
 ## To investigate: the editor renders defaults first, then applies the loaded config
 
@@ -118,8 +125,9 @@ Candidates, roughly in order:
   2026-09-20 (a null `li` in `_selectWebFunction()` aborting `refreshWeb()`'s
   `forEach`), but that was one instance of a general fragility, not necessarily
   the only one.
-- Dropped or unparsed messages - note that every GENERAL param 21 message is
-  currently discarded (see above), so part of each dump never lands.
+- Dropped or unparsed messages. Until 2026-09-20 every GENERAL param 21 message
+  was discarded, so a whole section of each dump never landed - that one is now
+  fixed (see above), which may or may not have been the cause here.
 - A race between the initial default render and the arrival of the reply,
   especially with the duplicate `REQ_CONFIG` traffic described below.
 

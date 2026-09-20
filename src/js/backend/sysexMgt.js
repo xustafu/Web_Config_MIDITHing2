@@ -394,7 +394,7 @@ function _processGeneralSysex(param, data) {
       showSlotStatus(usedMask);
       break;
     }
-    case 20: { //"MAPPING_SINGLE_PAR" (genComMappingSinglePar) reply: data = [slot, fieldId, value...]
+    case 21: { //"MAPPING_DEFAULT_SINGLE_PAR" (genComMappingDefaultSinglePar) reply: data = [slot, fieldId, value...]
       const slot = data[0];
       const fieldId = data[1];
       const entry = SYSEX_OBJ[MAPPING][fieldId];
@@ -724,10 +724,10 @@ function _storeGeneralData(param, value) {
   }
 }
 
-// Sends one field of a mapping slot (genComMappingSinglePar). Doesn't fit
+// Sends one field of a mapping slot (genComMappingDefaultSinglePar). Doesn't fit
 // sendGeneralSysex (single value at a fixed Parameter=index) or sendSysex (port/voice/
 // channel-number-in-TypeAndNumber) — mapping's [slot, fieldId, value...] all ride
-// together in the 7-bit-encoded payload, with Parameter fixed at MAPPING_SINGLE_PAR.
+// together in the 7-bit-encoded payload, with Parameter fixed at MAPPING_DEFAULT_SINGLE_PAR.
 export function sendMappingParam(slot, fieldId, value) {
   if (MIDIoutput == null) return;
   const entry = SYSEX_OBJ[MAPPING][fieldId];
@@ -744,7 +744,7 @@ export function sendMappingParam(slot, fieldId, value) {
   const send_arr = new Uint8Array(enc_length + 4);
   send_arr[0] = _deviceByte();
   send_arr[1] = 0;                  // TypeAndNumber = GENERAL(0), number 0
-  send_arr[2] = MAPPING_SINGLE_PAR; // Parameter = 20
+  send_arr[2] = MAPPING_DEFAULT_SINGLE_PAR; // Parameter = 21
   send_arr[3] = enc_length;
   send_arr.set(enc_data.slice(0, enc_length), 4);
   MIDIoutput.sendSysex(0x7d, Array.from(send_arr));
