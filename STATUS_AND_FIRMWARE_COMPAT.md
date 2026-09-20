@@ -95,6 +95,36 @@ fix belongs here: implement param 21, do not renumber the firmware.
 **This is the next task.** It was agreed as the follow-up to the current round
 and is not started.
 
+## To investigate: the editor renders defaults first, then applies the loaded config
+
+Observed 2026-09-20. On connect the page briefly shows a **default** configuration
+and then switches to the values loaded from the module. **A couple of times it
+stayed on the default** and never switched.
+
+This is worth chasing because it produces a symptom that is easy to blame on the
+firmware: "the module loaded defaults". If the editor renders defaults and then
+fails to apply the incoming config, the module's stored configuration can be
+perfectly intact while the UI insists otherwise. At least some past
+"loads to default" reports may be this rather than a persistence fault - so when
+it happens, confirm against the firmware side (probe UART log, or a slot-status
+request) before concluding anything about EEPROM.
+
+Likely shape of it: `refreshWeb()` paints from `DeviceConfig`, which starts at
+its `dataModel.js` defaults and is only filled in as config replies arrive. So
+anything that interrupts or drops the reply stream leaves the defaults on screen.
+Candidates, roughly in order:
+
+- An exception part-way through applying the dump. One such case was fixed on
+  2026-09-20 (a null `li` in `_selectWebFunction()` aborting `refreshWeb()`'s
+  `forEach`), but that was one instance of a general fragility, not necessarily
+  the only one.
+- Dropped or unparsed messages - note that every GENERAL param 21 message is
+  currently discarded (see above), so part of each dump never lands.
+- A race between the initial default render and the arrival of the reply,
+  especially with the duplicate `REQ_CONFIG` traffic described below.
+
+Not yet investigated.
+
 ## Also outstanding: the editor repeats commands
 
 While debugging the firmware side, a single UI interaction was measured sending
