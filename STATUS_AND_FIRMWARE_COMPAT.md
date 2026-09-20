@@ -199,9 +199,43 @@ be lost from a save nor land on top of a freshly loaded config.
 **Not yet verified on hardware.** Expected: one port-function command per settled
 edit instead of one per click, and no stall while setting a CC number.
 
-### Still open: the repeated `REQ_CONFIG`
+### The repeated `REQ_CONFIG` - two duplicates removed 2026-09-20
 
-Unrelated to the above and untouched. Some call sites use
-`requestConfigDebounced()` and others call `requestConfig()` directly - the
-add-to-voice modal in `domScripts.js` is one - and that asymmetry is the place
-to start.
+Every call site was traced; none are reply-driven, so there is no feedback loop.
+Two were genuine duplicates:
+
+- **Add-to-Voice modal submit** (`domScripts.js`). `_handleMainFunction()` ends by
+  dispatching `change` on the main-function input, and the global handler answers
+  that with `sendParameterSysex()` + `requestConfigDebounced()`. The handler then
+  did an explicit `sendParameterSysex()` on the *same* input plus an immediate
+  `requestConfig()` - so each submit sent the add-member command **twice** and
+  requested config twice. The duplicate send is the dangerous half: firmware tears
+  down and rebuilds the whole voice on that command, and re-firing it mid-rebuild
+  is exactly what corrupted the voice's other member ports in the bug fixed by
+  `25bd420`. That commit removed the stacked *listeners* but left this second send
+  inside the handler itself.
+- **LFO global graph selector** (`events.js`). `RequestConfig = false` suppresses
+  the immediate request inside `requestConfig()`, but each `setLFOGraph()`
+  dispatches `change`, and the debounced request it schedules fires 200 ms later -
+  by which point the flag is back to true. The suppression leaked one deferred
+  request and the explicit call added a second. Now debounced, so all five merge
+  into one.
+
+Also tightened: `sendToModule()` flushes pending function bundles before its
+`requestConfig()`, so a bundle queued by an earlier interaction cannot land after
+the request and make the reply stale.
+
+**Left alone deliberately** - these are correct as they are:
+
+- `initMidi.js` on auto-connect and `domScripts.js` on manual device selection,
+  both via `sendIdentityRequest(requestConfig)`. Two distinct user-visible events;
+  each should request once. They can both fire in one session, which is expected.
+- The explicit Settings -> Request menu item. User-initiated.
+
+**Not ours:** opening the Mappings tab calls `syncAllMappingSlots()`, which issues
+**32** slot requests (`REQ_CONFIG` with a slot selector). That is deliberate - no
+batch read exists for mapping slots - and belongs with the mapping branch's work,
+not here. If a session shows a large `REQ_CONFIG` count, check whether the
+Mappings tab was opened before assuming a duplication bug.
+
+**Not yet verified on hardware.**

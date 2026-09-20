@@ -15,7 +15,7 @@ import {
   switchView
 } from './domScripts.js';
 import { sendParameterSysex, sendGeneralSysex, sendSysex, bpmToPeriod, sendMidiStart, sendMidiStop, sendWipeSaves, getTargetDevNum, flushFunctBundles } from './backend/sysexMgt.js';
-import { requestConfig, requestConfigDebounced, handleFiles } from './settingsFuncs.js';
+import { requestConfigDebounced, handleFiles } from './settingsFuncs.js';
 import { drawAllADSR } from './backend/adsr.js';
 
 /**
@@ -167,13 +167,19 @@ qA('li.lfo-quad-graph-sel').forEach(li => {
  */
 qA('li.lfo-global-graph-sel').forEach(li => {
   li.addEventListener('click', e => {
+    // RequestConfig=false suppresses the *immediate* request inside requestConfig(),
+    // but each setLFOGraph() dispatches 'change', and the global handler answers with
+    // requestConfigDebounced() - whose timer fires 200ms later, by which point the flag
+    // is true again. So the suppression leaked one deferred request, and the explicit
+    // requestConfig() below added a second. Debouncing here instead merges all of them
+    // into the single pending timer: one request, 200ms after the last graph is set.
     RequestConfig = false;
     setLFOGraph(e.target, 1, true);
     setLFOGraph(e.target, 2, true);
     setLFOGraph(e.target, 3, true);
     setLFOGraph(e.target, 4, true);
     RequestConfig = true;
-    requestConfig();
+    requestConfigDebounced();
   });
 });
 

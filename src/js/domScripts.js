@@ -784,11 +784,20 @@ export function showModal(type, msg) {
           const li = q('#func-selector-wrap-box-' + port_id + ' li.add_to_voice[data-body="' + funct + '"]');
           q('#modal-wrap').classList.toggle('hidden', true);
           TriggerInputChange = true;
+          // _handleMainFunction() ends by dispatching 'change' on
+          // #main-func-box-<port_id>, and the global handler in events.js answers that
+          // with sendParameterSysex() + requestConfigDebounced(). This used to follow it
+          // with an explicit sendParameterSysex() on the *same* input plus an immediate
+          // requestConfig() - so every submit sent the add-member command twice and
+          // requested config twice.
+          //
+          // The duplicate send is the dangerous half. Firmware tears down and rebuilds
+          // the whole voice on that command, and re-firing it while the previous rebuild
+          // is still settling is exactly what corrupted the voice's other member ports in
+          // the bug fixed by 25bd420 - that commit removed the stacked *listeners*, but
+          // left this second send inside the handler itself.
           _handleMainFunction(li, false, v)
           //addFunctionToVoice(port_num, li, true, v);
-          const input = q('#main-func-box-' + port_id);
-          sendParameterSysex(input);
-          requestConfig();
         });
       }
   }

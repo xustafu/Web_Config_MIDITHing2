@@ -1,5 +1,5 @@
 import { q, qA } from "./globals.js";
-import { sendSysex, sendParameterSysex } from "./backend/sysexMgt.js";
+import { sendSysex, sendParameterSysex, flushFunctBundles } from "./backend/sysexMgt.js";
 import { showModal } from "./domScripts.js";
 import { refreshWeb, setDefaultConfig } from "./backend/refreshWeb.js";
 
@@ -78,6 +78,10 @@ export function sendToModule() {
       sendParameterSysex(input);
     })
   });
+  // Its own sends use is_send_to_module, so they bypass the bundle coalescing - but a
+  // bundle queued by an earlier UI interaction could still be pending, and would land
+  // after this request, making the reply we are about to get stale.
+  flushFunctBundles();
   requestConfig();
   console.log("sending to module");
 }
