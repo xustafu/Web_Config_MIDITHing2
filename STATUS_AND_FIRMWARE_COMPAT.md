@@ -97,7 +97,12 @@ payload change - the `[slot, fieldId, value...]` shape was already correct, and
 the whole 12-field `SYSEX_OBJ[MAPPING]` table was already in place. Only the
 command number was wrong.
 
-**Not yet verified on hardware.** Expected: the `Unknown GENERAL param 21` flood
+**Verified on hardware 2026-09-20.** Adding items to voices works, and the
+additions survived a reboot. That covers the part that mattered: the removed
+duplicate was the add-member command, and re-firing it mid-rebuild is what
+corrupted the voice's other member ports in `25bd420`. The voice's other ports
+kept their functions, and the result persisted - so the send is landing once and
+the firmware is saving it. Expected: the `Unknown GENERAL param 21` flood
 gone, mapping slots populating from the module, and mapping edits actually
 landing. The send half is the one worth testing deliberately, since it has
 apparently never worked and so has never been seen to work.
