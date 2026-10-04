@@ -843,7 +843,6 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr, is_send_
 
   if (type == VOICE) {
     switch (param) {
-      case PORTAMENTOTime:
       case LFOPreDelay:
       case ADSRTPredelay:
       case ADSRTAttack:
@@ -859,8 +858,10 @@ export function sendSysex(dtype, number, dparam, value, is_global_adsr, is_send_
   }
   if (type == PORT && param == PORTPERIOD)
     value = parseInt(60000000 / value)
+  if (type == PORT && param == PORTGLIDETIME)
+    value = value * 10; // UI in ms, firmware in 1/10 ms
 
-  _storeWebData(type, number, attr, value, is_global_adsr);
+  _storeWebData(type, number, attr, value, is_global_adsr, is_send_to_module);
 
   var dec_data = new Uint8Array(10);
   var send_drum_funct = (type == PORT && param == PORTFUNCTION && value == MIDIDRUMTRIG);
@@ -922,7 +923,7 @@ function _createParamArray(param)
   return funct_arr;
 }
 
-function _storeWebData(type, number, attr, value, is_global_adsr){
+function _storeWebData(type, number, attr, value, is_global_adsr, is_send_to_module = false){
   if (is_global_adsr && type == VOICE){
     //special case of voice parameters of global ADSR 
     DeviceConfig.voices_midi_ch[number - 18][attr] = value;
@@ -931,8 +932,10 @@ function _storeWebData(type, number, attr, value, is_global_adsr){
     switch (type) {
       case PORT:
         if (attr == "funct"){
-          // reset default values
-          _resetValues(number);
+          // reset default values - but not when replaying a loaded config
+          // (sendToModule): DeviceConfig then holds the file's values, which the
+          // reset would wipe before the parameter sends that follow read them.
+          if (!is_send_to_module) _resetValues(number);
           if (value == MIDIDRUMTRIG){
             // special case of DRUM function. clip_min and clip_max get 0-120
             DeviceConfig.voices_port[number].vo_min_note = 60;

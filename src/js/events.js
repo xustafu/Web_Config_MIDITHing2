@@ -516,6 +516,9 @@ if (_loadSlotRefreshBtn) {
 //if anything changes in the web, send sysex to module with new info, except toggle-wraps which do it separatedly
 qA('input:not([type=checkbox]):not(.no-trigger)').forEach(input => {
   input.addEventListener('change', e => {
+    // Numeric inputs already send from their own 'change' handler (minMax + arrowsFunc,
+    // above), which clamps first. Sending here too doubled every typed value.
+    if (e.target.matches('input[class*=num]')) return;
     if (TriggerInputChange) {
       sendParameterSysex(e.target);
       requestConfigDebounced();

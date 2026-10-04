@@ -21,6 +21,8 @@ class PortConfig {
     this.clk_div = 24;
     this.clk_pulse_width = 99;
     this.clk_mult = 1;
+    this.glide_time = 0; // PORTGLIDETIME, 1/10 ms units (Note ports)
+    this.glide_type = 0; // PORTGLIDETYPE, index into GlideModes
     this.start_stop_clock = true;
     this.use_midi_clock = true;
     this.gate_pulse = false;
@@ -57,8 +59,6 @@ class VoiceConfig {
     this.lfo_max_level = 20;
     this.lfo_pre_delay = 0;
     this.lfo_offset = 50;
-    this.portamento_time = 0;
-    this.portamento_type = 0;
     this.adsr_retrig_mode = 0;
     this.adsr_affect_osc = false;
     this.vel_affect_adsr = false;

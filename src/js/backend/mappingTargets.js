@@ -18,8 +18,8 @@ const MAP_TARGET_PARAMS = {
     { id: PORTCLKDIV, label: "Clock Divisor" },
     { id: PORTCLKPULSEWIDTH, label: "Clock Pulse Width" },
     { id: PORTCLKMULT, label: "Clock Multiplier" },
-    { id: 16, label: "Glide Time" },  // PORTGLIDETIME — not a named const in this app yet, nothing else here uses it
-    { id: 17, label: "Glide Type" },  // PORTGLIDETYPE
+    { id: PORTGLIDETIME, label: "Glide Time" },
+    { id: PORTGLIDETYPE, label: "Glide Type" },
     { id: PORTCALMIN, label: "Calibration Min" },
     { id: PORTCALMAX, label: "Calibration Max" },
     { id: PORTGATEPULSE, label: "Gate Pulse" },
@@ -48,8 +48,8 @@ const MAP_TARGET_PARAMS = {
     { id: LFOPeriod, label: "LFO Period" },
     { id: LFOMaxLevel, label: "LFO Max Level" },
     { id: LFOPreDelay, label: "LFO Pre-delay" },
-    { id: PORTAMENTOTime, label: "Portamento Time" },
     { id: LFOOffset, label: "LFO Offset" },
+    // Portamento is not a Voice field any more - see Glide Time/Type under PORT.
     // Curve-type/retrig-mode/boolean toggle fields (ADSRCurveType, LFOCurveTypeQ1-4,
     // ADSRRetrigMode, ADSRAffectOSC, etc.) intentionally omitted — enum/boolean
     // settings, not continuous values a MIDI knob sweep makes sense against.

@@ -1,5 +1,33 @@
 # Editor status, and compatibility with older firmware
 
+## Fixed 2026-10-04: voice IDs, glide, double send, JSON load (verified on RP2354)
+
+Found while checking the editor against firmware 1.3 (GitHub issue #64 follow-up).
+All four verified on MidiThingyRP_2354 hardware: live change, power-cycle, and JSON
+save/load round trip.
+
+- **Voice parameter IDs were shifted by two.** Firmware 1.3 moved glide from the voice
+  to the port (`PORTGLIDETIME`=16 / `PORTGLIDETYPE`=17), so `ADSRRetrigMode`,
+  `LFOMIDIClkMult` and `LFOOffset` became 21/22/23. The editor still sent 23/24/25 and
+  glide as voice 21/22 - so glide wrote Retrig Mode / LFO Clk Mult, Retrig wrote LFO
+  Offset, and Clk Mult / Offset never reached the module. Glide is now a port setting;
+  old JSON files without `glide_*` on ports load as 0 / Lineal.
+- **Typed numbers were sent twice.** Inputs with `num` in their class had two `change`
+  listeners that both sent. The global one now skips them.
+- **JSON load zeroed values.** `sendToModule()` re-sends every port's PORTFUNCTION
+  first, and `_storeWebData()` answered each with `_resetValues()` - wiping the loaded
+  port and voice data (clip max 0, voice max note 0, LFO level/offset/mult to
+  defaults) before the parameter sends read it. The reset is now skipped for
+  `is_send_to_module` sends.
+- **Duplicate input ids.** `lfo-shape.php` / `adsr-graph.php` are included twice per
+  port, so `_setParamValue()` filled only the first copy and the load sent the stale
+  second one too. It now sets every element with the id.
+
+Still open: a config dump requested right after a burst of sends can come back with
+messages missing (seen with the old double send: the ports batch and a port param were
+absent, while a quiet re-request returned everything). Not reproduced since the double
+send was fixed; firmware or Web MIDI side, undetermined.
+
 Last updated 2026-09-18. Companion to `USB_DEV_OPTIONS_CLOBBER_NOTES.md`.
 
 ## Is it safe to leave the editor as it is?

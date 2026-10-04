@@ -179,6 +179,8 @@ const PORTPERIOD=12; //, "PERIOD", u32T, 1136, 40, 1000000}, // 440 Hz default, 
 const PORTCLKDIV=13; //, "CLK DIVISOR", u16T, 24, 1, 48},     // MIDI Clock Divider (how many msgs per pulse)
 const PORTCLKPULSEWIDTH=14; //, "CLK WIDTH", u8T, 10, 1, 99}, // MIDI Clock Pulse Width in ms
 const PORTCLKMULT=15; //, "CLK MULTI", u8T, 1, 1, 50},        // MIDI Clock Multi (how many msgs per pulse)
+const PORTGLIDETIME=16; //, "Glide Time", u32T, 0, 0, MAXPORTGLIDETIME}, // 1/10 ms units, 99990 max
+const PORTGLIDETYPE=17; //, "Glide Type", u8T, PORTA_LIN_CURVE, PORTA_LIN_CURVE, PORTA_LAST_CURVE - 1},
 const PORTCALMIN=24; //, "CALMIN", i16T, 0, -999, 999},  // Cents to adjust calibration at minimum calibration point (2V)
 const PORTCALMAX=25; //, "CALMAX", i16T, 0, -999, 999},   // Cents to adjust calibration at maximum calibration point (8V)
 const PORTSTStCLOCK=100; //, "Start/Stop Clock", boolT, 1, 0, 1},
@@ -210,11 +212,12 @@ const LFOPeriod=17; // "LFO Period", u32T, 10000lu, 100, MAXLFOPeriod}, // Perio
 const LFOMIDIClkDiv = 18; //"LFO Clk Div", u8T, 24, 1, 30},             // Period 1000 to 0.1 Hz
 const LFOMaxLevel=19; // "LFO Max evel", u8T, 20, 1, 100},            // Max LFO level
 const LFOPreDelay=20; // "T.Predelay", u32T, 0, 0, 10000},      // LFO Pre delay
-const PORTAMENTOTime=21; // "Portamento Time", u32T, 1000lu, 1, MAXPORTAMENTOTIME}, 
-const PORTAMENTOType=22; // "Portamento Type", u8T, PORTA_LIN_CURVE, PORTA_LIN_CURVE, PORTA_LAST_CURVE-1}, 
-const ADSRRetrigMode=23; // "ADSR Retrigger Mode", u8T, 0, 0, 2},
-const LFOMIDIClkMult=24; // "LFO Clk Mult", u8T, 1, 1, 30},             // Period 1000 to 0.1 Hz
-const LFOOffset=25;      // "LFO Offset", u8T, 50, 0, 100},            // Offset LFO level
+// Glide/portamento is a PORT parameter since firmware 1.3 (PORTGLIDETIME/PORTGLIDETYPE
+// above). The old voice ids 21/22 no longer exist in Config_VoiceID_t (VoiceCfg.h), so
+// the ids below moved down by two.
+const ADSRRetrigMode=21; // "ADSR Retrigger Mode", u8T, 0, 0, 2},
+const LFOMIDIClkMult=22; // "LFO Clk Mult", u8T, 1, 1, 30},             // Period 1000 to 0.1 Hz
+const LFOOffset=23;      // "LFO Offset", u8T, 50, 0, 100},            // Offset LFO level
 const ADSRAffectOSC=100; // "ADSR in OSC", boolT, 1, 0, 1},
 const VelAffectADSR=101; // "Vel.Impact", boolT, 1, 0, 1},
 const UseLocalConfigADSR=102; // "ADSR local config", boolT, 0, 0, 1},
@@ -272,7 +275,7 @@ const REQ_CONFIG = 1;
 const SAVE_CONFIG_TO_SLOT = 2;
 const LOAD_CONFIG_FROM_SLOT = 3;
 const SET_LEARN_MODE = 4;
-const WIPE_SAVES = 17; // TODO: confirm firmware command index
+const WIPE_SAVES = 17; // genComWipeSaves
 const MIDI_MERGE = 5;
 const SER_DEV_OPTIONS = 6;
 const USB_DEV_OPTIONS = 7;
@@ -570,7 +573,7 @@ const SYSEX_OBJ = {
     [USE_MIDI_CLOCK]:      { index: 14, type: "Uint8", length: 1 },
     [CLOCK_PERIOD]:        { index: 15, type: "Uint32", length: 4 },
     [USB_DEV_NUMBER]:      { index: 16, type: "Uint8",  length: 1 },
-    [WIPE_SAVES]:          { index: 17, type: "Uint16", length: 2 }, // TODO: confirm index
+    [WIPE_SAVES]:          { index: 17, type: "Uint16", length: 2 },
     [REQ_SLOT_STATUS]:     { index: 18, type: "Uint16", length: 2 },
     // Present so _processGeneralSysex's "known param" guard doesn't reject mapping
     // replies — the actual [slot, fieldId, value...] decode is manual, not driven by
@@ -593,6 +596,8 @@ const SYSEX_OBJ = {
     [PORTCLKDIV]: { index: 13, type: "Uint16", length: 2, attr: "clk_div" },
     [PORTCLKPULSEWIDTH]: { index: 14, type: "Uint8", length: 1, attr: "clk_pulse_width" },
     [PORTCLKMULT]: { index: 15, type: "Uint8", length: 1, attr: "clk_mult" },
+    [PORTGLIDETIME]: { index: 16, type: "Uint32", length: 4, attr: "glide_time" },
+    [PORTGLIDETYPE]: { index: 17, type: "Uint8", length: 1, attr: "glide_type" },
     [PORTCALMIN]: { index: 24, type: "Int16", length: 2, attr: "cal_min" },
     [PORTCALMAX]: { index: 25, type: "Int16", length: 2, attr: "cal_max" },
     [PORTSTStCLOCK]: { index: 100, type: "Uint8", length: 1, attr: "start_stop_clock" },
@@ -626,11 +631,9 @@ const SYSEX_OBJ = {
     [LFOMIDIClkDiv]: { index: 18, type: "Uint8", length: 1, attr: "lfo_midi_clk_div" },
     [LFOMaxLevel]: { index: 19, type: "Uint8", length: 1, attr: "lfo_max_level" },
     [LFOPreDelay]: { index: 20, type: "Uint32", length: 4, attr: "lfo_pre_delay" },
-    [PORTAMENTOTime]: { index: 21, type: "Uint32", length: 4, attr: "portamento_time" },
-    [PORTAMENTOType]: { index: 22, type: "Uint8", length: 1, attr: "portamento_type" },
-    [ADSRRetrigMode]: { index: 23, type: "Uint8", length: 1, attr: "adsr_retrig_mode"},
-    [LFOMIDIClkMult]: { index: 24, type: "Uint8", length: 1, attr: "lfo_midi_clk_mult" },
-    [LFOOffset]:     {index: 25, type: "Uint8", length: 1, attr:"lfo_offset" },
+    [ADSRRetrigMode]: { index: 21, type: "Uint8", length: 1, attr: "adsr_retrig_mode"},
+    [LFOMIDIClkMult]: { index: 22, type: "Uint8", length: 1, attr: "lfo_midi_clk_mult" },
+    [LFOOffset]:     {index: 23, type: "Uint8", length: 1, attr:"lfo_offset" },
     [ADSRAffectOSC]: { index: 100, type: "Uint8", length: 1, attr: "adsr_affect_osc" },
     [VelAffectADSR]: { index: 101, type: "Uint8", length: 1, attr: "vel_affect_adsr" },
     [UseLocalConfigADSR]: { index: 102, type: "Uint8", length: 1, attr: "use_local_config_adsr" },

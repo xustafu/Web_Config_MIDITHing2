@@ -313,8 +313,13 @@ function _setBodyParams(port) {
 /********************************************/
 
 function _setParamValue(id, value){
-  q("#"+id).setAttribute("value",value);
-  q("#"+id).value = value;
+  // Set every element with this id: lfo-shape.php and adsr-graph.php are included
+  // twice per port (main.php), so their inputs exist twice. Setting only the first
+  // left the other copy stale, and sendToModule sends both - the stale one last.
+  qA('[id="' + id + '"]').forEach((el) => {
+    el.setAttribute("value", value);
+    el.value = value;
+  });
 }
 
 function _setNoteParams(port, voice, midi_ch) {
@@ -322,11 +327,12 @@ function _setNoteParams(port, voice, midi_ch) {
   q("#label-note-voice-" + port.id).innerHTML = port.voice_rep;
   //set bend numeric input (MIDI)
   q("#note-bend-input-" + port.id).setAttribute("value", midi_ch.bend_span);
-  //set glide mode (VOICE)
-  _setParamValue("note-glide-mode-input-" + port.id, voice.portamento_type);
-  q("label[for='note-glide-mode-input-" + port.id + "']").innerHTML = GlideModes[voice.portamento_type]
-  //set glide time (VOICE)
-  var value = Number(voice.portamento_time)/10;
+  //set glide mode (PORT). `|| 0`: JSON files saved before 1.3 have no glide_* on ports
+  var glide_type = Number(port.glide_type) || 0;
+  _setParamValue("note-glide-mode-input-" + port.id, glide_type);
+  q("label[for='note-glide-mode-input-" + port.id + "']").innerHTML = GlideModes[glide_type]
+  //set glide time (PORT), stored in 1/10 ms
+  var value = (Number(port.glide_time) || 0)/10;
   _setParamValue("note-glide-time-input-" + port.id, value);
   //set midi range (VOICE)
   _setParamValue("note-midi-range1-" + port.id,port.min);
