@@ -23,10 +23,31 @@ save/load round trip.
   port, so `_setParamValue()` filled only the first copy and the load sent the stale
   second one too. It now sets every element with the id.
 
-Still open: a config dump requested right after a burst of sends can come back with
-messages missing (seen with the old double send: the ports batch and a port param were
-absent, while a quiet re-request returned everything). Not reproduced since the double
-send was fixed; firmware or Web MIDI side, undetermined.
+Second round, same day, also verified on RP2354:
+
+- **Radio pairs sent both values.** `sendParameterSysex()` ignored `checked`, so a JSON
+  load sent 0 then 1 for every radio pair - forcing "Use MIDI Clock" on clock ports and
+  LFOs. Unchecked radios are now skipped.
+- **Clock divider vs parameter.** On a clock port the function parameter is the divider
+  and firmware re-applies it on every PORTFUNCTION; the editor now keeps `port.param`
+  equal to `clk_div` so a later bundle can't undo it.
+- **Clock BPM capped at 99.9.** Raised to 900, matching the firmware's BPM editor.
+- **ADSR "Note" box collapsed the voice.** Never filled by the refresh, so a JSON load
+  sent its HTML default 0 as VO_MinNote *and* VO_MaxNote (voice max note 0). It is now
+  filled, and 0 sends max 120 ("all notes"), as in the OLED menu.
+- **Damaged ports batch.** A dump that loses a byte shifts every later 6-byte port record
+  into garbage functions/voices, which crashed `refreshWeb()` in `addFunctionToVoice`.
+  A batch of the wrong length is now ignored with a warning, and `addFunctionToVoice`
+  no longer throws on a voice index outside 0-11.
+
+Still open: config dumps can lose or damage messages when they overlap or follow a
+burst of sends (missing ports batch / port params; one shifted batch after pressing
+Request while the load's own request was still replying). A single quiet request is
+clean. Fix at the source: don't issue a request while a dump is still arriving, or
+investigate the firmware/USB side. Also: after a JSON load the MIDI-channel bundles
+send each Note port's function with param = the next port (add-to-voice resolution);
+harmless on 1.3 firmware (same-function PORTFUNCTION only updates the channel), but
+on 1.2 firmware it would rebuild voices - relevant if these fixes are backported to main.
 
 Last updated 2026-09-18. Companion to `USB_DEV_OPTIONS_CLOBBER_NOTES.md`.
 

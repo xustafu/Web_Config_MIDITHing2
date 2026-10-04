@@ -25,8 +25,8 @@
         id="clock-bpm-input-<?= $port_id ?>" 
         data-type="number" 
         data-min="1.0" 
-        data-max="99.9" 
-        data-digits="4" 
+        data-max="900"
+        data-digits="5"
       />
       <span class="arrow-up float-arrow"></span>
       <span class="arrow-down float-arrow"></span>

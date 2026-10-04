@@ -82,8 +82,16 @@ export function addFunctionToVoice(port_num, li, is_automatic, voice) {
   port.voice = voice;
   port.voice_rep = calculateVoiceId(voice);
   port.param = voice;
-  if (voice != -1)
-    port.midi_ch = DeviceConfig.voices_port[voice].midi_ch;
+  if (voice != -1) {
+    // A voice index outside voices_port (0-11) means the module reported a voice
+    // function with an unexpected parameter. Throwing here aborted refreshWeb()'s
+    // forEach, leaving every later port stale - warn and keep going instead.
+    if (DeviceConfig.voices_port[voice])
+      port.midi_ch = DeviceConfig.voices_port[voice].midi_ch;
+    else
+      console.warn("Port " + (port_num + 1) + ": voice function points to voice " + voice +
+                   ", which does not exist - check this port's function parameter.");
+  }
   DeviceConfig.ports[port_num] = port;
 
   const port_name = "-" + BoxNames[voice];

@@ -228,6 +228,13 @@ function _setBodyParams(port) {
   if (is_global_adsr)
     voice = DeviceConfig.voices_midi_ch[voice.midi_ch-1];
   voice.voice = port.voice;
+  // ADSR/velocity "Note" box (VO_MinNote): the single trigger note when the voice range
+  // is collapsed, else 0 = all notes. Never filled before, so a JSON load sent its HTML
+  // default 0 as min AND max, collapsing the voice to note 0.
+  const vp = (port.voice >= 0 && port.voice < 12) ? DeviceConfig.voices_port[port.voice] : null;
+  if (vp)
+    _setParamValue("adsr-conf-note-input-" + port.id,
+                   (vp.vo_min_note == vp.vo_max_note) ? vp.vo_min_note : 0);
   switch (funct_name) {
     case "note":
       _setNoteParams(port, voice, midi_ch);

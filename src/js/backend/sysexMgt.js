@@ -493,6 +493,15 @@ function _processPortFunctionSysex(port_num, data, is_batch) {
 }
 
 function _processBatchSysex(num_ports, array) {
+  // 6 bytes per port. A different length means bytes were lost in transit (seen when
+  // two config dumps overlap): every record after the gap is shifted, decoding into
+  // garbage functions/voices that then crash refreshWeb(). Keep the previous port
+  // setup rather than apply it.
+  if (array.length !== num_ports * 6) {
+    console.warn("Ports batch is " + array.length + " bytes, expected " + (num_ports * 6) +
+                 " - message damaged in transit, ignored. Request the config again.");
+    return;
+  }
   const ports = [];
   for (let i = 0; i < array.length; i++) {
     const last = ports[ports.length - 1];
@@ -776,6 +785,10 @@ export function sendParameterSysex(element) {
   var parameter = element.dataset.mtParameter;
   var port_num = Number(element.dataset.mtPort);
   var value = element.value;
+  // A radio pair shares one parameter: only the checked one carries its value.
+  // Sending both (as sendToModule's bulk loop did) let the last one, value 1, always
+  // win - forcing "Use MIDI Clock" on clock ports and LFOs on every JSON load.
+  if (element.type == "radio" && !element.checked) return;
   var number = _extractNum(type, port_num);
   if (element.type == "checkbox") {
     element.checked ? (value = 1) : (value = 0);
@@ -797,8 +810,9 @@ export function sendParameterSysex(element) {
   sendSysex(type, number, parameter, value, is_global_adsr_param);
   var is_drum_funct = (DeviceConfig.ports[port_num].funct == MIDIDRUMTRIG);
   if (type == "VOICE" && parameter == "VO_MinNote" && (is_drum_funct || is_adsr_funct)) {
-    //if drum function and we send clip_min, send also clip_max with same value
-    sendSysex("VOICE", number, "VO_MaxNote", value);
+    //if drum function and we send clip_min, send also clip_max with same value.
+    //Note 0 means "all notes" (range 0-120), as in the OLED menu (doSelectGateNote).
+    sendSysex("VOICE", number, "VO_MaxNote", (Number(value) == 0) ? 120 : value);
   }
 }
 
@@ -944,6 +958,11 @@ function _storeWebData(type, number, attr, value, is_global_adsr, is_send_to_mod
           if (LogSentSysex) console.log("Set FUNCT "+FirmwareFunctions2Web[value]+" at port "+(number+1));
         }else {
           DeviceConfig.ports[number][attr] = value;
+          // On a clock port the function parameter is the divider: firmware re-applies
+          // the parameter as the divider on every PORTFUNCTION (e.g. a MIDI channel
+          // change), so a stale param would undo the divider just set.
+          if (attr == "clk_div" && DeviceConfig.ports[number].funct == MIDICLOCK)
+            DeviceConfig.ports[number].param = value;
           if (LogSentSysex) console.log("Set PORT PARAM at port"+(number+1)+", "+attr+"="+value);
         }
         break;
