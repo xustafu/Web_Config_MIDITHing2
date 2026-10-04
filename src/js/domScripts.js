@@ -84,6 +84,7 @@ export function selectDevice(li) {
   // the OS device name.  sendIdentityRequest then corrects both fields from the
   // firmware's actual usbDevNumber before requesting config.
   activateMidiThingy(name);
+  showSaveTipOnce(name);
   // sendIdentityRequest owns its own 500ms fallback timer internally and guarantees
   // requestConfig fires exactly once — see sysexMgt.js.
   sendIdentityRequest(requestConfig);
@@ -854,6 +855,88 @@ export function showConfirmModal(title, message, onConfirm) {
   frag.appendChild(p);
   frag.appendChild(btnWrap);
 
+  q('#modal-body').appendChild(frag);
+  q('#modal-wrap').classList.toggle('hidden', false);
+  q('#modal-wrap').style.top = `${window.scrollY}px`;
+  window.addEventListener('scroll', dynModal, true);
+}
+
+/**
+ * One-time tip shown when a MIDI Thingy connects: its flash write is debounced (about
+ * 6 s after the last change - see the firmware's planes/rp2350-save-commit-delay.md), so
+ * powering off sooner loses changes. Shown at most once per page load, and never again
+ * once "Don't show this again" is ticked (remembered in localStorage). Not shown for
+ * MIDI Thing 2 (Teensy), which writes immediately.
+ * @param {string} name - the connected device's MIDI name
+ */
+const SAVE_TIP_KEY = 'mtHideSaveTip';
+let _saveTipShownThisLoad = false;
+
+export function showSaveTipOnce(name) {
+  if (!name || !name.includes('MidiThingy') || _saveTipShownThisLoad) return;
+  try {
+    if (localStorage.getItem(SAVE_TIP_KEY) === '1') return;
+  } catch (e) { /* storage blocked: just show the tip */ }
+  _saveTipShownThisLoad = true;
+
+  q('body').dispatchEvent(new Event('click'));
+  q('#modal-body').innerHTML = '';
+  q('#add2voice_voice_selector').classList.toggle('hidden', true);
+
+  const frag = document.createDocumentFragment();
+
+  const h1 = document.createElement('h1');
+  h1.classList = 'modal-heading';
+  h1.textContent = 'How your changes are saved';
+
+  const p1 = document.createElement('p');
+  p1.classList = 'modal-par';
+  p1.innerHTML = 'Changes you make here are stored on your MIDI Thingy automatically, but the ' +
+                 'module writes them to its memory <strong>about 6 seconds after your last change</strong>.';
+
+  const p2 = document.createElement('p');
+  p2.classList = 'modal-par';
+  p2.innerHTML = '<strong>If you power off or unplug the module before then, your latest ' +
+                 'changes will be lost.</strong>';
+
+  const p3 = document.createElement('p');
+  p3.classList = 'modal-par';
+  p3.textContent = 'To keep your setups safe:';
+
+  const ul = document.createElement('ul');
+  ul.classList = 'modal-par modal-tip-list';
+  ul.innerHTML =
+    '<li><strong>Wait a few seconds</strong> after your last change before powering off.</li>' +
+    '<li><strong>Save to a slot</strong> (Global settings &rarr; Save / Load Slot) to keep setups ' +
+    'on the module that you can recall later. Slot saves are also written after a few seconds.</li>' +
+    '<li><strong>Save to file</strong> (Settings &rarr; Save to file) to keep a backup on your computer.</li>';
+
+  const label = document.createElement('label');
+  label.classList = 'modal-par modal-tip-dontshow';
+  const check = document.createElement('input');
+  check.type = 'checkbox';
+  check.classList = 'no-trigger'; // keep the global change handler from sending it as SysEx
+  // Remember on tick, not on "Got it": a click outside the modal also closes it.
+  check.addEventListener('change', () => {
+    try {
+      if (check.checked) localStorage.setItem(SAVE_TIP_KEY, '1');
+      else localStorage.removeItem(SAVE_TIP_KEY);
+    } catch (e) { /* storage blocked: not remembered */ }
+  });
+  label.appendChild(check);
+  label.appendChild(document.createTextNode(" Don't show this again"));
+
+  const btnWrap = document.createElement('div');
+  btnWrap.classList = 'modal-confirm-btns';
+  const okBtn = document.createElement('button');
+  okBtn.classList = 'round-l modal-tip-ok';
+  okBtn.textContent = 'Got it';
+  okBtn.addEventListener('click', () => {
+    q('#modal-wrap').classList.toggle('hidden', true);
+  });
+  btnWrap.appendChild(okBtn);
+
+  [h1, p1, p2, p3, ul, label, btnWrap].forEach(el => frag.appendChild(el));
   q('#modal-body').appendChild(frag);
   q('#modal-wrap').classList.toggle('hidden', false);
   q('#modal-wrap').style.top = `${window.scrollY}px`;

@@ -2,7 +2,7 @@ import { q } from "../globals.js";
 import { onSysexReceive, sendIdentityRequest } from "./sysexMgt.js";
 import { requestConfig } from "../settingsFuncs.js";
 import { refreshWeb } from "./refreshWeb.js";
-import { selectDevice, activateMidiThingy } from "../domScripts.js";
+import { selectDevice, activateMidiThingy, showSaveTipOnce } from "../domScripts.js";
 
 // the MIDI input/output
 export let MIDIinput = null,
@@ -122,6 +122,7 @@ function _initDeviceSelect() {
       selectMIDIinput(element);
       selectMIDIoutput(element.name); // vincula el output al input detectado
       activateMidiThingy(element.name);
+      showSaveTipOnce(element.name);
       sel_index = index;
       q("label[for='MIDIInputSelect']").innerHTML = element.name;
       q("#MIDIInputSelect").setAttribute("value", sel_index);
