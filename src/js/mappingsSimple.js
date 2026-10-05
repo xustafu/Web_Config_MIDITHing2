@@ -97,6 +97,17 @@ const SOURCES = [
 let _renderTimer = null;
 let _busy = false;
 
+// Rows a port's box shows. An LFO synced to MIDI clock takes its rate from the clock,
+// so its Period does nothing and is left out (same flag the Ports tab uses to grey out
+// the LFO frequency, refreshWeb.js _setLFOParams).
+function _paramsFor(port) {
+  const keys = FUNCTION_PARAMS[port.funct];
+  if (!keys || port.funct !== MIDIVOICELFO) return keys;
+  const voice = DeviceConfig.voices_port[port.voice];
+  const synced = voice && Number(voice.lfo_use_midi_clock) === 1;
+  return synced ? keys.filter(k => k !== 'period') : keys;
+}
+
 function _functRange(funct) {
   const def = DEF_FUNCT_VALUES[funct];
   return def ? [def.min, def.max] : [0, 127];
@@ -203,7 +214,7 @@ async function _applyRow(portIdx, key, source, number) {
 
 async function _restorePort(portIdx) {
   const port = _portOf(portIdx);
-  for (const key of FUNCTION_PARAMS[port.funct] || []) {
+  for (const key of _paramsFor(port) || []) {
     const row = _rowFor(portIdx, port, key);
     if (row.kind === 'port') {
       if (row.slot !== -1) {
@@ -241,7 +252,7 @@ export function renderSimpleMappings() {
 
   DeviceConfig.ports.forEach((port, portIdx) => {
     if (!port || !port.funct) return;
-    const keys = FUNCTION_PARAMS[port.funct];
+    const keys = _paramsFor(port);
     if (!keys) { hidden.push(`${BoxNames[portIdx]} ${FUNCTION_LABELS[port.funct] || ''}`.trim()); return; }
     grid.appendChild(_renderBox(portIdx, port, keys));
   });
