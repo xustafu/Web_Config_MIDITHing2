@@ -35,6 +35,12 @@ const GENMIDIMERGEPORT = 100;      // Definitions.h: the internal clock's port
 const TEMPO_MIN_PERIOD = 250000;   // µs per beat = 240 BPM
 const TEMPO_MAX_PERIOD = 1000000;  // µs per beat = 60 BPM
 const CLOCK_BOX = 'clock';         // box id for the internal clock (not a physical port)
+// An LFO shape is four settings, one curve per quarter cycle. The Shape row writes the
+// same source to all four (4 free slots), mapping the value onto curves 1-7
+// (VoiceCfg.h LFO_Curves: tri, round, sine, square, saw up, saw down, random).
+const SHAPE_QUADS = [LFOCurveTypeQ1, LFOCurveTypeQ2, LFOCurveTypeQ3, LFOCurveTypeQ4];
+const SHAPE_FIRST = 1;             // LFO_TRI_CURVE
+const SHAPE_LAST = 7;              // LFO_RANDOM_CURVE (LFO_LAST_CURVE - 1)
 const WRITE_GAP_MS = 15; // bursts of back-to-back SysEx have been seen to drop messages
 
 // Factory voice slots, in MapDefaultsPreset order. Curves and ranges copied 1:1.
@@ -64,7 +70,7 @@ const PORT_PARAMS = {
 const FUNCTION_PARAMS = {
   [MIDIVOICENOTE]: ['glide'],
   [MIDIVOICEADSR]: ['attack', 'decay', 'sustain', 'release', 'level'],
-  [MIDIVOICELFO]:  ['period', 'depth', 'delay', 'offset'],
+  [MIDIVOICELFO]:  ['period', 'depth', 'delay', 'offset', 'shape'],
   [MIDIVOICEVEL]:  ['max', 'min'],
   [MIDIMODECC]:    ['max', 'min', 'glide'],
   [MIDIMODERPN]:   ['max', 'min', 'glide'],
@@ -128,8 +134,15 @@ function _portOf(portIdx) {
   return portIdx === CLOCK_BOX ? { funct: CLOCK_BOX } : DeviceConfig.ports[portIdx];
 }
 
-// Resolves which slot a row edits and how. kind: 'voice' | 'glide' | 'port'.
+// Resolves which slot a row edits and how. kind: 'voice' | 'glide' | 'port' | 'shape'.
+// 'shape' spans four slots (row.slots); the others edit row.slot.
 function _rowFor(portIdx, port, key) {
+  if (key === 'shape') {
+    return { key, label: 'Shape', kind: 'shape', slot: -1, shared: 'all voices',
+             slots: SHAPE_QUADS.map(_findVoiceSlot),
+             fields: { chan: 0, tgtType: VOICE, tgtNumber: 0, curve: CURVE.LIN, outMin: SHAPE_FIRST, outMax: SHAPE_LAST },
+             factory: null, hint: 'uses 4 slots' };
+  }
   if (key === 'tempo') {
     const p = PORT_PARAMS.tempo;
     return { key, label: p.label, kind: 'port', slot: _findSlot(GENMIDIMERGEPORT, p.tgt), shared: null,
@@ -166,6 +179,16 @@ function _findSlot(tgtNumber, tgt) {
   return -1;
 }
 
+// A free-slot mapping that targets every voice (tgt_number 0) on this voice
+// parameter, or -1. Used by the Shape row's four quarter-curve slots.
+function _findVoiceSlot(tgt) {
+  for (let s = FIRST_FREE_SLOT; s < MAXMIDIMAPS; s++) {
+    const m = DeviceConfig.mappings[s];
+    if (m && m.enabled && m.tgt_type === VOICE && m.tgt_number === 0 && m.tgt_param === tgt) return s;
+  }
+  return -1;
+}
+
 function _freeSlots() {
   const free = [];
   for (let s = FIRST_FREE_SLOT; s < MAXMIDIMAPS; s++) {
@@ -195,9 +218,35 @@ async function _writeSlot(slot, row, source, number) {
   }
 }
 
+async function _applyShape(row, source, number) {
+  const used = row.slots.filter(s => s !== -1);
+  if (source === 'none') {
+    for (const s of used) {
+      sendMappingParam(s, MAP_ENABLED, 0);
+      await _sleep(WRITE_GAP_MS);
+    }
+    return;
+  }
+  // Reuse the quarters already mapped, take free slots for the rest - all or nothing,
+  // so a shape is never left mapped on only some quarters.
+  const free = _freeSlots();
+  const missing = row.slots.filter(s => s === -1).length;
+  if (free.length < missing) {
+    _setStatus(`Shape needs ${missing} free mapping slots and only ${free.length} are left. Clear a mapping first.`, 'fail');
+    return;
+  }
+  const slots = row.slots.map(s => (s === -1 ? free.shift() : s));
+  for (let i = 0; i < SHAPE_QUADS.length; i++) {
+    const quadRow = { ...row, fields: { ...row.fields, tgt: SHAPE_QUADS[i] } };
+    await _writeSlot(slots[i], quadRow, source, number);
+  }
+  _setStatus('', '');
+}
+
 async function _applyRow(portIdx, key, source, number) {
   const port = _portOf(portIdx);
   const row = _rowFor(portIdx, port, key);
+  if (row.kind === 'shape') return _applyShape(row, source, number);
   let slot = row.slot;
   if (slot === -1) {
     if (source === 'none') return; // nothing mapped, nothing to clear
@@ -216,7 +265,9 @@ async function _restorePort(portIdx) {
   const port = _portOf(portIdx);
   for (const key of _paramsFor(port) || []) {
     const row = _rowFor(portIdx, port, key);
-    if (row.kind === 'port') {
+    if (row.kind === 'shape') {
+      await _applyShape(row, 'none');
+    } else if (row.kind === 'port') {
       if (row.slot !== -1) {
         sendMappingParam(row.slot, MAP_ENABLED, 0);
         await _sleep(WRITE_GAP_MS);
@@ -312,7 +363,8 @@ function _renderBox(portIdx, port, keys) {
   let changed = 0;
   keys.forEach(key => {
     const row = _rowFor(portIdx, port, key);
-    const m = row.slot === -1 ? null : DeviceConfig.mappings[row.slot];
+    const slot = row.kind === 'shape' ? row.slots.find(s => s !== -1) : row.slot;
+    const m = slot === undefined || slot === -1 ? null : DeviceConfig.mappings[slot];
     const cur = _sourceOf(m);
     const isFactory = row.factory && cur.value === row.factory.value && cur.number === row.factory.number;
     if (row.factory ? !isFactory : cur.value !== 'none') changed++;
@@ -328,7 +380,7 @@ function _renderRow(portIdx, port, row, cur, isFactory) {
   const el = document.createElement('div');
   el.className = 'mbox-row' + (cur.value === 'none' ? ' unmapped' : '') + (isFactory ? ' is-default' : '');
   const id = `mbox-${portIdx === CLOCK_BOX ? CLOCK_BOX : BoxNames[portIdx]}-${row.key}`;
-  const note = row.shared ? `<em class="shared">shared · ${row.shared}</em>`
+  const note = row.shared ? `<em class="shared">shared · ${row.shared}${row.hint ? ' · ' + row.hint : ''}</em>`
     : isFactory ? '<em>factory default</em>'
     : row.hint ? `<em>${row.hint}</em>` : '';
   const options = SOURCES.map(s => `<option value="${s.value}"${s.value === cur.value ? ' selected' : ''}>${s.label}</option>`).join('')
