@@ -1,7 +1,29 @@
 <!-- MAPPINGS VIEW -->
-<!-- Maps an incoming MIDI message onto a Port/Voice/MIDI Channel config parameter.
-     Slot numbers and the target Type/Number split are intentionally not shown to the
-     user — see mappingsUI.js. -->
+<!-- Port view (default): one box per port with a function, listing only the parameters
+     that function offers, each with a MIDI-message dropdown. Built by mappingsSimple.js.
+     The original slot editor below stays available behind "Advanced". -->
+<section class="mbox-summary" aria-label="Mapping summary">
+  <div class="mbox-slots">
+    <span>Free mapping slots</span>
+    <strong id="mbox-slots-free">–</strong>
+    <div class="mbox-meter" id="mbox-meter" aria-hidden="true"></div>
+  </div>
+  <div class="mbox-legend">
+    <span><i class="mbox-dot def"></i>Factory default</span>
+    <span><i class="mbox-dot user"></i>Your mapping</span>
+    <span><i class="mbox-dot shared"></i>Shared with other voices or ports</span>
+  </div>
+  <span id="mbox-hidden-note" class="mbox-hidden-note"></span>
+  <button type="button" id="map-view-toggle" class="mbox-toggle">Advanced</button>
+  <span id="mbox-status" class="map-status"></span>
+</section>
+
+<div id="map-simple-grid-wrap">
+  <div id="mbox-grid" class="mbox-grid"></div>
+</div>
+
+<!-- ADVANCED: full slot editor (unchanged) -->
+<div id="map-advanced" class="hidden">
 <div class="map-wrap">
 
   <div class="map-card map-card-quick">
@@ -91,3 +113,4 @@
   </div>
 
 </div>
+</div><!-- #map-advanced END -->

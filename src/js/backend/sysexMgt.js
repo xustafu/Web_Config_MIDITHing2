@@ -766,6 +766,27 @@ export function sendMappingParam(slot, fieldId, value) {
   }
 }
 
+// Resets one mapping slot to its factory preset (genComMappingDefaultRestore). Slots with
+// no preset (21-31) come back disabled. The module replies with the slot's restored
+// fields as ordinary MAPPING_DEFAULT_SINGLE_PAR messages, which update DeviceConfig.
+export function sendMappingRestore(slot) {
+  if (MIDIoutput == null) return;
+  const dec_data = new Uint8Array([slot & 0xff]);
+  const enc_data = new Uint8Array(dec_data.length + 2);
+  const enc_length = _encodeSysEx(dec_data, enc_data);
+  const send_arr = new Uint8Array(enc_length + 4);
+  send_arr[0] = _deviceByte();
+  send_arr[1] = 0;                       // TypeAndNumber = GENERAL(0), number 0
+  send_arr[2] = MAPPING_DEFAULT_RESTORE; // Parameter = 22
+  send_arr[3] = enc_length;
+  send_arr.set(enc_data.slice(0, enc_length), 4);
+  MIDIoutput.sendSysex(0x7d, Array.from(send_arr));
+  if (LogSentSysex) {
+    const hex = Array.from(send_arr).map(x => x.toString(16).padStart(2, '0')).join(' ');
+    console.log('MAPPING RESTORE SENT: F0 7D ' + hex.toUpperCase() + ' F7');
+  }
+}
+
 // Requests one mapping slot's full config. Reuses the existing genComReqConfig
 // machinery (ttt=4 selects "mapping" as the request type, nnnnn=slot number) —
 // sendGeneralSysex already encodes REQ_CONFIG's Uint16 payload correctly for this.

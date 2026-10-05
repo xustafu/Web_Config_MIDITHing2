@@ -1,5 +1,127 @@
 /* Mappings view */
 
+/* ---- Port view (mappingsSimple.js) ----
+   Boxes copy the port boxes' look (general-box.css / header.css) under their own
+   class names: reusing .box would pull in the ports grid's fixed sizes and areas. */
+
+#mappings-view { padding: 2rem; box-sizing: border-box; }
+
+.mbox-summary {
+  max-width: var(--main-width);
+  margin: 0 auto 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.2rem 2.4rem;
+  padding: 1.2rem 1.6rem;
+  border: 2px solid var(--box-border);
+  border-radius: 12px;
+  background: #2a2a2a;
+  color: var(--off-white);
+  font-size: 1.3rem;
+}
+
+.mbox-slots { display: flex; align-items: center; gap: 1rem; }
+.mbox-slots strong { font-size: 1.6rem; color: white; font-variant-numeric: tabular-nums; }
+.mbox-meter { display: flex; gap: 3px; }
+.mbox-meter i { width: 0.9rem; height: 1.6rem; border-radius: 2px; background: var(--grey); }
+.mbox-meter i.used { background: var(--off-white); }
+
+.mbox-legend { display: flex; flex-wrap: wrap; gap: 0.6rem 1.6rem; color: var(--grey3); font-size: 1.2rem; }
+.mbox-legend span { display: inline-flex; align-items: center; gap: 0.5rem; }
+.mbox-dot { width: 0.9rem; height: 0.9rem; border-radius: 50%; display: inline-block; }
+.mbox-dot.def { box-shadow: inset 0 0 0 1px var(--grey3); }
+.mbox-dot.user { background: var(--off-white); }
+.mbox-dot.shared { background: #c9a227; }
+
+.mbox-hidden-note { color: var(--grey3); font-size: 1.2rem; margin-left: auto; }
+.mbox-summary .map-status { flex-basis: 100%; margin-top: 0; min-height: 0; font-size: 1.2rem; }
+
+.mbox-toggle {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--label-title);
+  font-size: 1.2rem;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+}
+.mbox-toggle:hover { color: white; border-color: var(--off-white); }
+
+.mbox-grid {
+  max-width: var(--main-width);
+  margin: 0 auto;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(26rem, 1fr));
+}
+
+.mbox-empty { color: var(--grey3); font-size: 1.4rem; }
+
+.mbox {
+  --port-color: var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: 5px solid var(--box-border);
+  border-radius: 20px;
+  padding: 1rem 1rem 1.2rem;
+  background: linear-gradient(to top, #222222 63%, black);
+  color: var(--off-white);
+  min-height: 22rem;
+}
+
+.mbox-header { display: grid; grid-template-columns: 5.4rem 1fr auto; gap: 0.8rem; align-items: center; }
+.mbox-port {
+  border: 2px solid var(--port-color);
+  border-radius: 6px;
+  color: white;
+  font-size: 1.8rem;
+  text-align: center;
+  padding-block: 0.9rem;
+}
+.mbox-func { background: var(--dropdown-label-bg); border-radius: 3px; padding: 0.5rem 0.8rem; min-width: 0; }
+.mbox-func b { display: block; font-size: 1.3rem; color: white; text-transform: uppercase; }
+.mbox-func small { display: block; font-size: 1.1rem; color: var(--label-title); min-height: 1.4rem; }
+.mbox-ch { text-align: center; }
+.mbox-ch h2 { font-size: 1rem; text-transform: uppercase; color: var(--label-title); margin-bottom: 0.2rem; }
+.mbox-ch span { display: block; background: var(--dropdown-label-bg); border-radius: 3px; padding: 0.4rem 0.9rem; font-size: 1.2rem; }
+
+.mbox-rows { display: flex; flex-direction: column; gap: 0.7rem; border-top: 1px solid #333; padding-top: 0.9rem; }
+.mbox-row { display: grid; grid-template-columns: minmax(0, 1fr) 9.4rem 5rem; gap: 0.5rem; align-items: center; }
+.mbox-row label { font-size: 1.2rem; color: var(--label-title); line-height: 1.2; }
+.mbox-row label em { display: block; font-style: normal; font-size: 1rem; color: var(--grey3); }
+.mbox-row label em.shared { color: #c9a227; }
+
+.mbox-msg,
+.mbox-num {
+  background: var(--dropdown-label-bg);
+  color: var(--off-white);
+  border: 0;
+  border-radius: 3px;
+  height: 2.6rem;
+  font-size: 1.2rem;
+  padding: 0 0.6rem;
+  width: 100%;
+}
+.mbox-msg { cursor: pointer; }
+.mbox-num { text-align: center; font-variant-numeric: tabular-nums; }
+.mbox-num:disabled { color: var(--grey); background: var(--dark-grey); }
+.mbox-row.unmapped .mbox-msg { color: var(--grey3); }
+.mbox-row.is-default .mbox-msg { box-shadow: inset 0 0 0 1px var(--grey); }
+
+.mbox-foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; color: var(--grey3); }
+.mbox-reset {
+  background: transparent;
+  border: 1px solid var(--grey);
+  border-radius: 4px;
+  padding: 0.3rem 0.8rem;
+  color: var(--label-title);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+.mbox-reset:hover { border-color: var(--off-white); color: white; }
+
 .map-wrap {
   display: flex;
   flex-wrap: wrap;

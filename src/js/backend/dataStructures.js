@@ -293,6 +293,8 @@ const MAPPING_DEFAULT_SINGLE_PAR = 21; // genComMappingDefaultSinglePar: set/rep
 // slot field. See MAPPING PARAMETERS below. Was genComMappingSinglePar(=20) until the user
 // mapping bank was retired firmware-side; 20 is no longer handled at all, so sends to it were
 // silently dropped and replies on 21 were discarded as an unknown param.
+const MAPPING_DEFAULT_RESTORE = 22; // genComMappingDefaultRestore: reset one slot to its factory
+// preset; payload [slot]. The module answers by re-sending the slot's fields on 21.
 
 
 /************************************************/

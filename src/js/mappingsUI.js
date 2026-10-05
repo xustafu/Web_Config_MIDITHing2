@@ -9,6 +9,7 @@
 import { q, qA } from './globals.js';
 import { calculateVoiceId } from './helpers.js';
 import { sendMappingParam, requestMappingSlot } from './backend/sysexMgt.js';
+import { initSimpleMappings, renderSimpleMappings, scheduleSimpleRender } from './mappingsSimple.js';
 
 // Maps the data-map-field attribute (a readable name in the markup, e.g. "MAP_ENABLED")
 // back to its numeric Config_MapID_t id. These consts are classic-script globals
@@ -88,6 +89,7 @@ export function initMappingsTab() {
 // SysEx Details.md §5), so this is 32 individual requests, same per-item cost class
 // already accepted for Voice/MIDI Channel config in this app.
 export function syncAllMappingSlots() {
+  renderSimpleMappings(); // ports may have changed since the tab was last open
   for (let i = 0; i < MAXMIDIMAPS; i++) requestMappingSlot(i);
   _populateQuickVoiceOptions(); // refresh in case ports/voices changed since last open
 }
@@ -96,6 +98,7 @@ export function syncAllMappingSlots() {
 export function onMappingSlotUpdated(slot) {
   renderMappingList();
   if (_openSlot === slot) _renderEditorFields(slot);
+  scheduleSimpleRender();
 }
 
 export function renderMappingList() {
@@ -398,3 +401,4 @@ function _setListStatus(text, cls) {
 }
 
 initMappingsTab();
+initSimpleMappings();
