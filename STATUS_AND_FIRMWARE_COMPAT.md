@@ -1,5 +1,31 @@
 # Editor status, and compatibility with older firmware
 
+## Known limitation 2026-10-05: reload the editor after the module restarts
+
+**After a module is power-cycled, reflashed or replugged, reload the editor page.**
+Until then the page keeps listening on the module's old, vanished MIDI port. Requests
+still go out, but nothing the module sends back reaches the page: config replies, and
+changes made on the module's own screen, are missed. Seen on a Teensy module; affects any
+module, since the cause is on the browser side.
+
+The editor picks its MIDI ports once, when it loads (`initMidi.js`), and has no
+reconnect handling. Adding it was tried and dropped (branch `MidiReconnect`, deleted,
+never merged). On Chrome 154 / Windows:
+
+- Unplugging produced a `disconnected` event only when a second MIDI Thing was also
+  connected. With one module, nothing.
+- Plugging back in never produced a `connected` event, so there is nothing to
+  re-attach on.
+- The first attempt crashed Chrome. WebMidi v2 replays the `connected` events from
+  opening every port at startup, which the handler took for a reconnect: a second,
+  overlapping identity + full config request went out on every page load. (WebMidi v2
+  can also run its enable callback twice.)
+
+Actively probing the module instead (e.g. a periodic Identity Request) was rejected:
+sending to a port that has gone away is where Chrome's Windows MIDI layer has crashed
+before. Revisit only if the browser's MIDI backend changes, e.g. Chrome's WinRT MIDI
+path.
+
 ## Fixed 2026-10-04: voice IDs, glide, double send, JSON load (verified on RP2354)
 
 Found while checking the editor against firmware 1.3 (GitHub issue #64 follow-up).
