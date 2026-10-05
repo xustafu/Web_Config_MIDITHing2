@@ -90,6 +90,9 @@ export function initMappingsTab() {
 // already accepted for Voice/MIDI Channel config in this app.
 export function syncAllMappingSlots() {
   renderSimpleMappings(); // ports may have changed since the tab was last open
+  // Start each slot from defaults: the module omits fields at their default value, so a
+  // field changed earlier and since reset would otherwise keep its stale local value.
+  for (let i = 0; i < MAXMIDIMAPS; i++) DeviceConfig.mappings[i] = new MappingConfig(i);
   for (let i = 0; i < MAXMIDIMAPS; i++) requestMappingSlot(i);
   _populateQuickVoiceOptions(); // refresh in case ports/voices changed since last open
 }

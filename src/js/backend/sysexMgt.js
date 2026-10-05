@@ -771,6 +771,9 @@ export function sendMappingParam(slot, fieldId, value) {
 // fields as ordinary MAPPING_DEFAULT_SINGLE_PAR messages, which update DeviceConfig.
 export function sendMappingRestore(slot) {
   if (MIDIoutput == null) return;
+  // The reply omits fields at their default value, so start the local copy from
+  // defaults rather than leaving earlier values in place.
+  DeviceConfig.mappings[slot] = new MappingConfig(slot);
   const dec_data = new Uint8Array([slot & 0xff]);
   const enc_data = new Uint8Array(dec_data.length + 2);
   const enc_length = _encodeSysEx(dec_data, enc_data);

@@ -83,11 +83,15 @@ class MidiChannelConfig {
   }
 }
 
+// Defaults must equal the firmware's DEF_CFG (MIDIMapCfg.cpp): the module only sends the
+// fields that differ from them, so whatever is left out is assumed to be this value.
+// src_msgtype was NOTE_ON here while the firmware default is CC, so every factory CC
+// mapping showed up as "Note On".
 class MappingConfig {
   constructor(slot = 0) {
     this.slot = slot;
     this.enabled = false;
-    this.src_msgtype = NOTE_ON;
+    this.src_msgtype = CONTROL_CHANGE;
     this.src_channel = 0;
     this.src_number = 0;
     this.src_min = 0;
