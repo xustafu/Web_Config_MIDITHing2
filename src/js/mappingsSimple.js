@@ -12,6 +12,11 @@
 //     glide slot and uses a free slot instead.
 //   - Everything else (Max/Min value, clock divider) uses a free slot, 21-31,
 //     targeting that one port (tgt_number = port + 1) on the port's own channel.
+//   - Tempo (internal clock box, only shown while the module runs on its internal
+//     clock) uses a free slot targeting the internal clock port (tgt_number = 100,
+//     GENMIDIMERGEPORT) and its PORTPERIOD, on any channel. The firmware stores a
+//     period, not a BPM, and its range clamp needs min < max, so for now a higher
+//     value means a longer period: knob up = slower, with most travel at slow tempos.
 // The full slot editor is still available behind "Advanced" (mappingsUI.js).
 
 import { q } from './globals.js';
@@ -26,6 +31,10 @@ const MAX_LFO_PERIOD = 1000000;    // VoiceCfg.h MAXLFOPeriod
 const MAX_LFO_PREDELAY = 9990;     // VoiceCfg.h MAX_LFOPREDELAY
 const MAX_PORT_GLIDE_TIME = 99990; // IOPortCfg.h MAXPORTGLIDETIME
 const CURVE = { LIN: 0, EXP: 1, LOG: 2 }; // VoiceCfg.h ccTypeConv
+const GENMIDIMERGEPORT = 100;      // Definitions.h: the internal clock's port
+const TEMPO_MIN_PERIOD = 250000;   // µs per beat = 240 BPM
+const TEMPO_MAX_PERIOD = 1000000;  // µs per beat = 60 BPM
+const CLOCK_BOX = 'clock';         // box id for the internal clock (not a physical port)
 const WRITE_GAP_MS = 15; // bursts of back-to-back SysEx have been seen to drop messages
 
 // Factory voice slots, in MapDefaultsPreset order. Curves and ranges copied 1:1.
@@ -48,6 +57,7 @@ const PORT_PARAMS = {
   max:     { label: 'Max value',  tgt: PORTMAXVAL,    curve: CURVE.LIN, range: f => _functRange(f) },
   min:     { label: 'Min value',  tgt: PORTMINVAL,    curve: CURVE.LIN, range: f => _functRange(f) },
   divider: { label: 'Divider',    tgt: PORTCLKDIV,    curve: CURVE.LIN, range: () => [1, 96] },
+  tempo:   { label: 'Tempo',      tgt: PORTPERIOD,    curve: CURVE.LIN, range: () => [TEMPO_MIN_PERIOD, TEMPO_MAX_PERIOD] },
 };
 
 // What each port function offers. Functions not listed get no box.
@@ -64,6 +74,7 @@ const FUNCTION_PARAMS = {
   [MIDIKEYPRESS]:  ['max', 'min', 'glide'],
   [MIDIPRGCHANGE]: ['max', 'min', 'glide'],
   [MIDICLOCK]:     ['divider'],
+  [CLOCK_BOX]:     ['tempo'],
 };
 
 const FUNCTION_LABELS = {
@@ -101,8 +112,20 @@ function _sourceOf(m) {
 
 // ── Row model ────────────────────────────────────────────────────────────────
 
+// The port a box stands for; the internal clock box has no physical port.
+function _portOf(portIdx) {
+  return portIdx === CLOCK_BOX ? { funct: CLOCK_BOX } : DeviceConfig.ports[portIdx];
+}
+
 // Resolves which slot a row edits and how. kind: 'voice' | 'glide' | 'port'.
 function _rowFor(portIdx, port, key) {
+  if (key === 'tempo') {
+    const p = PORT_PARAMS.tempo;
+    return { key, label: p.label, kind: 'port', slot: _findSlot(GENMIDIMERGEPORT, p.tgt), shared: null,
+             fields: { chan: 0, tgtType: PORT, tgtNumber: GENMIDIMERGEPORT, tgt: p.tgt, curve: p.curve,
+                       outMin: TEMPO_MIN_PERIOD, outMax: TEMPO_MAX_PERIOD },
+             factory: null, hint: 'knob up = slower' };
+  }
   if (VOICE_PARAMS[key]) {
     const p = VOICE_PARAMS[key];
     return { key, label: p.label, kind: 'voice', slot: p.slot, shared: 'all voices',
@@ -117,16 +140,17 @@ function _rowFor(portIdx, port, key) {
              fields: { chan: ch, tgtType: PORT, tgtNumber: 0, tgt: p.tgt, curve: p.curve, outMin, outMax },
              factory: { value: 'cc', number: GLIDE_CC } };
   }
-  return { key, label: p.label, kind: 'port', slot: _findPortSlot(portIdx, p.tgt), shared: null,
+  return { key, label: p.label, kind: 'port', slot: _findSlot(portIdx + 1, p.tgt), shared: null,
            fields: { chan: ch, tgtType: PORT, tgtNumber: portIdx + 1, tgt: p.tgt, curve: p.curve, outMin, outMax },
            factory: null };
 }
 
-// A free-slot mapping that already targets this port's parameter, or -1.
-function _findPortSlot(portIdx, tgt) {
+// A free-slot mapping that already targets this port parameter (tgt_number as sent
+// on the wire: port + 1, or GENMIDIMERGEPORT), or -1.
+function _findSlot(tgtNumber, tgt) {
   for (let s = FIRST_FREE_SLOT; s < MAXMIDIMAPS; s++) {
     const m = DeviceConfig.mappings[s];
-    if (m && m.enabled && m.tgt_type === PORT && m.tgt_number === portIdx + 1 && m.tgt_param === tgt) return s;
+    if (m && m.enabled && m.tgt_type === PORT && m.tgt_number === tgtNumber && m.tgt_param === tgt) return s;
   }
   return -1;
 }
@@ -161,7 +185,7 @@ async function _writeSlot(slot, row, source, number) {
 }
 
 async function _applyRow(portIdx, key, source, number) {
-  const port = DeviceConfig.ports[portIdx];
+  const port = _portOf(portIdx);
   const row = _rowFor(portIdx, port, key);
   let slot = row.slot;
   if (slot === -1) {
@@ -178,7 +202,7 @@ async function _applyRow(portIdx, key, source, number) {
 }
 
 async function _restorePort(portIdx) {
-  const port = DeviceConfig.ports[portIdx];
+  const port = _portOf(portIdx);
   for (const key of FUNCTION_PARAMS[port.funct] || []) {
     const row = _rowFor(portIdx, port, key);
     if (row.kind === 'port') {
@@ -212,6 +236,9 @@ export function renderSimpleMappings() {
   grid.innerHTML = '';
   const hidden = [];
 
+  // Tempo only means something while the module generates its own clock.
+  if (!DeviceConfig.global_use_midi_clock) grid.appendChild(_renderBox(CLOCK_BOX, _portOf(CLOCK_BOX), FUNCTION_PARAMS[CLOCK_BOX]));
+
   DeviceConfig.ports.forEach((port, portIdx) => {
     if (!port || !port.funct) return;
     const keys = FUNCTION_PARAMS[port.funct];
@@ -230,7 +257,7 @@ export function renderSimpleMappings() {
     meter.appendChild(b);
   }
   q('#mbox-hidden-note').textContent = hidden.length ? `Nothing to map on: ${hidden.join(', ')}` : '';
-  if (!grid.children.length) {
+  if (!grid.querySelector('.mbox:not([data-box="clock"])')) {
     const empty = document.createElement('p');
     empty.className = 'mbox-empty';
     empty.textContent = 'No port has a function with mappable parameters. Set up ports on the Ports tab first.';
@@ -251,15 +278,21 @@ function _subtitle(port) {
 }
 
 function _renderBox(portIdx, port, keys) {
+  const isClock = portIdx === CLOCK_BOX;
   const box = document.createElement('section');
   box.className = 'mbox';
-  box.style.setProperty('--port-color', _portColor(portIdx));
-  box.setAttribute('aria-label', `Port ${BoxNames[portIdx]} ${FUNCTION_LABELS[port.funct] || ''}`);
+  box.dataset.box = isClock ? CLOCK_BOX : BoxNames[portIdx];
+  box.style.setProperty('--port-color', isClock ? 'var(--green)' : _portColor(portIdx));
+  const tag = isClock ? 'CLK' : BoxNames[portIdx];
+  const func = isClock ? 'Internal clock' : (FUNCTION_LABELS[port.funct] || '');
+  const sub = isClock ? `${Math.round(60000000 / (DeviceConfig.global_clock_period || 500000))} BPM` : _subtitle(port);
+  const ch = isClock ? 'Any' : (port.funct === MIDICLOCK ? '–' : port.midi_ch);
+  box.setAttribute('aria-label', isClock ? 'Internal clock' : `Port ${tag} ${func}`);
   box.innerHTML = `
     <header class="mbox-header">
-      <div class="mbox-port">${BoxNames[portIdx]}</div>
-      <div class="mbox-func"><b>${FUNCTION_LABELS[port.funct] || ''}</b><small>${_subtitle(port)}</small></div>
-      <div class="mbox-ch"><h2>Midi Ch</h2><span>${port.funct === MIDICLOCK ? '–' : port.midi_ch}</span></div>
+      <div class="mbox-port">${tag}</div>
+      <div class="mbox-func"><b>${func}</b><small>${sub}</small></div>
+      <div class="mbox-ch"><h2>Midi Ch</h2><span>${ch}</span></div>
     </header>
     <div class="mbox-rows"></div>
     <footer class="mbox-foot"><span></span><button type="button" class="mbox-reset">Restore defaults</button></footer>`;
@@ -283,8 +316,10 @@ function _renderBox(portIdx, port, keys) {
 function _renderRow(portIdx, port, row, cur, isFactory) {
   const el = document.createElement('div');
   el.className = 'mbox-row' + (cur.value === 'none' ? ' unmapped' : '') + (isFactory ? ' is-default' : '');
-  const id = `mbox-${BoxNames[portIdx]}-${row.key}`;
-  const note = row.shared ? `<em class="shared">shared · ${row.shared}</em>` : (isFactory ? '<em>factory default</em>' : '');
+  const id = `mbox-${portIdx === CLOCK_BOX ? CLOCK_BOX : BoxNames[portIdx]}-${row.key}`;
+  const note = row.shared ? `<em class="shared">shared · ${row.shared}</em>`
+    : isFactory ? '<em>factory default</em>'
+    : row.hint ? `<em>${row.hint}</em>` : '';
   const options = SOURCES.map(s => `<option value="${s.value}"${s.value === cur.value ? ' selected' : ''}>${s.label}</option>`).join('')
     + (cur.value === 'other' ? `<option value="other" selected disabled>${cur.label}</option>` : '');
   el.innerHTML = `
