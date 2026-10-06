@@ -38,6 +38,17 @@ const CLOCK_BOX = 'clock';         // box id for the internal clock (not a physi
 // An LFO shape is four settings, one curve per quarter cycle. The Shape row writes the
 // same source to all four (4 free slots), mapping the value onto curves 1-7
 // (VoiceCfg.h LFO_Curves: tri, round, sine, square, saw up, saw down, random).
+// The row has a scope the user picks:
+//   'voice'   - only this LFO (tgt_number = voice + 1); 4 slots per LFO.
+//   'channel' - every LFO on the incoming channel (tgt_number 0); one shared set of 4
+//               slots, shown in every LFO box.
+// A per-LFO mapping and the shared one can coexist; each LFO box shows its own if it
+// has one, otherwise the shared one.
+const SHAPE_SCOPES = [
+  { value: 'voice',   label: 'This LFO' },
+  { value: 'channel', label: 'All LFOs on channel' },
+];
+const _shapeScopePref = {}; // scope chosen on a row that has no Shape mapping yet
 const SHAPE_QUADS = [LFOCurveTypeQ1, LFOCurveTypeQ2, LFOCurveTypeQ3, LFOCurveTypeQ4];
 const SHAPE_FIRST = 1;             // LFO_TRI_CURVE
 const SHAPE_LAST = 7;              // LFO_RANDOM_CURVE (LFO_LAST_CURVE - 1)
@@ -138,10 +149,19 @@ function _portOf(portIdx) {
 // 'shape' spans four slots (row.slots); the others edit row.slot.
 function _rowFor(portIdx, port, key) {
   if (key === 'shape') {
-    return { key, label: 'Shape', kind: 'shape', slot: -1, shared: 'all voices',
-             slots: SHAPE_QUADS.map(_findVoiceSlot),
-             fields: { chan: 0, tgtType: VOICE, tgtNumber: 0, curve: CURVE.LIN, outMin: SHAPE_FIRST, outMax: SHAPE_LAST },
-             factory: null, hint: 'uses 4 slots' };
+    const vt = _voiceTarget(port);
+    const ownSlots = vt === -1 ? [-1, -1, -1, -1] : SHAPE_QUADS.map(q => _findVoiceSlot(vt, q));
+    const chanSlots = SHAPE_QUADS.map(q => _findVoiceSlot(0, q));
+    const scope = ownSlots.some(s => s !== -1) ? 'voice'
+                : chanSlots.some(s => s !== -1) ? 'channel'
+                : (_shapeScopePref[portIdx] || 'voice');
+    const isVoice = scope === 'voice';
+    return { key, label: 'Shape', kind: 'shape', slot: -1, portIdx, scope, ownSlots, chanSlots,
+             slots: isVoice ? ownSlots : chanSlots,
+             unavailable: vt === -1,
+             shared: isVoice ? null : 'all LFOs on the channel',
+             fields: { chan: 0, tgtType: VOICE, tgtNumber: isVoice ? vt : 0, curve: CURVE.LIN, outMin: SHAPE_FIRST, outMax: SHAPE_LAST },
+             factory: null, hint: isVoice ? 'uses 4 slots per LFO' : 'uses 4 slots' };
   }
   if (key === 'tempo') {
     const p = PORT_PARAMS.tempo;
@@ -179,14 +199,22 @@ function _findSlot(tgtNumber, tgt) {
   return -1;
 }
 
-// A free-slot mapping that targets every voice (tgt_number 0) on this voice
-// parameter, or -1. Used by the Shape row's four quarter-curve slots.
-function _findVoiceSlot(tgt) {
+// A free-slot mapping on this voice parameter for tgt_number (voice + 1, or 0 = every
+// voice on the channel), or -1. Used by the Shape row's four quarter-curve slots.
+function _findVoiceSlot(tgtNumber, tgt) {
   for (let s = FIRST_FREE_SLOT; s < MAXMIDIMAPS; s++) {
     const m = DeviceConfig.mappings[s];
-    if (m && m.enabled && m.tgt_type === VOICE && m.tgt_number === 0 && m.tgt_param === tgt) return s;
+    if (m && m.enabled && m.tgt_type === VOICE && m.tgt_number === tgtNumber && m.tgt_param === tgt) return s;
   }
   return -1;
+}
+
+// The mapping target number for a port's voice: its firmware voice index + 1 (0 means
+// "every voice"), or -1 if the voice is not known yet. Same numbering the editor uses
+// for VOICE SysEx (sysexMgt.js _extractNum).
+function _voiceTarget(port) {
+  const idx = DeviceConfig.voices_port_used.indexOf(port.voice);
+  return idx === -1 ? -1 : idx + 1;
 }
 
 function _freeSlots() {
@@ -218,29 +246,60 @@ async function _writeSlot(slot, row, source, number) {
   }
 }
 
-async function _applyShape(row, source, number) {
-  const used = row.slots.filter(s => s !== -1);
+async function _disableSlots(slots) {
+  for (const s of slots.filter(s => s !== -1)) {
+    sendMappingParam(s, MAP_ENABLED, 0);
+    await _sleep(WRITE_GAP_MS);
+  }
+}
+
+// Writes (or clears) the Shape mapping for one scope. Returns false if it could not.
+async function _applyShape(row, source, number, scope = row.scope) {
+  const isVoice = scope === 'voice';
+  const target = isVoice ? row.ownSlots : row.chanSlots;
   if (source === 'none') {
-    for (const s of used) {
-      sendMappingParam(s, MAP_ENABLED, 0);
-      await _sleep(WRITE_GAP_MS);
-    }
-    return;
+    await _disableSlots(target);
+    return true;
+  }
+  if (isVoice && row.unavailable) {
+    _setStatus("This LFO's voice is not known yet. Open the Mappings tab again once the module's config has loaded.", 'fail');
+    return false;
   }
   // Reuse the quarters already mapped, take free slots for the rest - all or nothing,
   // so a shape is never left mapped on only some quarters.
   const free = _freeSlots();
-  const missing = row.slots.filter(s => s === -1).length;
+  const missing = target.filter(s => s === -1).length;
   if (free.length < missing) {
     _setStatus(`Shape needs ${missing} free mapping slots and only ${free.length} are left. Clear a mapping first.`, 'fail');
-    return;
+    return false;
   }
-  const slots = row.slots.map(s => (s === -1 ? free.shift() : s));
+  const slots = target.map(s => (s === -1 ? free.shift() : s));
+  const tgtNumber = isVoice ? _voiceTarget(_portOf(row.portIdx)) : 0;
   for (let i = 0; i < SHAPE_QUADS.length; i++) {
-    const quadRow = { ...row, fields: { ...row.fields, tgt: SHAPE_QUADS[i] } };
+    const quadRow = { ...row, fields: { ...row.fields, tgtNumber, tgt: SHAPE_QUADS[i] } };
     await _writeSlot(slots[i], quadRow, source, number);
   }
   _setStatus('', '');
+  return true;
+}
+
+// Switching scope keeps whatever source the row shows:
+//   to 'channel' - the shared mapping takes this source (created if missing) and this
+//                  LFO's own mapping is removed;
+//   to 'voice'   - this LFO gets its own copy; the shared one stays for the others.
+async function _changeScope(portIdx, newScope) {
+  const port = _portOf(portIdx);
+  const row = _rowFor(portIdx, port, 'shape');
+  _shapeScopePref[portIdx] = newScope;
+  const shown = row.slots.find(s => s !== -1);
+  if (shown === undefined || newScope === row.scope) return; // nothing mapped: just remember the choice
+  const cur = _sourceOf(DeviceConfig.mappings[shown]);
+  if (cur.value === 'none' || cur.value === 'other') return;
+  if (newScope === 'channel') {
+    if (await _applyShape(row, cur.value, cur.number, 'channel')) await _disableSlots(row.ownSlots);
+  } else {
+    await _applyShape(row, cur.value, cur.number, 'voice');
+  }
 }
 
 async function _applyRow(portIdx, key, source, number) {
@@ -266,7 +325,7 @@ async function _restorePort(portIdx) {
   for (const key of _paramsFor(port) || []) {
     const row = _rowFor(portIdx, port, key);
     if (row.kind === 'shape') {
-      await _applyShape(row, 'none');
+      await _applyShape(row, 'none'); // clears what this box shows: its own, or the shared one
     } else if (row.kind === 'port') {
       if (row.slot !== -1) {
         sendMappingParam(row.slot, MAP_ENABLED, 0);
@@ -385,15 +444,22 @@ function _renderRow(portIdx, port, row, cur, isFactory) {
     : row.hint ? `<em>${row.hint}</em>` : '';
   const options = SOURCES.map(s => `<option value="${s.value}"${s.value === cur.value ? ' selected' : ''}>${s.label}</option>`).join('')
     + (cur.value === 'other' ? `<option value="other" selected disabled>${cur.label}</option>` : '');
+  const scope = row.kind === 'shape'
+    ? `<select class="mbox-scope no-trigger" id="${id}-scope" aria-label="${row.label} applies to">${
+        SHAPE_SCOPES.map(s => `<option value="${s.value}"${s.value === row.scope ? ' selected' : ''}>${s.label}</option>`).join('')
+      }</select>`
+    : '';
   el.innerHTML = `
-    <label for="${id}">${row.label}${note}</label>
+    <div class="mbox-label"><label for="${id}">${row.label}${note}</label>${scope}</div>
     <select class="mbox-msg no-trigger" id="${id}">${options}</select>
     <input class="mbox-num no-trigger" id="${id}-cc" type="number" min="0" max="127" inputmode="numeric"
       aria-label="${row.label} CC number" value="${cur.value === 'cc' ? cur.number : ''}"
       placeholder="–" ${cur.value === 'cc' ? '' : 'disabled'}>`;
 
-  const select = el.querySelector('select');
-  const num = el.querySelector('input');
+  const select = el.querySelector('.mbox-msg');
+  const num = el.querySelector('.mbox-num');
+  const scopeSelect = el.querySelector('.mbox-scope');
+  if (scopeSelect) scopeSelect.addEventListener('change', () => _run(() => _changeScope(portIdx, scopeSelect.value)));
   select.addEventListener('change', () => {
     const v = select.value;
     if (v === 'cc') {
