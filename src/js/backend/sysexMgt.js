@@ -791,10 +791,14 @@ export function sendMappingRestore(slot) {
 }
 
 // Requests one mapping slot's full config. Reuses the existing genComReqConfig
-// machinery (ttt=4 selects "mapping" as the request type, nnnnn=slot number) —
-// sendGeneralSysex already encodes REQ_CONFIG's Uint16 payload correctly for this.
+// machinery (ttt = request type, nnnnn = slot number) — sendGeneralSysex already
+// encodes REQ_CONFIG's Uint16 payload correctly for this.
+// ttt must be 5 (sysexTypeMappingDefault): firmware processRequestCommand() only
+// answers 5. This sent 4, the retired user mapping bank, which falls through to
+// `default: break` with no reply - so opening the Mappings tab never re-read any slot.
+const REQ_TYPE_MAPPING_DEFAULT = 5;
 export function requestMappingSlot(slot) {
-  sendGeneralSysex(REQ_CONFIG, (4 << 5) | (slot & 0x1f));
+  sendGeneralSysex(REQ_CONFIG, (REQ_TYPE_MAPPING_DEFAULT << 5) | (slot & 0x1f));
 }
 
 function _storeMappingData(slot, fieldId, value) {

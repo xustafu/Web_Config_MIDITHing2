@@ -1,0 +1,15 @@
+# Make browsers check for newer scripts and styles on every load.
+#
+# The editor loads its JavaScript as ES modules and imports most of them from other
+# scripts, so they cannot carry a version number in index.php. Without this, Chrome
+# can keep serving old .js/.css after an update while index.php itself is new - a
+# beta tester saw the new Mappings page with old styles and no new script running.
+#
+# "no-cache" still lets the browser keep a copy; it only has to ask the server
+# whether the file changed (a cheap 304 when it did not). Apache only; each rule
+# is skipped if its module is not available.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
