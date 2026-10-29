@@ -102,6 +102,7 @@ class MappingConfig {
     this.tgt_param = 0;
     this.out_min = 0;
     this.out_max = 127;
+    this.out_unit = 0; // MAP_UNIT_RAW
   }
 }
 

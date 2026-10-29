@@ -324,12 +324,24 @@ const MAP_TGT_NUMBER = 9;   // u8 — target port/channel/voice number; ignored 
 const MAP_TGT_PARAM = 10;   // u16 — target's own cfgId within its config
 const MAP_OUT_MIN = 11;     // i32 — output range min, in the target parameter's own units
 const MAP_OUT_MAX = 12;     // i32 — output range max
+const MAP_OUT_UNIT = 14;    // u8 — 0=Raw (range/curve conversion), 1=BPM (fixed tempo scaling)
+
+// MAP_OUT_UNIT values (firmware MIDIMapCfg.h MapOutUnit). BPM ignores input range, curve
+// and output range: 7-bit value v -> 2*v BPM; 14-bit -> 1-101 BPM in 0.01 steps, then
+// 0.1 steps up to 739.2; 0 = no change. Only PORTPERIOD and LFO Period accept it.
+const MAP_UNIT_RAW = 0;
+const MAP_UNIT_BPM = 1;
+const MAP_UNIT_NAMES = { [MAP_UNIT_RAW]: "Raw", [MAP_UNIT_BPM]: "BPM" };
+
+// MAP_SRC_MSGTYPE pseudo type: 14-bit CC pair, MSB CC n (0-31) + LSB CC n+32
+const MAP_SRC_CC14BIT = 0xB1;
 
 const MAP_MSGTYPE_NAMES = {
   [NOTE_OFF]: "Note Off",
   [NOTE_ON]: "Note On",
   [POLY_KEY_PRESSURE]: "Poly Aftertouch",
   [CONTROL_CHANGE]: "CC",
+  [MAP_SRC_CC14BIT]: "CC 14-bit",
   [PROGRAM_CHANGE]: "Program Change",
   [CHANNEL_PRESSURE]: "Channel Pressure",
   [PITCH_BEND_CHANGE]: "Pitch Bend",
@@ -666,5 +678,6 @@ const SYSEX_OBJ = {
     [MAP_TGT_PARAM]:   { index: 10, type: "Uint16", length: 2, attr: "tgt_param" },
     [MAP_OUT_MIN]:     { index: 11, type: "Int32",  length: 4, attr: "out_min" },
     [MAP_OUT_MAX]:     { index: 12, type: "Int32",  length: 4, attr: "out_max" },
+    [MAP_OUT_UNIT]:    { index: 14, type: "Uint8",  length: 1, attr: "out_unit" },
   },
 };

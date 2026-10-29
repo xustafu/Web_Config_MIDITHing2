@@ -12,11 +12,12 @@
 //     glide slot and uses a free slot instead.
 //   - Everything else (Max/Min value, clock divider) uses a free slot, 21-31,
 //     targeting that one port (tgt_number = port + 1) on the port's own channel.
-//   - Tempo (internal clock box, only shown while the module runs on its internal
-//     clock) uses a free slot targeting the internal clock port (tgt_number = 100,
-//     GENMIDIMERGEPORT) and its PORTPERIOD, on any channel. The firmware stores a
-//     period, not a BPM, and its range clamp needs min < max, so for now a higher
-//     value means a longer period: knob up = slower, with most travel at slow tempos.
+//   - Tempo uses a free slot targeting PORTPERIOD with Unit = BPM, on any channel: the
+//     module turns the value into a tempo (CC: 2 x value, 2-254 BPM; Pitch Bend /
+//     CC 14-bit: 1-739 BPM, finer below 101) and ignores the slot's ranges and curve.
+//     The internal clock box (only shown while the module runs on its internal clock)
+//     targets the internal clock port (tgt_number = 100, GENMIDIMERGEPORT); a clock
+//     port running free (not following MIDI clock) targets itself (port + 1).
 // The full slot editor is still available behind "Advanced" (mappingsUI.js).
 
 import { q } from './globals.js';
@@ -32,8 +33,6 @@ const MAX_LFO_PREDELAY = 9990;     // VoiceCfg.h MAX_LFOPREDELAY
 const MAX_PORT_GLIDE_TIME = 99990; // IOPortCfg.h MAXPORTGLIDETIME
 const CURVE = { LIN: 0, EXP: 1, LOG: 2 }; // VoiceCfg.h ccTypeConv
 const GENMIDIMERGEPORT = 100;      // Definitions.h: the internal clock's port
-const TEMPO_MIN_PERIOD = 250000;   // µs per beat = 240 BPM
-const TEMPO_MAX_PERIOD = 1000000;  // µs per beat = 60 BPM
 const CLOCK_BOX = 'clock';         // box id for the internal clock (not a physical port)
 // An LFO shape is four settings, one curve per quarter cycle. The Shape row uses one
 // free slot targeting LFOCurveTypeAll, which sets all four live (firmware
@@ -78,7 +77,8 @@ const PORT_PARAMS = {
   max:     { label: 'Max value',  tgt: PORTMAXVAL,    curve: CURVE.LIN, range: f => _functRange(f) },
   min:     { label: 'Min value',  tgt: PORTMINVAL,    curve: CURVE.LIN, range: f => _functRange(f) },
   divider: { label: 'Divider',    tgt: PORTCLKDIV,    curve: CURVE.LIN, range: () => [1, 96] },
-  tempo:   { label: 'Tempo',      tgt: PORTPERIOD,    curve: CURVE.LIN, range: () => [TEMPO_MIN_PERIOD, TEMPO_MAX_PERIOD] },
+  // Unit = BPM: the module ignores the range and curve, kept at the full period range
+  tempo:   { label: 'Tempo',      tgt: PORTPERIOD,    curve: CURVE.LIN, range: () => [40, 60000000], unit: MAP_UNIT_BPM },
 };
 
 // What each port function offers. Functions not listed get no box.
@@ -94,7 +94,7 @@ const FUNCTION_PARAMS = {
   [MIDICHPRESS]:   ['max', 'min', 'glide'],
   [MIDIKEYPRESS]:  ['max', 'min', 'glide'],
   [MIDIPRGCHANGE]: ['max', 'min', 'glide'],
-  [MIDICLOCK]:     ['divider'],
+  [MIDICLOCK]:     ['divider', 'tempo'], // narrowed by clock mode in _paramsFor()
   [CLOCK_BOX]:     ['tempo'],
 };
 
@@ -108,12 +108,15 @@ const FUNCTION_LABELS = {
 
 // Sources offered in each dropdown. Anything else a slot may hold (set from the
 // Advanced view) is shown as a disabled "Other" entry rather than overwritten.
+// maxNum marks a source with a controller number (and its highest valid value).
 const SOURCES = [
   { value: 'none', label: 'Not mapped' },
-  { value: 'cc',   label: 'CC',         msg: CONTROL_CHANGE,    srcMax: 127 },
+  { value: 'cc',   label: 'CC',         msg: CONTROL_CHANGE,    srcMax: 127,   maxNum: 127 },
+  { value: 'cc14', label: 'CC 14-bit',  msg: MAP_SRC_CC14BIT,   srcMax: 16383, maxNum: 31 },
   { value: 'pb',   label: 'Pitch Bend', msg: PITCH_BEND_CHANGE, srcMax: 16383 },
   { value: 'at',   label: 'Aftertouch', msg: CHANNEL_PRESSURE,  srcMax: 127 },
 ];
+const _maxNum = source => (SOURCES.find(s => s.value === source) || {}).maxNum;
 
 let _renderTimer = null;
 let _busy = false;
@@ -121,8 +124,14 @@ let _busy = false;
 // Rows a port's box shows. An LFO synced to MIDI clock takes its rate from the clock,
 // so its Period does nothing and is left out (same flag the Ports tab uses to grey out
 // the LFO frequency, refreshWeb.js _setLFOParams).
+// A clock port following MIDI clock divides the incoming ticks (Divider); one running
+// free pulses at its own period (Tempo).
 function _paramsFor(port) {
   const keys = FUNCTION_PARAMS[port.funct];
+  if (keys && port.funct === MIDICLOCK) {
+    const following = Number(port.use_midi_clock) === 1;
+    return keys.filter(k => k !== (following ? 'tempo' : 'divider'));
+  }
   if (!keys || port.funct !== MIDIVOICELFO) return keys;
   const voice = DeviceConfig.voices_port[port.voice];
   const synced = voice && Number(voice.lfo_use_midi_clock) === 1;
@@ -169,10 +178,11 @@ function _rowFor(portIdx, port, key) {
   }
   if (key === 'tempo') {
     const p = PORT_PARAMS.tempo;
-    return { key, label: p.label, kind: 'port', slot: _findSlot(GENMIDIMERGEPORT, p.tgt), shared: null,
-             fields: { chan: 0, tgtType: PORT, tgtNumber: GENMIDIMERGEPORT, tgt: p.tgt, curve: p.curve,
-                       outMin: TEMPO_MIN_PERIOD, outMax: TEMPO_MAX_PERIOD },
-             factory: null, hint: 'knob up = slower' };
+    const [outMin, outMax] = p.range();
+    const tgtNumber = portIdx === CLOCK_BOX ? GENMIDIMERGEPORT : portIdx + 1;
+    return { key, label: p.label, kind: 'port', slot: _findSlot(tgtNumber, p.tgt), shared: null,
+             fields: { chan: 0, tgtType: PORT, tgtNumber, tgt: p.tgt, curve: p.curve, outMin, outMax, unit: p.unit },
+             factory: null, hint: 'BPM · CC: 2 × value' };
   }
   if (VOICE_PARAMS[key]) {
     const p = VOICE_PARAMS[key];
@@ -250,10 +260,12 @@ async function _writeSlot(slot, row, source, number) {
   const steps = [[MAP_ENABLED, 0]];
   if (src && src.msg !== undefined) {
     steps.push(
-      [MAP_SRC_MSGTYPE, src.msg], [MAP_SRC_CHANNEL, f.chan], [MAP_SRC_NUMBER, source === 'cc' ? number : 0],
+      [MAP_SRC_MSGTYPE, src.msg], [MAP_SRC_CHANNEL, f.chan], [MAP_SRC_NUMBER, src.maxNum ? number : 0],
       [MAP_SRC_MIN, 0], [MAP_SRC_MAX, src.srcMax], [MAP_CURVE_TYPE, f.curve],
       [MAP_TGT_TYPE, f.tgtType], [MAP_TGT_NUMBER, f.tgtNumber], [MAP_TGT_PARAM, f.tgt],
-      [MAP_OUT_MIN, f.outMin], [MAP_OUT_MAX, f.outMax], [MAP_ENABLED, 1]);
+      // Always sent, so a reused slot never keeps another row's unit
+      [MAP_OUT_MIN, f.outMin], [MAP_OUT_MAX, f.outMax], [MAP_OUT_UNIT, f.unit || MAP_UNIT_RAW],
+      [MAP_ENABLED, 1]);
   }
   for (const [field, value] of steps) {
     sendMappingParam(slot, field, value);
@@ -464,9 +476,9 @@ function _renderRow(portIdx, port, row, cur, isFactory) {
   el.innerHTML = `
     <div class="mbox-label"><label for="${id}">${row.label}${note}</label>${scope}</div>
     <select class="mbox-msg no-trigger" id="${id}">${options}</select>
-    <input class="mbox-num no-trigger" id="${id}-cc" type="number" min="0" max="127" inputmode="numeric"
-      aria-label="${row.label} CC number" value="${cur.value === 'cc' ? cur.number : ''}"
-      placeholder="–" ${cur.value === 'cc' ? '' : 'disabled'}>`;
+    <input class="mbox-num no-trigger" id="${id}-cc" type="number" min="0" max="${_maxNum(cur.value) || 127}" inputmode="numeric"
+      aria-label="${row.label} CC number" value="${_maxNum(cur.value) ? cur.number : ''}"
+      placeholder="–" ${_maxNum(cur.value) ? '' : 'disabled'}>`;
 
   const select = el.querySelector('.mbox-msg');
   const num = el.querySelector('.mbox-num');
@@ -474,20 +486,23 @@ function _renderRow(portIdx, port, row, cur, isFactory) {
   if (scopeSelect) scopeSelect.addEventListener('change', () => _run(() => _changeScope(portIdx, scopeSelect.value)));
   select.addEventListener('change', () => {
     const v = select.value;
-    if (v === 'cc') {
+    const maxNum = _maxNum(v);
+    if (maxNum) {
       // Start from the factory CC when there is one, so switching back is one click.
-      const n = row.factory ? row.factory.number : 1;
+      const n = v === 'cc' && row.factory ? row.factory.number : 1;
       num.disabled = false;
+      num.max = maxNum;
       num.value = n;
-      _run(() => _applyRow(portIdx, row.key, 'cc', n));
+      _run(() => _applyRow(portIdx, row.key, v, n));
     } else {
       _run(() => _applyRow(portIdx, row.key, v));
     }
   });
   num.addEventListener('change', () => {
-    const n = Math.max(0, Math.min(127, parseInt(num.value, 10) || 0));
+    const v = select.value;
+    const n = Math.max(0, Math.min(_maxNum(v) || 127, parseInt(num.value, 10) || 0));
     num.value = n;
-    _run(() => _applyRow(portIdx, row.key, 'cc', n));
+    _run(() => _applyRow(portIdx, row.key, v, n));
   });
   return el;
 }
