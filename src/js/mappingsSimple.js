@@ -33,6 +33,8 @@ const MAX_LFO_PREDELAY = 9990;     // VoiceCfg.h MAX_LFOPREDELAY
 const MAX_PORT_GLIDE_TIME = 99990; // IOPortCfg.h MAXPORTGLIDETIME
 const CURVE = { LIN: 0, EXP: 1, LOG: 2 }; // VoiceCfg.h ccTypeConv
 const GENMIDIMERGEPORT = 100;      // Definitions.h: the internal clock's port
+const TEMPO_MIN_PERIOD = 250000;   // µs per beat = 240 BPM
+const TEMPO_MAX_PERIOD = 1000000;  // µs per beat = 60 BPM
 const CLOCK_BOX = 'clock';         // box id for the internal clock (not a physical port)
 // An LFO shape is four settings, one curve per quarter cycle. The Shape row uses one
 // free slot targeting LFOCurveTypeAll, which sets all four live (firmware
@@ -77,8 +79,9 @@ const PORT_PARAMS = {
   max:     { label: 'Max value',  tgt: PORTMAXVAL,    curve: CURVE.LIN, range: f => _functRange(f) },
   min:     { label: 'Min value',  tgt: PORTMINVAL,    curve: CURVE.LIN, range: f => _functRange(f) },
   divider: { label: 'Divider',    tgt: PORTCLKDIV,    curve: CURVE.LIN, range: () => [1, 96] },
-  // Unit = BPM: the module ignores the range and curve, kept at the full period range
-  tempo:   { label: 'Tempo',      tgt: PORTPERIOD,    curve: CURVE.LIN, range: () => [40, 60000000], unit: MAP_UNIT_BPM },
+  // Unit = BPM: the module ignores the range and curve. Firmware without the unit field
+  // uses this range as a period instead (240-60 BPM, knob up = slower), as before.
+  tempo:   { label: 'Tempo',      tgt: PORTPERIOD,    curve: CURVE.LIN, range: () => [TEMPO_MIN_PERIOD, TEMPO_MAX_PERIOD], unit: MAP_UNIT_BPM },
 };
 
 // What each port function offers. Functions not listed get no box.
