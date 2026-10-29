@@ -104,6 +104,11 @@
         <input type="number" id="map-out-min" class="no-trigger map-range-input" data-map-field="MAP_OUT_MIN" />
         <input type="number" id="map-out-max" class="no-trigger map-range-input" data-map-field="MAP_OUT_MAX" />
       </div>
+      <div class="map-row">
+        <label for="map-out-unit">Unit</label>
+        <select id="map-out-unit" class="no-trigger" data-map-field="MAP_OUT_UNIT"
+          title="BPM: the value is a tempo (CC: 2 × value; Pitch Bend / CC 14-bit: 1-739 BPM). Ranges and curve are ignored. Only Clock Period and LFO Period accept it."></select>
+      </div>
     </fieldset>
 
     <div class="map-editor-actions">

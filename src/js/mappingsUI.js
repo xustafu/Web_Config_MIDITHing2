@@ -18,7 +18,7 @@ import { initSimpleMappings, renderSimpleMappings, scheduleSimpleRender } from '
 const MAP_FIELD_IDS = {
   MAP_ENABLED, MAP_SRC_MSGTYPE, MAP_SRC_CHANNEL, MAP_SRC_NUMBER,
   MAP_SRC_MIN, MAP_SRC_MAX, MAP_CURVE_TYPE, MAP_TGT_PARAM,
-  MAP_OUT_MIN, MAP_OUT_MAX,
+  MAP_OUT_MIN, MAP_OUT_MAX, MAP_OUT_UNIT,
 };
 
 // Message types with no independent "number" concept — CC#/note# input is disabled
@@ -191,6 +191,7 @@ function _renderEditorFields(slot) {
   _rebuildTargetParamOptions(m.tgt_type, m.tgt_param);
   q('#map-out-min').value = m.out_min;
   q('#map-out-max').value = m.out_max;
+  q('#map-out-unit').value = m.out_unit;
   _updateSourceNumberEnabled();
 }
 
@@ -208,6 +209,13 @@ function _populateStaticDropdowns() {
     opt.value = value;
     opt.textContent = label;
     curve.appendChild(opt);
+  });
+  const unit = q('#map-out-unit');
+  Object.entries(MAP_UNIT_NAMES).forEach(([value, label]) => {
+    const opt = document.createElement('option');
+    opt.value = value;
+    opt.textContent = label;
+    unit.appendChild(opt);
   });
 }
 
@@ -283,7 +291,9 @@ function _rebuildTargetParamOptions(targetType, selectedId) {
 
 function _updateSourceNumberEnabled() {
   const msgType = Number(q('#map-src-type').value);
-  q('#map-src-number').disabled = NO_NUMBER_MSGTYPES.includes(msgType);
+  const num = q('#map-src-number');
+  num.disabled = NO_NUMBER_MSGTYPES.includes(msgType);
+  num.max = msgType === MAP_SRC_CC14BIT ? 31 : 127; // CC14: MSB controller only, LSB is n+32
 }
 
 function _describeTarget(type, number) {
@@ -304,7 +314,8 @@ function _summarizeMapping(m) {
   const targetLabel = _describeTarget(m.tgt_type, m.tgt_number);
   const paramEntry = getMappingTargetParams(m.tgt_type).find(p => p.id === m.tgt_param);
   const paramLabel = paramEntry ? paramEntry.label : `param ${m.tgt_param}`;
-  return `${msgName}${numberPart} (${chanPart}) → ${targetLabel}: ${paramLabel}`;
+  const unitPart = m.out_unit === MAP_UNIT_BPM ? ' (BPM)' : '';
+  return `${msgName}${numberPart} (${chanPart}) → ${targetLabel}: ${paramLabel}${unitPart}`;
 }
 
 // ── Quick CC -> ADSR panel ───────────────────────────────────────────────────
