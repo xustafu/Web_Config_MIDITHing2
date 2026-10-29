@@ -218,6 +218,9 @@ const LFOPreDelay=20; // "T.Predelay", u32T, 0, 0, 10000},      // LFO Pre delay
 const ADSRRetrigMode=21; // "ADSR Retrigger Mode", u8T, 0, 0, 2},
 const LFOMIDIClkMult=22; // "LFO Clk Mult", u8T, 1, 1, 30},             // Period 1000 to 0.1 Hz
 const LFOOffset=23;      // "LFO Offset", u8T, 50, 0, 100},            // Offset LFO level
+// Action-only id: no stored config element, so it has no entry in the voice parameter
+// table below. Only valid as a mapping target; sets all 4 LFO quadrant curves live.
+const LFOCurveTypeAll=24;
 const ADSRAffectOSC=100; // "ADSR in OSC", boolT, 1, 0, 1},
 const VelAffectADSR=101; // "Vel.Impact", boolT, 1, 0, 1},
 const UseLocalConfigADSR=102; // "ADSR local config", boolT, 0, 0, 1},

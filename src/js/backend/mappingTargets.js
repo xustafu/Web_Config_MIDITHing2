@@ -49,10 +49,13 @@ const MAP_TARGET_PARAMS = {
     { id: LFOMaxLevel, label: "LFO Max Level" },
     { id: LFOPreDelay, label: "LFO Pre-delay" },
     { id: LFOOffset, label: "LFO Offset" },
+    // Action-only target: sets all 4 quadrant curves live. Use Out Min/Max 1-7, linear.
+    { id: LFOCurveTypeAll, label: "LFO Shape (all quadrants)" },
     // Portamento is not a Voice field any more - see Glide Time/Type under PORT.
-    // Curve-type/retrig-mode/boolean toggle fields (ADSRCurveType, LFOCurveTypeQ1-4,
-    // ADSRRetrigMode, ADSRAffectOSC, etc.) intentionally omitted — enum/boolean
-    // settings, not continuous values a MIDI knob sweep makes sense against.
+    // Curve-type/retrig-mode/boolean toggle fields (ADSRCurveType, ADSRRetrigMode,
+    // ADSRAffectOSC, etc.) intentionally omitted — enum/boolean settings, not
+    // continuous values a MIDI knob sweep makes sense against. The per-quadrant
+    // LFOCurveTypeQ1-4 are covered by LFOCurveTypeAll above.
   ],
 };
 

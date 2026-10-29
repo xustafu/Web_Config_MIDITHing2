@@ -262,13 +262,23 @@ function _buildTargetOptions(selectedType, selectedNumber) {
 function _rebuildTargetParamOptions(targetType, selectedId) {
   const select = q('#map-tgt-param');
   select.innerHTML = '';
-  getMappingTargetParams(targetType).forEach(p => {
+  const params = getMappingTargetParams(targetType);
+  params.forEach(p => {
     const opt = document.createElement('option');
     opt.value = p.id;
     opt.textContent = p.label;
     if (selectedId != null && p.id === selectedId) opt.selected = true;
     select.appendChild(opt);
   });
+  // Keep a target this list doesn't offer (e.g. a legacy LFOCurveTypeQ1-4 slot) instead
+  // of falling back to the first entry, which Save would then write to the module.
+  if (selectedId != null && !params.some(p => p.id === selectedId)) {
+    const opt = document.createElement('option');
+    opt.value = selectedId;
+    opt.textContent = `param ${selectedId}`;
+    opt.selected = true;
+    select.appendChild(opt);
+  }
 }
 
 function _updateSourceNumberEnabled() {

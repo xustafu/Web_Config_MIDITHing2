@@ -35,21 +35,25 @@ const GENMIDIMERGEPORT = 100;      // Definitions.h: the internal clock's port
 const TEMPO_MIN_PERIOD = 250000;   // µs per beat = 240 BPM
 const TEMPO_MAX_PERIOD = 1000000;  // µs per beat = 60 BPM
 const CLOCK_BOX = 'clock';         // box id for the internal clock (not a physical port)
-// An LFO shape is four settings, one curve per quarter cycle. The Shape row writes the
-// same source to all four (4 free slots), mapping the value onto curves 1-7
+// An LFO shape is four settings, one curve per quarter cycle. The Shape row uses one
+// free slot targeting LFOCurveTypeAll, which sets all four live (firmware
+// Voice::applyLiveVoiceParam), mapping the value onto curves 1-7
 // (VoiceCfg.h LFO_Curves: tri, round, sine, square, saw up, saw down, random).
 // The row has a scope the user picks:
-//   'voice'   - only this LFO (tgt_number = voice + 1); 4 slots per LFO.
-//   'channel' - every LFO on the incoming channel (tgt_number 0); one shared set of 4
-//               slots, shown in every LFO box.
+//   'voice'   - only this LFO (tgt_number = voice + 1); 1 slot per LFO.
+//   'channel' - every LFO on the incoming channel (tgt_number 0); one shared slot,
+//               shown in every LFO box.
 // A per-LFO mapping and the shared one can coexist; each LFO box shows its own if it
 // has one, otherwise the shared one.
+// Older editor versions wrote the shape as four slots, one per quarter
+// (LFOCurveTypeQ1-Q4). Those are still recognised and replaced by the single slot
+// the next time the row is edited.
 const SHAPE_SCOPES = [
   { value: 'voice',   label: 'This LFO' },
   { value: 'channel', label: 'All LFOs on channel' },
 ];
 const _shapeScopePref = {}; // scope chosen on a row that has no Shape mapping yet
-const SHAPE_QUADS = [LFOCurveTypeQ1, LFOCurveTypeQ2, LFOCurveTypeQ3, LFOCurveTypeQ4];
+const LEGACY_SHAPE_QUADS = [LFOCurveTypeQ1, LFOCurveTypeQ2, LFOCurveTypeQ3, LFOCurveTypeQ4];
 const SHAPE_FIRST = 1;             // LFO_TRI_CURVE
 const SHAPE_LAST = 7;              // LFO_RANDOM_CURVE (LFO_LAST_CURVE - 1)
 const WRITE_GAP_MS = 15; // bursts of back-to-back SysEx have been seen to drop messages
@@ -146,22 +150,22 @@ function _portOf(portIdx) {
 }
 
 // Resolves which slot a row edits and how. kind: 'voice' | 'glide' | 'port' | 'shape'.
-// 'shape' spans four slots (row.slots); the others edit row.slot.
+// 'shape' also carries any legacy four-quarter slots for its scope (row.legacy).
 function _rowFor(portIdx, port, key) {
   if (key === 'shape') {
     const vt = _voiceTarget(port);
-    const ownSlots = vt === -1 ? [-1, -1, -1, -1] : SHAPE_QUADS.map(q => _findVoiceSlot(vt, q));
-    const chanSlots = SHAPE_QUADS.map(q => _findVoiceSlot(0, q));
-    const scope = ownSlots.some(s => s !== -1) ? 'voice'
-                : chanSlots.some(s => s !== -1) ? 'channel'
-                : (_shapeScopePref[portIdx] || 'voice');
+    const own = vt === -1 ? { slot: -1, legacy: [] } : _shapeSlots(vt);
+    const chan = _shapeSlots(0);
+    const used = s => s.slot !== -1 || s.legacy.length > 0;
+    const scope = used(own) ? 'voice' : used(chan) ? 'channel' : (_shapeScopePref[portIdx] || 'voice');
     const isVoice = scope === 'voice';
-    return { key, label: 'Shape', kind: 'shape', slot: -1, portIdx, scope, ownSlots, chanSlots,
-             slots: isVoice ? ownSlots : chanSlots,
+    const cur = isVoice ? own : chan;
+    return { key, label: 'Shape', kind: 'shape', slot: cur.slot, legacy: cur.legacy, portIdx, scope, own, chan,
              unavailable: vt === -1,
              shared: isVoice ? null : 'all LFOs on the channel',
-             fields: { chan: 0, tgtType: VOICE, tgtNumber: isVoice ? vt : 0, curve: CURVE.LIN, outMin: SHAPE_FIRST, outMax: SHAPE_LAST },
-             factory: null, hint: isVoice ? 'uses 4 slots per LFO' : 'uses 4 slots' };
+             fields: { chan: 0, tgtType: VOICE, tgtNumber: isVoice ? vt : 0, tgt: LFOCurveTypeAll,
+                       curve: CURVE.LIN, outMin: SHAPE_FIRST, outMax: SHAPE_LAST },
+             factory: null };
   }
   if (key === 'tempo') {
     const p = PORT_PARAMS.tempo;
@@ -200,13 +204,24 @@ function _findSlot(tgtNumber, tgt) {
 }
 
 // A free-slot mapping on this voice parameter for tgt_number (voice + 1, or 0 = every
-// voice on the channel), or -1. Used by the Shape row's four quarter-curve slots.
+// voice on the channel), or -1.
 function _findVoiceSlot(tgtNumber, tgt) {
   for (let s = FIRST_FREE_SLOT; s < MAXMIDIMAPS; s++) {
     const m = DeviceConfig.mappings[s];
     if (m && m.enabled && m.tgt_type === VOICE && m.tgt_number === tgtNumber && m.tgt_param === tgt) return s;
   }
   return -1;
+}
+
+// The Shape slot for one tgt_number, plus any legacy quarter slots still mapped there.
+function _shapeSlots(tgtNumber) {
+  return { slot: _findVoiceSlot(tgtNumber, LFOCurveTypeAll),
+           legacy: LEGACY_SHAPE_QUADS.map(q => _findVoiceSlot(tgtNumber, q)).filter(s => s !== -1) };
+}
+
+// The slot whose source the Shape row shows: the single slot, else a legacy quarter.
+function _shapeShownSlot(row) {
+  return row.slot !== -1 ? row.slot : (row.legacy.length ? row.legacy[0] : -1);
 }
 
 // The mapping target number for a port's voice: its firmware voice index + 1 (0 means
@@ -254,31 +269,28 @@ async function _disableSlots(slots) {
 }
 
 // Writes (or clears) the Shape mapping for one scope. Returns false if it could not.
+// Any legacy quarter slots for that scope are cleared, reusing one of them if needed.
 async function _applyShape(row, source, number, scope = row.scope) {
   const isVoice = scope === 'voice';
-  const target = isVoice ? row.ownSlots : row.chanSlots;
+  const target = isVoice ? row.own : row.chan;
   if (source === 'none') {
-    await _disableSlots(target);
+    await _disableSlots([target.slot, ...target.legacy]);
     return true;
   }
   if (isVoice && row.unavailable) {
     _setStatus("This LFO's voice is not known yet. Open the Mappings tab again once the module's config has loaded.", 'fail');
     return false;
   }
-  // Reuse the quarters already mapped, take free slots for the rest - all or nothing,
-  // so a shape is never left mapped on only some quarters.
-  const free = _freeSlots();
-  const missing = target.filter(s => s === -1).length;
-  if (free.length < missing) {
-    _setStatus(`Shape needs ${missing} free mapping slots and only ${free.length} are left. Clear a mapping first.`, 'fail');
+  const legacy = [...target.legacy];
+  let slot = target.slot;
+  if (slot === -1) slot = legacy.length ? legacy.shift() : (_freeSlots()[0] ?? -1);
+  if (slot === -1) {
+    _setStatus('No free mapping slots left. Clear a mapping first.', 'fail');
     return false;
   }
-  const slots = target.map(s => (s === -1 ? free.shift() : s));
   const tgtNumber = isVoice ? _voiceTarget(_portOf(row.portIdx)) : 0;
-  for (let i = 0; i < SHAPE_QUADS.length; i++) {
-    const quadRow = { ...row, fields: { ...row.fields, tgtNumber, tgt: SHAPE_QUADS[i] } };
-    await _writeSlot(slots[i], quadRow, source, number);
-  }
+  await _writeSlot(slot, { ...row, fields: { ...row.fields, tgtNumber } }, source, number);
+  await _disableSlots(legacy);
   _setStatus('', '');
   return true;
 }
@@ -291,12 +303,12 @@ async function _changeScope(portIdx, newScope) {
   const port = _portOf(portIdx);
   const row = _rowFor(portIdx, port, 'shape');
   _shapeScopePref[portIdx] = newScope;
-  const shown = row.slots.find(s => s !== -1);
-  if (shown === undefined || newScope === row.scope) return; // nothing mapped: just remember the choice
+  const shown = _shapeShownSlot(row);
+  if (shown === -1 || newScope === row.scope) return; // nothing mapped: just remember the choice
   const cur = _sourceOf(DeviceConfig.mappings[shown]);
   if (cur.value === 'none' || cur.value === 'other') return;
   if (newScope === 'channel') {
-    if (await _applyShape(row, cur.value, cur.number, 'channel')) await _disableSlots(row.ownSlots);
+    if (await _applyShape(row, cur.value, cur.number, 'channel')) await _disableSlots([row.own.slot, ...row.own.legacy]);
   } else {
     await _applyShape(row, cur.value, cur.number, 'voice');
   }
@@ -422,8 +434,8 @@ function _renderBox(portIdx, port, keys) {
   let changed = 0;
   keys.forEach(key => {
     const row = _rowFor(portIdx, port, key);
-    const slot = row.kind === 'shape' ? row.slots.find(s => s !== -1) : row.slot;
-    const m = slot === undefined || slot === -1 ? null : DeviceConfig.mappings[slot];
+    const slot = row.kind === 'shape' ? _shapeShownSlot(row) : row.slot;
+    const m = slot === -1 ? null : DeviceConfig.mappings[slot];
     const cur = _sourceOf(m);
     const isFactory = row.factory && cur.value === row.factory.value && cur.number === row.factory.number;
     if (row.factory ? !isFactory : cur.value !== 'none') changed++;
