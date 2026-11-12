@@ -19,7 +19,8 @@
     </svg>
   </figure>
 
-  <h1 class="banner-title"><span id="title">MIDI Thing 2 FW V1.3</span><span class="banner-subtitle"> | Editor</span></h1>
+  <h1 class="banner-title"><span id="title">MIDIThing2 V1.3</span><span class="banner-subtitle"
+    title="Editor build <?= htmlspecialchars(mt_build_id()) ?>, <?= date('j M Y', mt_build_time()) ?>"> | <?= mt_build_date() ?></span></h1>
 
   <figure class="live-button">
     <svg

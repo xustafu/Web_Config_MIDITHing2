@@ -154,7 +154,7 @@ export function activateMidiThingy(name = 'MidiThingyRP') {
     }
   else {
     // Switching (back) to a MIDIThing2: undo the RP-only title/wrap/class changes above.
-    q('#title').innerHTML = "MIDI Thing 2 FW V1.3"
+    q('#title').innerHTML = "MIDIThing2 V1.3"
     q('#head-title').innerHTML = "Web MIDI Thing 2"
     const mt2Wrap = q('.mt2-main-wrap');
     if (mt2Wrap) {

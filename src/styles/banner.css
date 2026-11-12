@@ -133,9 +133,8 @@
     margin-bottom: -6px;
   }
 
-  .banner-subtitle {
-    display: none;
-  }
+  /* The subtitle is the editor build date (" | 12Nov26"): short, and kept on narrow
+     screens too so it is always visible for bug reports. */
 
   .banner-device-select .selector-label,
   .banner-settings-select .selector-label {

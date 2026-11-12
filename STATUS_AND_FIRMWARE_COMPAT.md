@@ -236,6 +236,13 @@ uploaded files can be mismatched against cached ones in exactly this way. Users
 will not know to hard-refresh. Worth considering cache-busting query strings or
 versioned filenames on the module imports.
 
+**Addressed 2026-11-12** (`src/includes/build.php`): every JS/CSS URL now carries
+`?v=<hash of all asset files>`, module imports are remapped to it by an import map,
+and an inline check in `index.php` shows a non-blocking notice (bottom of the
+window, page stays usable, Reload / Later) when the modules fail to load
+(`js/bootCheck.js` never ran) or when `build.php` reports a newer build than the
+open page. Not yet tested on a PHP server.
+
 
 ## Resolved 2026-09-20: the disappearing menus
 
